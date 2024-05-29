@@ -16,14 +16,9 @@
         "bundle": false,
         "main": "apps/server/src/main.ts",
         "tsConfig": "apps/server/tsconfig.app.json",
+        "esbuildConfig": "apps/server/esbuild.config.js",
         "assets": ["apps/server/src/assets"],
-        "generatePackageJson": true,
-        "esbuildOptions": {
-          "sourcemap": true,
-          "outExtension": {
-            ".js": ".js"
-          }
-        }
+        "generatePackageJson": true
       },
       "configurations": {
         "development": {},

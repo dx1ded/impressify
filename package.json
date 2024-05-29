@@ -10,15 +10,19 @@
     "axios": "^1.6.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.5",
     "fastify": "~4.13.0",
     "fastify-plugin": "~4.5.0",
     "lucide-react": "^0.379.0",
+    "pg": "^8.11.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "^6.23.1",
+    "reflect-metadata": "^0.2.2",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@conarti/eslint-plugin-feature-sliced": "^1.0.5",
@@ -50,6 +54,7 @@
     "babel-jest": "^29.4.1",
     "cypress": "^13.8.0",
     "esbuild": "^0.19.2",
+    "esbuild-plugin-tsc": "^0.4.0",
     "eslint": "~8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^18.0.0",
