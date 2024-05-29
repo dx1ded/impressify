@@ -1,10 +1,50 @@
 {
-  "extends": ["plugin:@nx/react", "../../.eslintrc.json"],
-  "ignorePatterns": ["!**/*"],
+  "extends": ["plugin:@nx/react", "../../.eslintrc.json", "airbnb/hooks"],
+  "plugins": ["@conarti/feature-sliced"],
+  "ignorePatterns": ["!**/*", "postcss.config.js", "tailwind.config.js"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
+      "rules": {
+        "react/require-default-props": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-props-no-spreading": "off",
+        "react/no-array-index-key": "off",
+        "@conarti/feature-sliced/layers-slices": "error",
+        "@conarti/feature-sliced/absolute-relative": "error",
+        "@conarti/feature-sliced/public-api": "off",
+        "import/order": [
+          "error",
+          {
+            "newlines-between": "always",
+            "pathGroups": [
+              {
+                "pattern": "~/**",
+                "group": "internal",
+                "position": "after"
+              },
+              {
+                "pattern": "react**",
+                "group": "builtin",
+                "position": "before"
+              },
+              {
+                "pattern": "@reduxjs/toolkit",
+                "group": "builtin",
+                "position": "before"
+              }
+            ],
+            "groups": [
+              "builtin",
+              "external",
+              "internal",
+              "sibling",
+              "parent",
+              "index"
+            ]
+          }
+        ]
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],

@@ -1,7 +1,23 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nx"],
+  "plugins": ["@nx", "@typescript-eslint", "import"],
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.base.json"]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -18,13 +34,51 @@
               }
             ]
           }
-        ]
+        ],
+        "import/no-extraneous-dependencies": "off",
+        "no-nested-ternary": "off",
+        "import/prefer-default-export": "off",
+        "no-param-reassign": "off",
+        "consistent-return": "off",
+        "no-underscore-dangle": "off",
+        "no-plusplus": "off",
+        "import/no-cycle": "off",
+        "import/order": [
+          "error",
+          {
+            "groups": [
+              "builtin",
+              "external",
+              "internal",
+              "sibling",
+              "parent",
+              "index"
+            ]
+          }
+        ],
+        "import/extensions": ["error", "ignorePackages", {
+          "": "never",
+          "js": "never",
+          "jsx": "never",
+          "ts": "never",
+          "tsx": "never"
+        }]
       }
     },
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-shadow": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/lines-between-class-members": "off",
+        "@typescript-eslint/naming-convention": "off",
+        "@typescript-eslint/default-param-last": "off",
+        "@typescript-eslint/no-throw-literal": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-non-null-asserted-optional-chain": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
