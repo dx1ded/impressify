@@ -1,3 +1,5 @@
+import { Checkbox } from "~/shared/ui/checkbox"
+
 export function App() {
-  return <p className="text-blue-500">App</p>
+  return <Checkbox>Yo</Checkbox>
 }
