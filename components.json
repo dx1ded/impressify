@@ -10,6 +10,7 @@
   },
   "aliases": {
     "components": "apps/client/src/shared",
+    "ui": "apps/client/src/shared/ui-kit",
     "utils": "~/shared/lib"
   }
 }

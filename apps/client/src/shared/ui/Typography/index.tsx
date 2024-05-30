@@ -1,0 +1,5 @@
+export * from "./Heading"
+export * from "./Subheading"
+export * from "./Lead"
+export * from "./Text"
+export * from "./Small"
