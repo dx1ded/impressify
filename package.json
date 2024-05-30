@@ -9,6 +9,7 @@
     "@fastify/autoload": "~5.7.1",
     "@fastify/sensible": "~5.2.0",
     "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "axios": "^1.6.0",
