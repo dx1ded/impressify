@@ -40,6 +40,7 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
+    "@clerk/testing": "^1.1.7",
     "@conarti/eslint-plugin-feature-sliced": "^1.0.5",
     "@nx/cypress": "19.1.0",
     "@nx/esbuild": "19.1.0",
