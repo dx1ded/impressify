@@ -1,7 +1,5 @@
-import { AppWindow, EllipsisVertical, Users } from "lucide-react"
+import { AppWindow, EllipsisVertical, Trash2, Type, Users } from "lucide-react"
 
-import { DeletePresentationOption } from "~/features/delete-presentation"
-import { EditPresentationNameOption } from "~/features/edit-presentation-name"
 import { Popover, PopoverContent, PopoverTrigger } from "~/shared/ui-kit/popover"
 import { Small } from "~/shared/ui/Typography"
 
@@ -26,8 +24,18 @@ export function PresentationPreview() {
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-52 px-0 py-2">
-                <EditPresentationNameOption />
-                <DeletePresentationOption />
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">
+                  <Type className="h-4 w-4" />
+                  Rename
+                </button>
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </button>
                 <button
                   type="button"
                   className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">

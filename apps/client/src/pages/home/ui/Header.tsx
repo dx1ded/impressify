@@ -9,7 +9,7 @@ export function Header() {
   return (
     <header className="py-3">
       <Container className="grid grid-cols-3 items-center gap-5">
-        <Logo />
+        <Logo size={2.5} />
         <div className="relative">
           <Input className="pr-11" placeholder="Search" />
           <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-600" />

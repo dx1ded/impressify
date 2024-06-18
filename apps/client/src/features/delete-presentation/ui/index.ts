@@ -1,1 +1,1 @@
-export * from "./DeletePresentationOption"
+export * from "./DeletePresentation"

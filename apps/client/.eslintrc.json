@@ -11,7 +11,7 @@
         "react/jsx-props-no-spreading": "off",
         "react/prop-types": "off",
         "react/no-array-index-key": "off",
-        "@conarti/feature-sliced/layers-slices": "off",
+        "@conarti/feature-sliced/layers-slices": "error",
         "@conarti/feature-sliced/absolute-relative": "off",
         "@conarti/feature-sliced/public-api": "off",
         "import/order": [

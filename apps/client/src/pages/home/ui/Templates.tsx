@@ -1,5 +1,4 @@
 import { Template } from "~/entities/template"
-import { Small } from "~/shared/ui/Typography"
 
 const mock = [
   {
