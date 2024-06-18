@@ -1,5 +1,6 @@
-import { SignInButton, SignUpButton } from "@clerk/clerk-react"
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/clerk-react"
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 
 import { capitalize } from "~/shared"
 import { Button } from "~/shared/ui-kit/button"
@@ -52,14 +53,21 @@ export function Header() {
           </ul>
         </nav>
         <div className="flex items-center gap-6">
-          <SignInButton>
-            <Small as="a" href="#">
-              Login
-            </Small>
-          </SignInButton>
-          <SignUpButton>
-            <Button size="sm">Sign up</Button>
-          </SignUpButton>
+          <SignedIn>
+            <Button asChild size="sm" variant="outline" className="font-semibold">
+              <Link to="/home">/ home</Link>
+            </Button>
+          </SignedIn>
+          <SignedOut>
+            <SignInButton>
+              <Small as="a" href="#">
+                Login
+              </Small>
+            </SignInButton>
+            <SignUpButton>
+              <Button size="sm">Sign up</Button>
+            </SignUpButton>
+          </SignedOut>
         </div>
       </Container>
     </header>

@@ -1,5 +1,5 @@
 import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react"
-import { Outlet, Navigate } from "react-router-dom"
+import { Outlet } from "react-router-dom"
 
 export function PrivateRoutes() {
   return (
@@ -9,19 +9,6 @@ export function PrivateRoutes() {
       </SignedOut>
       <SignedIn>
         <Outlet />
-      </SignedIn>
-    </>
-  )
-}
-
-export function PublicRoutes() {
-  return (
-    <>
-      <SignedOut>
-        <Outlet />
-      </SignedOut>
-      <SignedIn>
-        <Navigate to="/" />
       </SignedIn>
     </>
   )
