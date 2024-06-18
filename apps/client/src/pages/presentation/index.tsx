@@ -5,7 +5,7 @@ import { Header } from "~/pages/presentation/ui/Header"
 import { Toaster } from "~/shared/ui-kit/sonner"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 
-export function Presentation() {
+export default function Presentation() {
   return (
     <TooltipProvider>
       <div className="flex h-screen flex-col bg-[#f8fafd] px-4">

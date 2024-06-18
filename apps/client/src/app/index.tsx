@@ -1,16 +1,18 @@
 import { ClerkProvider } from "@clerk/clerk-react"
+import { lazy } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
 
 import { PrivateRoutes } from "~/app/ui"
-import { Home } from "~/pages/home"
-import { Main } from "~/pages/main"
-import { Presentation } from "~/pages/presentation"
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key")
 }
+
+const Main = lazy(() => import("~/pages/main"))
+const Home = lazy(() => import("~/pages/home"))
+const Presentation = lazy(() => import("~/pages/presentation"))
 
 export function App() {
   const navigate = useNavigate()
