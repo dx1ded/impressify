@@ -13,7 +13,7 @@ export function SlideList() {
           </button>
           <button
             type="button"
-            className="invisible h-[1.125rem] w-[1.125rem] opacity-0 transition duration-300 group-hover:visible group-hover:opacity-100">
+            className="invisible h-[1.125rem] w-[1.125rem] text-red-600 opacity-0 transition duration-300 group-hover:visible group-hover:opacity-100">
             <Trash2Icon className="h-full w-full" />
           </button>
         </div>
