@@ -1,4 +1,5 @@
 import { lazy } from "react"
+import { Provider } from "react-redux"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache, split } from "@apollo/client"
 import { getMainDefinition } from "@apollo/client/utilities"
@@ -7,6 +8,7 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions"
 import { ClerkProvider, useUser } from "@clerk/clerk-react"
 import { createClient } from "graphql-ws"
 
+import { store } from "~/app/model"
 import { PrivateRoutes } from "~/app/ui"
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -55,21 +57,23 @@ export function App() {
 
   return (
     <ApolloProvider client={client}>
-      <ClerkProvider
-        publishableKey={PUBLISHABLE_KEY}
-        routerPush={(to) => navigate(to)}
-        routerReplace={(to) => navigate(to, { replace: true })}
-        signInForceRedirectUrl="/home"
-        signUpForceRedirectUrl="/home"
-        afterSignOutUrl="/">
-        <Routes>
-          <Route index element={<Main />} />
-          <Route element={<PrivateRoutes />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/presentation/:id" element={<Presentation />} />
-          </Route>
-        </Routes>
-      </ClerkProvider>
+      <Provider store={store}>
+        <ClerkProvider
+          publishableKey={PUBLISHABLE_KEY}
+          routerPush={(to) => navigate(to)}
+          routerReplace={(to) => navigate(to, { replace: true })}
+          signInForceRedirectUrl="/home"
+          signUpForceRedirectUrl="/home"
+          afterSignOutUrl="/">
+          <Routes>
+            <Route index element={<Main />} />
+            <Route element={<PrivateRoutes />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/presentation/:id" element={<Presentation />} />
+            </Route>
+          </Routes>
+        </ClerkProvider>
+      </Provider>
     </ApolloProvider>
   )
 }

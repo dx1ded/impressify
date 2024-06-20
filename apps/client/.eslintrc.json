@@ -1,7 +1,7 @@
 {
   "extends": ["plugin:@nx/react", "../../.eslintrc.json", "airbnb/hooks"],
   "plugins": ["@conarti/feature-sliced"],
-  "ignorePatterns": ["!**/*", "postcss.config.js", "tailwind.config.js"],
+  "ignorePatterns": ["!**/*", "postcss.config.js", "tailwind.config.js", "__generated__/*"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],

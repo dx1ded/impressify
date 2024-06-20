@@ -7,6 +7,7 @@ import { PubSub } from "graphql-subscriptions"
 import { ApolloServer } from "@apollo/server"
 import { createClerkClient } from "@clerk/backend"
 import fastifyApollo, { type ApolloFastifyContextFunction, fastifyApolloDrainPlugin } from "@as-integrations/fastify"
+import { app } from "./app"
 import { schema, type ApolloContext } from "./graphql"
 
 const host = process.env.HOST ?? "localhost"
@@ -57,6 +58,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000
   await apollo.start()
 
   fastify.register(fastifyApollo(apollo), { context: contextFn })
+  fastify.register(app)
   fastify.listen({ port, host }, (err) => {
     if (err) {
       fastify.log.error(err)
