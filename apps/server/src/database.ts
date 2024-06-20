@@ -1,5 +1,12 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
+import { Element } from "./entities/Element"
+import { Slide } from "./entities/Slide"
+import { Presentation } from "./entities/Presentation"
+import { Text } from "./entities/Text"
+import { Image } from "./entities/Image"
+import { Shape } from "./entities/Shape"
+import { User } from "./entities/User"
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -11,6 +18,14 @@ export const AppDataSource = new DataSource({
   synchronize: true,
   entities: [`${__dirname}/entities/**/*.js`],
 })
+
+export const userRepository = AppDataSource.getRepository(User)
+export const presentationRepository = AppDataSource.getRepository(Presentation)
+export const slideRepository = AppDataSource.getRepository(Slide)
+export const elementRepository = AppDataSource.getRepository(Element)
+export const textRepository = AppDataSource.getRepository(Text)
+export const imageRepository = AppDataSource.getRepository(Image)
+export const shapeRepository = AppDataSource.getRepository(Shape)
 
 AppDataSource.initialize()
   .then(() => console.log("Database Connected"))

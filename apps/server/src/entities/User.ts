@@ -1,10 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, ManyToMany, PrimaryColumn, type Relation } from "typeorm"
+import { Presentation } from "./Presentation"
+import { User as IUser } from "../graphql/__generated__"
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number
+export class User implements IUser {
+  @PrimaryColumn()
+  id: string
 
   @Column()
   name: string
+
+  @ManyToMany(() => Presentation, (presentation) => presentation.users)
+  presentations: Relation<Presentation>[]
+
+  constructor(id: string) {
+    this.id = id
+  }
 }

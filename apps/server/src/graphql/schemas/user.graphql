@@ -1,0 +1,9 @@
+type User {
+  id: ID!
+  name: String!
+  presentations: [Presentation!]!
+}
+
+type Query {
+  user(id: ID!): User
+}

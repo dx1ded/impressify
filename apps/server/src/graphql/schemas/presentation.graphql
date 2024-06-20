@@ -1,0 +1,16 @@
+type Presentation {
+  id: ID!
+  name: String!
+  slides: [Slide!]!
+  users: [User!]!
+}
+
+type Query {
+  findUserPresentations: [Presentation!]
+}
+
+type Mutation {
+  createPresentation(name: String!): Presentation
+  renamePresentation(id: ID!, name: String!): Presentation
+  deletePresentation(id: ID!): Boolean
+}

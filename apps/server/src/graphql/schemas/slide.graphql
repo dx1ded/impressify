@@ -1,0 +1,5 @@
+type Slide {
+  id: ID!
+  elements: [Element!]!
+  presentation: Presentation!
+}
