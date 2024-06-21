@@ -3,6 +3,7 @@ type Presentation {
   name: String!
   slides: [Slide!]!
   users: [User!]!
+  history: History!
 }
 
 type Query {

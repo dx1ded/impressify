@@ -42,9 +42,7 @@ Thumbs.db
 
 # Env
 
-/*.env
-/*.env.example
-/*.env.local
-/*.env.staging
-
-apps/server/.env.local
+.env
+.env.example
+.env.local
+.env.staging

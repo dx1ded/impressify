@@ -13,6 +13,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  Date: { input: any; output: any; }
 };
 
 export type Element = {
@@ -24,6 +25,20 @@ export type Element = {
   x2: Scalars['Int']['output'];
   y1: Scalars['Int']['output'];
   y2: Scalars['Int']['output'];
+};
+
+export type History = {
+  __typename?: 'History';
+  id: Scalars['Int']['output'];
+  presentation: Presentation;
+  records: Array<HistoryRecord>;
+};
+
+export type HistoryRecord = {
+  __typename?: 'HistoryRecord';
+  history: History;
+  lastOpened: Scalars['Date']['output'];
+  user: User;
 };
 
 export type Image = Element & {
@@ -64,6 +79,7 @@ export type MutationRenamePresentationArgs = {
 
 export type Presentation = {
   __typename?: 'Presentation';
+  history: History;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   slides: Array<Slide>;
@@ -132,6 +148,7 @@ export type User = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   presentations: Array<Presentation>;
+  profilePicUrl: Scalars['String']['output'];
 };
 
 /** All built-in and custom scalars, mapped to their actual values */
@@ -141,6 +158,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  Date: { input: any; output: any; }
 };
 
 export type Element = {
@@ -152,6 +170,20 @@ export type Element = {
   x2: Scalars['Int']['output'];
   y1: Scalars['Int']['output'];
   y2: Scalars['Int']['output'];
+};
+
+export type History = {
+  __typename?: 'History';
+  id: Scalars['Int']['output'];
+  presentation: Presentation;
+  records: Array<HistoryRecord>;
+};
+
+export type HistoryRecord = {
+  __typename?: 'HistoryRecord';
+  history: History;
+  lastOpened: Scalars['Date']['output'];
+  user: User;
 };
 
 export type Image = Element & {
@@ -192,6 +224,7 @@ export type MutationRenamePresentationArgs = {
 
 export type Presentation = {
   __typename?: 'Presentation';
+  history: History;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   slides: Array<Slide>;
@@ -260,4 +293,5 @@ export type User = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   presentations: Array<Presentation>;
+  profilePicUrl: Scalars['String']['output'];
 };

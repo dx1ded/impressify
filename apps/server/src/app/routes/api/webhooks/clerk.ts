@@ -54,18 +54,20 @@ export default async function (fastify: FastifyInstance) {
         })
       }
 
-      const { id, first_name, last_name } = evt.data as UserJSON
+      const { id, first_name, last_name, image_url } = evt.data as UserJSON
       const eventType = evt.type
 
-      switch (eventType) {
-        case UserWebhookEventTypes.USER_CREATED:
-          await userRepository.save(new User(id, first_name, last_name))
-          break
-        case UserWebhookEventTypes.USER_DELETED:
-          await userRepository.delete({ id })
-          break
-        default:
-          console.log(`Unknown event type - ${eventType}`)
+      if (eventType === UserWebhookEventTypes.USER_CREATED) {
+        await userRepository.save(new User(id, first_name, last_name, image_url))
+      } else if (eventType === UserWebhookEventTypes.USER_UPDATE) {
+        const user = await userRepository.findOneBy({ id })
+        user.name = `${first_name} ${last_name}`
+        user.profilePicUrl = image_url
+        await userRepository.save(user)
+      } else if (eventType === UserWebhookEventTypes.USER_DELETED) {
+        await userRepository.delete({ id })
+      } else {
+        console.log(`Unknown event type - ${eventType}`)
       }
 
       return reply.status(200).send({

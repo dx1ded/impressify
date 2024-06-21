@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  Date: { input: any; output: any; }
 };
 
 export type Element = {
@@ -26,6 +27,20 @@ export type Element = {
   x2: Scalars['Int']['output'];
   y1: Scalars['Int']['output'];
   y2: Scalars['Int']['output'];
+};
+
+export type History = {
+  __typename?: 'History';
+  id: Scalars['Int']['output'];
+  presentation: Presentation;
+  records: Array<HistoryRecord>;
+};
+
+export type HistoryRecord = {
+  __typename?: 'HistoryRecord';
+  history: History;
+  lastOpened: Scalars['Date']['output'];
+  user: User;
 };
 
 export type Image = Element & {
@@ -66,6 +81,7 @@ export type MutationRenamePresentationArgs = {
 
 export type Presentation = {
   __typename?: 'Presentation';
+  history: History;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   slides: Array<Slide>;
@@ -134,6 +150,7 @@ export type User = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   presentations: Array<Presentation>;
+  profilePicUrl: Scalars['String']['output'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -213,7 +230,10 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   Element: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Element']>;
+  History: ResolverTypeWrapper<History>;
+  HistoryRecord: ResolverTypeWrapper<HistoryRecord>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Image: ResolverTypeWrapper<Image>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -230,7 +250,10 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
+  Date: Scalars['Date']['output'];
   Element: ResolversInterfaceTypes<ResolversParentTypes>['Element'];
+  History: History;
+  HistoryRecord: HistoryRecord;
   ID: Scalars['ID']['output'];
   Image: Image;
   Int: Scalars['Int']['output'];
@@ -244,6 +267,10 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
 }>;
 
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
+
 export type ElementResolvers<ContextType = any, ParentType extends ResolversParentTypes['Element'] = ResolversParentTypes['Element']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Image' | 'Shape' | 'Text', ParentType, ContextType>;
   angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -254,6 +281,20 @@ export type ElementResolvers<ContextType = any, ParentType extends ResolversPare
   x2?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   y1?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   y2?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+}>;
+
+export type HistoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['History'] = ResolversParentTypes['History']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  presentation?: Resolver<ResolversTypes['Presentation'], ParentType, ContextType>;
+  records?: Resolver<Array<ResolversTypes['HistoryRecord']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type HistoryRecordResolvers<ContextType = any, ParentType extends ResolversParentTypes['HistoryRecord'] = ResolversParentTypes['HistoryRecord']> = ResolversObject<{
+  history?: Resolver<ResolversTypes['History'], ParentType, ContextType>;
+  lastOpened?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ImageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Image'] = ResolversParentTypes['Image']> = ResolversObject<{
@@ -276,6 +317,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type PresentationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Presentation'] = ResolversParentTypes['Presentation']> = ResolversObject<{
+  history?: Resolver<ResolversTypes['History'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   slides?: Resolver<Array<ResolversTypes['Slide']>, ParentType, ContextType>;
@@ -338,11 +380,15 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   presentations?: Resolver<Array<ResolversTypes['Presentation']>, ParentType, ContextType>;
+  profilePicUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  Date?: GraphQLScalarType;
   Element?: ElementResolvers<ContextType>;
+  History?: HistoryResolvers<ContextType>;
+  HistoryRecord?: HistoryRecordResolvers<ContextType>;
   Image?: ImageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Presentation?: PresentationResolvers<ContextType>;

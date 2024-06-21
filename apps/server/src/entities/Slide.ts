@@ -13,7 +13,7 @@ export class Slide implements ISlide {
   id: string
 
   @OneToMany(() => Element, (element) => element.slide, { cascade: true })
-  elements: Relation<Text | Image | Shape>[]
+  elements: Relation<(Text | Image | Shape)[]>
 
   @ManyToOne(() => Presentation, (presentation) => presentation.slides, { onDelete: "CASCADE" })
   presentation: Relation<Presentation>

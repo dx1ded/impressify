@@ -17,7 +17,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000
 ;(async function () {
   let httpServer: Server
   const fastify = Fastify({
-    logger: true,
+    logger: false,
     serverFactory: (handler) => {
       httpServer = createServer((req, res) => {
         handler(req, res)
