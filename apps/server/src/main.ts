@@ -1,6 +1,5 @@
 import "dotenv/config"
 import { createServer, type Server } from "node:http"
-
 import Fastify from "fastify"
 import { WebSocketServer } from "ws"
 import { useServer } from "graphql-ws/lib/use/ws"
