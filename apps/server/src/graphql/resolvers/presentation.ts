@@ -1,8 +1,9 @@
 import { In } from "typeorm"
 import type { ApolloContext } from ".."
 import type { Resolvers } from "../__generated__"
-import { presentationRepository, slideRepository, userRepository } from "../../database"
+import { presentationRepository, slideRepository, userRepository, historyRepository } from "../../database"
 import { Presentation } from "../../entities/Presentation"
+import { History } from "../../entities/History"
 
 export default {
   Query: {
@@ -22,7 +23,11 @@ export default {
       if (!user) return null
 
       const presentation = new Presentation(name, [await userRepository.findOneBy({ id: user.id })])
-      return presentationRepository.create(presentation)
+      const history = new History(presentation)
+      presentation.history = history
+
+      await historyRepository.save(history)
+      return presentationRepository.save(presentation)
     },
     async renamePresentation(_, { id, name }, { user }) {
       if (!user) return null
@@ -44,6 +49,9 @@ export default {
     },
     users(parent) {
       return userRepository.findBy({ presentations: { id: parent.id } })
+    },
+    history(parent) {
+      return historyRepository.findOneBy({ presentation: { id: parent.id } })
     },
   },
 } as Resolvers<ApolloContext>

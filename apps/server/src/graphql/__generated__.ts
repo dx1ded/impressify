@@ -39,6 +39,7 @@ export type History = {
 export type HistoryRecord = {
   __typename?: 'HistoryRecord';
   history: History;
+  id: Scalars['Int']['output'];
   lastOpened: Scalars['Date']['output'];
   user: User;
 };
@@ -151,6 +152,7 @@ export type User = {
   name: Scalars['String']['output'];
   presentations: Array<Presentation>;
   profilePicUrl: Scalars['String']['output'];
+  records: Array<HistoryRecord>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -292,6 +294,7 @@ export type HistoryResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type HistoryRecordResolvers<ContextType = any, ParentType extends ResolversParentTypes['HistoryRecord'] = ResolversParentTypes['HistoryRecord']> = ResolversObject<{
   history?: Resolver<ResolversTypes['History'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   lastOpened?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -381,6 +384,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   presentations?: Resolver<Array<ResolversTypes['Presentation']>, ParentType, ContextType>;
   profilePicUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  records?: Resolver<Array<ResolversTypes['HistoryRecord']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

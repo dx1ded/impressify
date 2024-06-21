@@ -3,6 +3,7 @@ type User {
   name: String!
   profilePicUrl: String!
   presentations: [Presentation!]!
+  records: [HistoryRecord!]!
 }
 
 type Query {

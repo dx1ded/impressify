@@ -37,6 +37,7 @@ export type History = {
 export type HistoryRecord = {
   __typename?: 'HistoryRecord';
   history: History;
+  id: Scalars['Int']['output'];
   lastOpened: Scalars['Date']['output'];
   user: User;
 };
@@ -149,6 +150,7 @@ export type User = {
   name: Scalars['String']['output'];
   presentations: Array<Presentation>;
   profilePicUrl: Scalars['String']['output'];
+  records: Array<HistoryRecord>;
 };
 
 /** All built-in and custom scalars, mapped to their actual values */
@@ -182,6 +184,7 @@ export type History = {
 export type HistoryRecord = {
   __typename?: 'HistoryRecord';
   history: History;
+  id: Scalars['Int']['output'];
   lastOpened: Scalars['Date']['output'];
   user: User;
 };
@@ -294,4 +297,5 @@ export type User = {
   name: Scalars['String']['output'];
   presentations: Array<Presentation>;
   profilePicUrl: Scalars['String']['output'];
+  records: Array<HistoryRecord>;
 };

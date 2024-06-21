@@ -1,4 +1,5 @@
 type HistoryRecord {
+  id: Int!
   user: User!
   history: History!
   lastOpened: Date!

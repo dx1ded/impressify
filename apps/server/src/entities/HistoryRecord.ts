@@ -17,7 +17,7 @@ export class HistoryRecord implements IHistoryRecord {
   @Column()
   lastOpened: Date
 
-  constructor(user: User, date: Date) {
+  constructor(user: Relation<User>, date: Date) {
     this.user = user
     this.lastOpened = date
   }
