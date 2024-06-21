@@ -21,7 +21,7 @@ export default async function (fastify: FastifyInstance) {
     ) {
       const { WEBHOOK_SECRET } = process.env
       if (!WEBHOOK_SECRET) {
-        throw new Error("You need a WEBHOOK_SECRET in your .env")
+        throw new Error("You need a WEBHOOK_SECRET in your .env!")
       }
 
       const { headers } = request
