@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import { DataSource } from "typeorm"
+import { DataSource, Repository } from "typeorm"
 import { Element } from "./entities/Element"
 import { Slide } from "./entities/Slide"
 import { Presentation } from "./entities/Presentation"
@@ -12,8 +12,8 @@ import { User } from "./entities/User"
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  url: process.env.POSTGRES_URL,
   host: process.env.POSTGRES_HOST,
+  port: Number(process.env.POSTGRES_PORT),
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DATABASE,
@@ -26,7 +26,7 @@ export const presentationRepository = AppDataSource.getRepository(Presentation)
 export const historyRepository = AppDataSource.getRepository(History)
 export const historyRecordRepository = AppDataSource.getRepository(HistoryRecord)
 export const slideRepository = AppDataSource.getRepository(Slide)
-export const elementRepository = AppDataSource.getRepository(Element)
+export const elementRepository = AppDataSource.getRepository(Element) as Repository<Text | Image | Shape>
 export const textRepository = AppDataSource.getRepository(Text)
 export const imageRepository = AppDataSource.getRepository(Image)
 export const shapeRepository = AppDataSource.getRepository(Shape)

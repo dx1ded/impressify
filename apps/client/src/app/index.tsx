@@ -5,11 +5,12 @@ import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache, split } fr
 import { getMainDefinition } from "@apollo/client/utilities"
 import { setContext } from "@apollo/client/link/context"
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions"
-import { ClerkProvider, useUser } from "@clerk/clerk-react"
+import { ClerkProvider } from "@clerk/clerk-react"
 import { createClient } from "graphql-ws"
 
 import { store } from "~/app/model"
 import { PrivateRoutes } from "~/app/ui"
+import { OnUserChanged } from "~/entities/user"
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -21,12 +22,16 @@ const httpLink = createHttpLink({
   uri: import.meta.env.VITE_GRAPHQL_URL,
 })
 
-const authLink = setContext((_, { headers }) => ({
-  headers: {
-    ...headers,
-    authorization: useUser().user?.id,
-  },
-}))
+const authLink = setContext((_, { headers }) => {
+  const userId = store.getState().user?.userId || ""
+
+  return {
+    headers: {
+      ...headers,
+      authorization: userId,
+    },
+  }
+})
 
 const wsLink = new GraphQLWsLink(
   createClient({
@@ -65,13 +70,15 @@ export function App() {
           signInForceRedirectUrl="/home"
           signUpForceRedirectUrl="/home"
           afterSignOutUrl="/">
-          <Routes>
-            <Route index element={<Main />} />
-            <Route element={<PrivateRoutes />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/presentation/:id" element={<Presentation />} />
-            </Route>
-          </Routes>
+          <OnUserChanged>
+            <Routes>
+              <Route index element={<Main />} />
+              <Route element={<PrivateRoutes />}>
+                <Route path="/home" element={<Home />} />
+                <Route path="/presentation/:id" element={<Presentation />} />
+              </Route>
+            </Routes>
+          </OnUserChanged>
         </ClerkProvider>
       </Provider>
     </ApolloProvider>

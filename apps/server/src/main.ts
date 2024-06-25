@@ -4,6 +4,7 @@ import Fastify from "fastify"
 import { WebSocketServer } from "ws"
 import { useServer } from "graphql-ws/lib/use/ws"
 import { PubSub } from "graphql-subscriptions"
+import cors from "@fastify/cors"
 import { ApolloServer } from "@apollo/server"
 import { createClerkClient } from "@clerk/backend"
 import fastifyApollo, { type ApolloFastifyContextFunction, fastifyApolloDrainPlugin } from "@as-integrations/fastify"
@@ -59,6 +60,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000
 
   await apollo.start()
 
+  fastify.register(cors)
   fastify.register(fastifyApollo(apollo), { context: contextFn })
   fastify.register(app)
   fastify.listen({ port, host }, (err) => {

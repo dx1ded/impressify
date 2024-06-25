@@ -2,7 +2,7 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/clerk-re
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
-import { capitalize } from "~/shared"
+import { capitalize } from "~/shared/lib"
 import { Button } from "~/shared/ui-kit/button"
 import { Container } from "~/shared/ui/Container"
 import { Logo } from "~/shared/ui/Logo"

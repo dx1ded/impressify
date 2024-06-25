@@ -11,6 +11,7 @@
         "react/jsx-props-no-spreading": "off",
         "react/prop-types": "off",
         "react/no-array-index-key": "off",
+        "jsx-a11y/click-events-have-key-events": "off",
         "@conarti/feature-sliced/layers-slices": "error",
         "@conarti/feature-sliced/absolute-relative": "off",
         "@conarti/feature-sliced/public-api": "off",

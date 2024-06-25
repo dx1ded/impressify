@@ -17,5 +17,6 @@ type Text implements Element {
   bold: Boolean!
   italic: Boolean!
   underlined: Boolean!
+  alignment: String!
   lineHeight: Int!
 }

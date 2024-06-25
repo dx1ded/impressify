@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid"
-import { Entity, ManyToOne, OneToMany, PrimaryColumn, type Relation } from "typeorm"
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryColumn, type Relation } from "typeorm"
 import { Presentation } from "./Presentation"
 import { Element } from "./Element"
 import { Text } from "./Text"
@@ -18,7 +18,17 @@ export class Slide implements ISlide {
   @ManyToOne(() => Presentation, (presentation) => presentation.slides, { onDelete: "CASCADE" })
   presentation: Relation<Presentation>
 
-  constructor() {
+  @Column()
+  thumbnailUrl: string
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  constructor(presentation: Relation<Presentation>) {
     this.id = nanoid(8)
+    this.presentation = presentation
+    // Plain white background
+    this.thumbnailUrl =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/erDEdIAAAAASUVORK5CYII="
   }
 }

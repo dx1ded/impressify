@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, type Relation } from "typeorm"
+import { CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, type Relation } from "typeorm"
 import { User } from "./User"
 import { History } from "./History"
 import { HistoryRecord as IHistoryRecord } from "../graphql/__generated__"
@@ -14,11 +14,11 @@ export class HistoryRecord implements IHistoryRecord {
   @ManyToOne(() => History, { onDelete: "CASCADE" })
   history: Relation<History>
 
-  @Column()
+  @CreateDateColumn()
   lastOpened: Date
 
-  constructor(user: Relation<User>, date: Date) {
+  constructor(user: Relation<User>, history: Relation<History>) {
     this.user = user
-    this.lastOpened = date
+    this.history = history
   }
 }

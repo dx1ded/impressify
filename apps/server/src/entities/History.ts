@@ -1,4 +1,4 @@
-import { Entity, OneToOne, OneToMany, PrimaryGeneratedColumn, type Relation } from "typeorm"
+import { Entity, OneToOne, OneToMany, type Relation, PrimaryGeneratedColumn } from "typeorm"
 import { HistoryRecord } from "./HistoryRecord"
 import { Presentation } from "./Presentation"
 import { History as IHistory } from "../graphql/__generated__"
@@ -8,7 +8,7 @@ export class History implements IHistory {
   @PrimaryGeneratedColumn()
   id: number
 
-  @OneToOne(() => Presentation, { onDelete: "CASCADE" })
+  @OneToOne(() => Presentation, (presentation) => presentation.history)
   presentation: Relation<Presentation>
 
   @OneToMany(() => HistoryRecord, (record) => record.history, { cascade: true })

@@ -1,7 +1,7 @@
 import { MinusIcon, PlusIcon } from "lucide-react"
 import { type ComponentPropsWithoutRef, useRef } from "react"
 
-import { cn } from "~/shared"
+import { cn } from "~/shared/lib"
 
 export function Counter({ defaultValue, className, ...props }: ComponentPropsWithoutRef<"input">) {
   const counterRef = useRef<HTMLInputElement>(null)

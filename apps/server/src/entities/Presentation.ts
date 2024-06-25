@@ -1,4 +1,14 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryColumn, type Relation } from "typeorm"
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  type Relation,
+} from "typeorm"
 import { nanoid } from "nanoid"
 import { User } from "./User"
 import { Slide } from "./Slide"
@@ -20,7 +30,8 @@ export class Presentation implements IPresentation {
   @JoinTable()
   users: Relation<User[]>
 
-  @OneToOne(() => History, { cascade: true })
+  @OneToOne(() => History, (history) => history.presentation, { cascade: true })
+  @JoinColumn()
   history: Relation<History>
 
   constructor(name: string, users: User[]) {

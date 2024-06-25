@@ -59,14 +59,21 @@ export type Image = Element & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addRecord?: Maybe<HistoryRecord>;
   createPresentation?: Maybe<Presentation>;
   deletePresentation?: Maybe<Scalars['Boolean']['output']>;
   renamePresentation?: Maybe<Presentation>;
 };
 
 
+export type MutationAddRecordArgs = {
+  presentationId: Scalars['String']['input'];
+};
+
+
 export type MutationCreatePresentationArgs = {
   name: Scalars['String']['input'];
+  template: Scalars['String']['input'];
 };
 
 
@@ -92,7 +99,25 @@ export type Presentation = {
 export type Query = {
   __typename?: 'Query';
   findUserPresentations?: Maybe<Array<Presentation>>;
+  getPresentation?: Maybe<Presentation>;
+  searchPresentations?: Maybe<Array<Presentation>>;
   user?: Maybe<User>;
+};
+
+
+export type QueryFindUserPresentationsArgs = {
+  preview: Scalars['Boolean']['input'];
+  sortBy: Scalars['String']['input'];
+};
+
+
+export type QueryGetPresentationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QuerySearchPresentationsArgs = {
+  name: Scalars['String']['input'];
 };
 
 
@@ -119,13 +144,16 @@ export type Shape = Element & {
 
 export type Slide = {
   __typename?: 'Slide';
+  createdAt: Scalars['Date']['output'];
   elements: Array<Element>;
   id: Scalars['ID']['output'];
   presentation: Presentation;
+  thumbnailUrl: Scalars['String']['output'];
 };
 
 export type Text = Element & {
   __typename?: 'Text';
+  alignment: Scalars['String']['output'];
   angle: Scalars['Int']['output'];
   bold: Scalars['Boolean']['output'];
   borderColor: Scalars['String']['output'];
@@ -314,7 +342,8 @@ export type ImageResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  createPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCreatePresentationArgs, 'name'>>;
+  addRecord?: Resolver<Maybe<ResolversTypes['HistoryRecord']>, ParentType, ContextType, RequireFields<MutationAddRecordArgs, 'presentationId'>>;
+  createPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCreatePresentationArgs, 'name' | 'template'>>;
   deletePresentation?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePresentationArgs, 'id'>>;
   renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
 }>;
@@ -329,7 +358,9 @@ export type PresentationResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  findUserPresentations?: Resolver<Maybe<Array<ResolversTypes['Presentation']>>, ParentType, ContextType>;
+  findUserPresentations?: Resolver<Maybe<Array<ResolversTypes['Presentation']>>, ParentType, ContextType, RequireFields<QueryFindUserPresentationsArgs, 'preview' | 'sortBy'>>;
+  getPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<QueryGetPresentationArgs, 'id'>>;
+  searchPresentations?: Resolver<Maybe<Array<ResolversTypes['Presentation']>>, ParentType, ContextType, RequireFields<QuerySearchPresentationsArgs, 'name'>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
 }>;
 
@@ -351,13 +382,16 @@ export type ShapeResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type SlideResolvers<ContextType = any, ParentType extends ResolversParentTypes['Slide'] = ResolversParentTypes['Slide']> = ResolversObject<{
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   elements?: Resolver<Array<ResolversTypes['Element']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   presentation?: Resolver<ResolversTypes['Presentation'], ParentType, ContextType>;
+  thumbnailUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type TextResolvers<ContextType = any, ParentType extends ResolversParentTypes['Text'] = ResolversParentTypes['Text']> = ResolversObject<{
+  alignment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   bold?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   borderColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

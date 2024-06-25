@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 
 import ImpressifyLogo from "~/assets/impressify-logo.png"
+import { DEFAULT_URL } from "~/shared/ui/Logo/model"
 
 interface LogoProps {
   /**
@@ -11,11 +12,12 @@ interface LogoProps {
    * No text
    */
   noText?: boolean
+  url?: string
 }
 
-export function Logo({ size = 3, noText = false }: LogoProps) {
+export function Logo({ size = 3, noText = false, url = DEFAULT_URL }: LogoProps) {
   return (
-    <Link to="/" className="inline-flex items-center gap-2 text-lg font-medium">
+    <Link to={url} className="inline-flex items-center gap-2 text-lg font-medium">
       <img
         src={ImpressifyLogo}
         style={{

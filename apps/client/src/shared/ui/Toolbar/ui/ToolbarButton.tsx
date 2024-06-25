@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react"
 import { type ComponentPropsWithoutRef, forwardRef } from "react"
 
-import { cn } from "~/shared"
+import { cn } from "~/shared/lib"
 
 interface ToolbarButtonProps extends ComponentPropsWithoutRef<"button"> {
   Icon?: LucideIcon
