@@ -11,7 +11,7 @@ export function Header() {
   return (
     <header className="flex items-center justify-between py-2">
       <div className="flex items-start gap-1.5">
-        <Logo size={3.25} noText />
+        <Logo noText size={3.25} url="/home" />
         <div>
           <div className="flex items-center gap-3">
             <ResizableInput maxLength={MAX_NAME_LENGTH}>

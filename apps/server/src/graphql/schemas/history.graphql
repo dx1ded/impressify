@@ -1,0 +1,5 @@
+type History {
+  id: Int!
+  presentation: Presentation!
+  records: [HistoryRecord!]!
+}

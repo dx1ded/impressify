@@ -14,14 +14,16 @@
 declare namespace Cypress {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface Chainable<Subject> {
-    login(email: string, password: string): void;
+    /**
+     * Initialize auth to a state where you're
+     * logged in as the test user.
+     *
+     * @example cy.initializeAuth()
+     */
+    signOut(): Chainable<void>
+    signIn(): Chainable<void>
   }
 }
-
-// -- This is a parent command --
-Cypress.Commands.add('login', (email, password) => {
-  console.log('Custom command example: Login', email, password);
-});
 //
 // -- This is a child command --
 // Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
@@ -33,3 +35,32 @@ Cypress.Commands.add('login', (email, password) => {
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("signOut", () => {
+  cy.log("sign out by clearing all cookies.")
+  cy.clearCookies()
+})
+
+// Cypress.Commands.add("signIn", () => {
+//   cy.log("Signing in.")
+//   cy.visit("/")
+//
+//   cy.window()
+//     .should((window) => {
+//       expect(window).to.not.have.property("Clerk", undefined)
+//       expect(window.Clerk.isReady()).to.eq(true)
+//     })
+//     .then(async (window) => {
+//       cy.clearCookies()
+//       const res = await window.Clerk.client.signIn.create({
+//         identifier: "test@test.com",
+//         password: "Test",
+//       })
+//
+//       await window.Clerk.setActive({
+//         session: res.createdSessionId,
+//       })
+//
+//       cy.log("Finished Signing in.")
+//     })
+// })

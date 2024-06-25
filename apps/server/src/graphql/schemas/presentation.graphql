@@ -1,0 +1,20 @@
+type Presentation {
+  id: ID!
+  name: String!
+  slides: [Slide!]!
+  users: [User!]!
+  history: History!
+}
+
+type Query {
+  # @preview means you get only the first slide
+  findUserPresentations(preview: Boolean!, sortBy: String!): [Presentation!]
+  getPresentation(id: String!): Presentation
+  searchPresentations(name: String!): [Presentation!]
+}
+
+type Mutation {
+  createPresentation(name: String!, template: String!): Presentation
+  renamePresentation(id: ID!, name: String!): Presentation
+  deletePresentation(id: ID!): Boolean
+}

@@ -1,0 +1,7 @@
+type Slide {
+  id: ID!
+  elements: [Element!]!
+  presentation: Presentation!
+  thumbnailUrl: String!
+  createdAt: Date!
+}

@@ -20,3 +20,5 @@ export const MAX_NAME_LENGTH = 128
 
 export const SLIDE_WIDTH = 1156
 export const SLIDE_HEIGHT = 760
+
+export const DEFAULT_NAME = "New presentation"

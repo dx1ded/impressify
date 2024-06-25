@@ -1,6 +1,6 @@
 import type { ElementType } from "react"
 
-import type { PolymorphicProps } from "~/shared"
+import type { PolymorphicProps } from "~/shared/lib"
 
 export function Heading<T extends ElementType = "h1">({ as, children, className, ...props }: PolymorphicProps<T>) {
   const Component = as || "h1"

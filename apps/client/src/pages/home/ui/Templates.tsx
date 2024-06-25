@@ -1,4 +1,6 @@
 import { Template } from "~/entities/template"
+import { CreatePresentation } from "~/features/create-presentation"
+import { Loader } from "~/shared/ui/Loader"
 
 const mock = [
   {
@@ -35,9 +37,21 @@ const mock = [
 export function Templates() {
   return (
     <div className="grid grid-cols-6 gap-4">
-      {mock.map((template, i) => (
-        <Template key={i} thumbnailUrl={template.thumbnailUrl} name={template.name} />
-      ))}
+      <CreatePresentation>
+        {(createPresentation, loading) => (
+          <>
+            {loading && <Loader />}
+            {mock.map((template, i) => (
+              <Template
+                key={i}
+                thumbnailUrl={template.thumbnailUrl}
+                name={template.name}
+                createPresentation={createPresentation}
+              />
+            ))}
+          </>
+        )}
+      </CreatePresentation>
     </div>
   )
 }

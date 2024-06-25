@@ -1,0 +1,11 @@
+type User {
+  id: ID!
+  name: String!
+  profilePicUrl: String!
+  presentations: [Presentation!]!
+  records: [HistoryRecord!]!
+}
+
+type Query {
+  user(id: ID!): User
+}

@@ -1,25 +1,74 @@
 import "dotenv/config"
+import { createServer, type Server } from "node:http"
 import Fastify from "fastify"
-import { app } from "./app/app"
-import "./database"
+import { WebSocketServer } from "ws"
+import { useServer } from "graphql-ws/lib/use/ws"
+import { PubSub } from "graphql-subscriptions"
+import cors from "@fastify/cors"
+import { ApolloServer } from "@apollo/server"
+import { createClerkClient } from "@clerk/backend"
+import fastifyApollo, { type ApolloFastifyContextFunction, fastifyApolloDrainPlugin } from "@as-integrations/fastify"
+
+import { app } from "./app"
+import { schema, type ApolloContext } from "./graphql"
 
 const host = process.env.HOST ?? "localhost"
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
 
-// Instantiate Fastify with some config
-const server = Fastify({
-  logger: true,
-})
+;(async function () {
+  let httpServer: Server
+  const fastify = Fastify({
+    logger: false,
+    serverFactory: (handler) => {
+      httpServer = createServer((req, res) => {
+        handler(req, res)
+      })
 
-// Register your application as a normal plugin.
-server.register(app)
+      return httpServer
+    },
+  })
 
-// Start listening.
-server.listen({ port, host }, (err) => {
-  if (err) {
-    server.log.error(err)
-    process.exit(1)
-  } else {
-    console.log(`[ ready ] http://${host}:${port}`)
-  }
-})
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: "/graphql",
+  })
+
+  const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET })
+  const apollo = new ApolloServer<ApolloContext>({
+    schema,
+    plugins: [
+      // Plugin to shutdown the HTTP / Fastify server
+      fastifyApolloDrainPlugin(fastify),
+      // Plugin to shutdown the WebSocket server
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await useServer({ schema }, wsServer).dispose()
+            },
+          }
+        },
+      },
+    ],
+  })
+
+  const contextFn: ApolloFastifyContextFunction<ApolloContext> = async (request) => ({
+    clerk,
+    user: request.headers.authorization ? await clerk.users.getUser(request.headers.authorization) : undefined,
+    pubsub: new PubSub(),
+  })
+
+  await apollo.start()
+
+  fastify.register(cors)
+  fastify.register(fastifyApollo(apollo), { context: contextFn })
+  fastify.register(app)
+  fastify.listen({ port, host }, (err) => {
+    if (err) {
+      fastify.log.error(err)
+      process.exit(1)
+    } else {
+      console.log(`Server ready at http://${host}:${port}`)
+    }
+  })
+})()

@@ -1,0 +1,10 @@
+type HistoryRecord {
+  id: Int!
+  user: User!
+  history: History!
+  lastOpened: Date!
+}
+
+type Mutation {
+  addRecord(presentationId: String!): HistoryRecord
+}

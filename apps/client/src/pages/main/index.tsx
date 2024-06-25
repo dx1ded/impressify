@@ -6,7 +6,7 @@ import { Support } from "~/pages/main/ui/Support"
 import { Footer } from "~/widgets/footer"
 import { Header, HeaderProvider } from "~/widgets/header"
 
-export function Main() {
+export default function Main() {
   return (
     <HeaderProvider>
       <div>

@@ -42,6 +42,7 @@
         "consistent-return": "off",
         "no-underscore-dangle": "off",
         "no-plusplus": "off",
+        "func-names": "off",
         "import/no-cycle": "off",
         "import/order": [
           "error",
@@ -77,7 +78,8 @@
         "@typescript-eslint/no-throw-literal": "off",
         "@typescript-eslint/no-unused-vars": "warn",
         "@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/no-non-null-asserted-optional-chain": "off"
+        "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
+        "@typescript-eslint/no-empty-interface": "off"
       }
     },
     {
