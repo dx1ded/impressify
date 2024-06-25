@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "~/shared/model"
 export function DeletePresentation({ children }: ChildrenAsCallback<[string]>) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { recentPresentations } = useAppSelector((state) => state.presentation)
+  const { recentPresentations } = useAppSelector((state) => state.recentPresentations)
   const [sendDeletePresentation, { loading }] = useMutation<
     DeletePresentationMutation,
     DeletePresentationMutationVariables

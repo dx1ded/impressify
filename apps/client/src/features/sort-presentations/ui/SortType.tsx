@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from "~/shared/ui-ki
 
 export function SortType() {
   const dispatch = useDispatch()
-  const { sort } = useAppSelector((state) => state.presentation)
+  const { sort } = useAppSelector((state) => state.recentPresentations)
 
   const Icon =
     sort === "newest" ? CalendarPlus : sort === "oldest" ? CalendarMinus : sort === "a_z" ? ArrowDownAZ : ArrowUpZA

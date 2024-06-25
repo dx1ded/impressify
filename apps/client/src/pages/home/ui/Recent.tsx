@@ -12,7 +12,7 @@ import { Container } from "~/shared/ui/Container"
 import { Text } from "~/shared/ui/Typography"
 
 export function Recent() {
-  const { recentPresentations, view, sort } = useAppSelector((state) => state.presentation)
+  const { recentPresentations, view, sort } = useAppSelector((state) => state.recentPresentations)
   const { userId } = useAppSelector((state) => state.user)
   const dispatch = useAppDispatch()
   const { loading } = useQuery<FindUserPresentationsQuery, FindUserPresentationsQueryVariables>(

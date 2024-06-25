@@ -11,8 +11,8 @@ import { useAppSelector } from "~/shared/model"
 import { Input } from "~/shared/ui-kit/input"
 
 export function SearchPresentations() {
-  const { userId } = useAppSelector((state) => state.user)
   const [open, setOpen] = useState(false)
+  const { userId } = useAppSelector((state) => state.user)
   const [searchPresentations, { data }] = useLazyQuery<SearchPresentationsQuery, SearchPresentationsQueryVariables>(
     SEARCH_PRESENTATIONS,
     {
