@@ -47,9 +47,7 @@ export function PresentationPreview({ presentation, view, DeleteAlert, RenameDia
         alt="Presentation thumbnail"
       />
       <div className={cn("flex flex-col gap-2 p-3 pr-1.5", view === "list" && "flex-row items-center p-5")}>
-        <Small className={cn("block truncate pb-0.5", view === "list" && "pb-0 !text-[1rem]")}>
-          {presentation.name}
-        </Small>
+        <Small className={cn("block truncate", view === "list" && "!text-[1rem]")}>{presentation.name}</Small>
         <div className={cn("flex items-center gap-1", view === "list" && "ml-auto gap-5")}>
           <PanelRightIcon className={cn("text-primary h-4 w-4", view === "list" && "hidden")} />
           {presentation.users.length > 1 && <Users className="text-primary h-4 w-4" />}
