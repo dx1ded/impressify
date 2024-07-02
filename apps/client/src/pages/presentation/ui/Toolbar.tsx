@@ -5,9 +5,12 @@ import { ImageMode } from "~/pages/presentation/ui/toolbar-items/ImageMode"
 import { Mode } from "~/pages/presentation/ui/toolbar-items/Mode"
 import { ShapeMode } from "~/pages/presentation/ui/toolbar-items/ShapeMode"
 import { TextMode } from "~/pages/presentation/ui/toolbar-items/TextMode"
+import { useAppSelector } from "~/shared/model"
 import { ToolbarSeparator } from "~/shared/ui/Toolbar"
 
 export function Toolbar() {
+  const { mode } = useAppSelector((state) => state.presentation)
+
   return (
     <div className="bg-secondary mb-6 flex items-center rounded-3xl px-4 py-2">
       <Add />
@@ -16,10 +19,15 @@ export function Toolbar() {
       <ToolbarSeparator />
       <Mode />
       <ToolbarSeparator />
-      {/* <CursorMode /> */}
-      <TextMode />
-      {/* <ImageMode /> */}
-      {/* <ShapeMode /> */}
+      {mode === "cursor" ? (
+        <CursorMode />
+      ) : mode === "text" ? (
+        <TextMode />
+      ) : mode === "image" ? (
+        <ImageMode />
+      ) : (
+        <ShapeMode />
+      )}
     </div>
   )
 }

@@ -10,14 +10,23 @@ import {
   TypeIcon,
 } from "lucide-react"
 
+import { setMode, Mode as IMode, type Shapes, setShape } from "~/entities/presentation"
+import { useAppDispatch, useAppSelector } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton } from "~/shared/ui/Toolbar"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "~/shared/ui-kit/select"
 import { ToggleGroup, ToggleGroupItem } from "~/shared/ui-kit/toggle-group"
 
 export function Mode() {
+  const { mode, shape } = useAppSelector((state) => state.presentation)
+  const dispatch = useAppDispatch()
+
   return (
-    <ToggleGroup className="gap-2" type="single">
+    <ToggleGroup
+      className="gap-2"
+      type="single"
+      defaultValue={mode}
+      onValueChange={(value: IMode) => dispatch(setMode(value))}>
       <Tooltip>
         <TooltipTrigger asChild>
           <ToggleGroupItem value="cursor" asChild>
@@ -28,7 +37,7 @@ export function Mode() {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <ToggleGroupItem value="textbox" asChild>
+          <ToggleGroupItem value="text" asChild>
             <ToolbarButton Icon={TypeIcon} />
           </ToggleGroupItem>
         </TooltipTrigger>
@@ -45,13 +54,27 @@ export function Mode() {
       <div className="flex items-center">
         <Tooltip>
           <TooltipTrigger asChild>
-            <ToggleGroupItem value="line" asChild>
-              <ToolbarButton Icon={MinusIcon} />
+            <ToggleGroupItem value="shape" asChild>
+              <ToolbarButton
+                Icon={
+                  shape === "line"
+                    ? MinusIcon
+                    : shape === "square"
+                      ? SquareIcon
+                      : shape === "rectangle"
+                        ? RectangleHorizontalIcon
+                        : shape === "circle"
+                          ? CircleIcon
+                          : shape === "arrow"
+                            ? ArrowRightIcon
+                            : StarIcon
+                }
+              />
             </ToggleGroupItem>
           </TooltipTrigger>
-          <TooltipContent>Line</TooltipContent>
+          <TooltipContent>Shape</TooltipContent>
         </Tooltip>
-        <Select defaultValue="line">
+        <Select defaultValue={shape} onValueChange={(value: Shapes) => dispatch(setShape(value))}>
           <SelectTrigger className="h-6 w-4 justify-center border-none bg-transparent p-0" />
           <SelectContent>
             <SelectItem value="line">

@@ -39,11 +39,10 @@ export class Text extends Element implements IText {
 
   constructor(
     {
-      layer,
-      x1,
-      y1,
-      x2,
-      y2,
+      x,
+      y,
+      width,
+      height,
       angle,
       fillColor,
       borderColor,
@@ -59,11 +58,10 @@ export class Text extends Element implements IText {
     }: Omit<Element, "id"> & Text = {} as Omit<Element, "id"> & Text,
   ) {
     super({
-      layer,
-      x1,
-      y1,
-      x2,
-      y2,
+      x,
+      y,
+      width,
+      height,
       angle,
       slide,
     })

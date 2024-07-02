@@ -32,7 +32,38 @@ export const GET_PRESENTATION = gql(`#graphql
         thumbnailUrl
         id
         elements {
-          ...ElementFields
+          id
+          x
+          y
+          width
+          height
+          angle
+
+          ... on Text {
+            text
+            fillColor
+            borderColor
+            textColor
+            fontFamily
+            fontSize
+            bold
+            italic
+            underlined
+            alignment
+            lineHeight
+          }
+
+          ... on Image {
+            imageUrl
+          }
+
+          ... on Shape {
+            type
+            fillColor
+            strokeColor
+            strokeWidth
+            proportional
+          }
         }
       }
     }

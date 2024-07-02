@@ -8,14 +8,13 @@ export class Image extends Element implements IImage {
   imageUrl: string
 
   constructor(
-    { layer, x1, y1, x2, y2, angle, imageUrl, slide }: Omit<Element, "id"> & Image = {} as Omit<Element, "id"> & Image,
+    { x, y, width, height, angle, imageUrl, slide }: Omit<Element, "id"> & Image = {} as Omit<Element, "id"> & Image,
   ) {
     super({
-      layer,
-      x1,
-      y1,
-      x2,
-      y2,
+      x,
+      y,
+      width,
+      height,
       angle,
       slide,
     })

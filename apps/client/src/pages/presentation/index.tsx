@@ -7,7 +7,7 @@ import type {
   GetPresentationQuery,
   GetPresentationQueryVariables,
 } from "~/__generated__/graphql"
-import { GET_PRESENTATION, setPresentation } from "~/entities/presentation"
+import { GET_PRESENTATION, setIsLoading, setPresentation } from "~/entities/presentation"
 import { ADD_RECORD } from "~/entities/record"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
@@ -35,6 +35,7 @@ export default function Presentation() {
       const data = result.getPresentation
       if (!data) return
       dispatch(setPresentation(data))
+      dispatch(setIsLoading(false))
       await addRecord()
     },
   })

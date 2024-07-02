@@ -9,19 +9,16 @@ export class Element implements IElement {
   id: number
 
   @Column()
-  layer: number
+  x: number
 
   @Column()
-  x1: number
+  y: number
 
   @Column()
-  y1: number
+  width: number
 
   @Column()
-  x2: number
-
-  @Column()
-  y2: number
+  height: number
 
   @Column()
   angle: number
@@ -29,12 +26,11 @@ export class Element implements IElement {
   @ManyToOne(() => Slide, (slide) => slide.elements, { onDelete: "CASCADE" })
   slide: Relation<Slide>
 
-  constructor({ layer, x1, y1, x2, y2, angle, slide }: Omit<Element, "id"> = {} as Omit<Element, "id">) {
-    this.layer = layer
-    this.x1 = x1
-    this.y1 = y1
-    this.x2 = x2
-    this.y2 = y2
+  constructor({ x, y, width, height, angle, slide }: Omit<Element, "id"> = {} as Omit<Element, "id">) {
+    this.x = x
+    this.y = y
+    this.width = width
+    this.height = height
     this.angle = angle
     this.slide = slide
   }

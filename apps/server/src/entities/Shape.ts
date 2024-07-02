@@ -5,6 +5,9 @@ import { Shape as IShape } from "../graphql/__generated__"
 @ChildEntity()
 export class Shape extends Element implements IShape {
   @Column()
+  type: string
+
+  @Column()
   fillColor: string
 
   @Column()
@@ -14,32 +17,27 @@ export class Shape extends Element implements IShape {
   strokeWidth: number
 
   @Column()
-  aspectRatio: string
-
-  @Column("int", { array: true })
-  points: number[][]
+  proportional: boolean
 
   constructor(
     {
-      layer,
-      x1,
-      y1,
-      x2,
-      y2,
+      x,
+      y,
+      width,
+      height,
       angle,
       fillColor,
       strokeColor,
       strokeWidth,
       slide,
-    }: Omit<Element, "id"> & Omit<Shape, "aspectRatio" | "points"> = {} as Omit<Element, "id"> &
-      Omit<Shape, "aspectRatio" | "points">,
+    }: Omit<Element, "id"> & Omit<Shape, "type" | "proportional"> = {} as Omit<Element, "id"> &
+      Omit<Shape, "type" | "proportional">,
   ) {
     super({
-      layer,
-      x1,
-      y1,
-      x2,
-      y2,
+      x,
+      y,
+      width,
+      height,
       angle,
       slide,
     })
