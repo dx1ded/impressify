@@ -21,6 +21,25 @@ export type AddImagePayload = Coordinates & { imageUrl: string }
 export type AddShapePayload = Coordinates & { type: string }
 
 export type ElementProps = Presentation["slides"][number]["elements"][number]
+
+export type TextProps = ElementProps & { __typename: "Text" }
+export type ImageProps = ElementProps & { __typename: "Image" }
+export type ShapeProps = ElementProps & { __typename: "Shape" }
+
+export type TextEditProps = Pick<
+  TextProps,
+  | "fillColor"
+  | "borderColor"
+  | "fontFamily"
+  | "fontSize"
+  | "bold"
+  | "italic"
+  | "underlined"
+  | "textColor"
+  | "alignment"
+  | "lineHeight"
+>
+
 export type ElementComponent =
   | typeof Text
   | typeof Image

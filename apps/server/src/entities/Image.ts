@@ -8,7 +8,11 @@ export class Image extends Element implements IImage {
   imageUrl: string
 
   constructor(
-    { x, y, width, height, angle, imageUrl, slide }: Omit<Element, "id"> & Image = {} as Omit<Element, "id"> & Image,
+    { x, y, width, height, angle, scaleX, scaleY, imageUrl, slide }: Omit<Element, "id"> & Image = {} as Omit<
+      Element,
+      "id"
+    > &
+      Image,
   ) {
     super({
       x,
@@ -16,6 +20,8 @@ export class Image extends Element implements IImage {
       width,
       height,
       angle,
+      scaleX,
+      scaleY,
       slide,
     })
     this.imageUrl = imageUrl

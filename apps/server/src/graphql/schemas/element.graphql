@@ -5,5 +5,7 @@ interface Element {
   width: Int!
   height: Int!
   angle: Int!
+  scaleX: Int!
+  scaleY: Int!
   slide: Slide!
 }

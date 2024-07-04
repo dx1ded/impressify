@@ -16,6 +16,9 @@ export const DEFAULT_FILL_COLOR = "transparent"
 export const DEFAULT_STROKE_COLOR = "black"
 export const DEFAULT_BORDER_COLOR = "transparent"
 
+export const DEFAULT_TEXT_WIDTH = 180
+export const DEFAULT_TEXT_HEIGHT = 60
+
 export const MAX_NAME_LENGTH = 128
 
 export const SLIDE_WIDTH = 1156

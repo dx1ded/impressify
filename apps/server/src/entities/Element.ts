@@ -23,15 +23,23 @@ export class Element implements IElement {
   @Column()
   angle: number
 
+  @Column()
+  scaleX: number
+
+  @Column()
+  scaleY: number
+
   @ManyToOne(() => Slide, (slide) => slide.elements, { onDelete: "CASCADE" })
   slide: Relation<Slide>
 
-  constructor({ x, y, width, height, angle, slide }: Omit<Element, "id"> = {} as Omit<Element, "id">) {
+  constructor({ x, y, width, height, angle, scaleX, scaleY, slide }: Omit<Element, "id"> = {} as Omit<Element, "id">) {
     this.x = x
     this.y = y
     this.width = width
     this.height = height
     this.angle = angle
+    this.scaleX = scaleX
+    this.scaleY = scaleY
     this.slide = slide
   }
 }

@@ -19,6 +19,9 @@ export class Text extends Element implements IText {
   @Column()
   fontFamily: string
 
+  /**
+   * in pt
+   */
   @Column()
   fontSize: number
 
@@ -44,6 +47,8 @@ export class Text extends Element implements IText {
       width,
       height,
       angle,
+      scaleX,
+      scaleY,
       fillColor,
       borderColor,
       textColor,
@@ -63,6 +68,8 @@ export class Text extends Element implements IText {
       width,
       height,
       angle,
+      scaleX,
+      scaleY,
       slide,
     })
     this.fillColor = fillColor

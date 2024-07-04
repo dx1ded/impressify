@@ -1,6 +1,5 @@
 import dayjs from "dayjs"
 import {
-  Text as KonvaText,
   Image as KonvaImage,
   Rect as KonvaRect,
   Line as KonvaLine,
@@ -11,13 +10,25 @@ import {
 import type { ImageConfig } from "konva/lib/shapes/Image"
 import type { TextConfig } from "konva/lib/shapes/Text"
 
-import type {
-  AddImagePayload,
-  AddShapePayload,
-  AddTextPayload,
-  ElementProps,
-  ShapesConfig,
+import {
+  type AddImagePayload,
+  type AddShapePayload,
+  type AddTextPayload,
+  DEFAULT_BORDER_COLOR,
+  DEFAULT_FILL_COLOR,
+  DEFAULT_FONT_FAMILY,
+  DEFAULT_FONT_SIZE,
+  DEFAULT_TEXT_COLOR,
+  DEFAULT_TEXT_HEIGHT,
+  DEFAULT_TEXT_WIDTH,
+  type ElementProps,
+  type ImageProps,
+  type ShapeProps,
+  type ShapesConfig,
+  type TextProps,
 } from "~/entities/presentation"
+import { EditableText } from "~/entities/presentation/ui/EditableText"
+import { ptToPx } from "~/shared/lib"
 
 export const formatDate = (timestamp: number) => {
   const dateNow = Date.now()
@@ -30,19 +41,52 @@ export const formatDate = (timestamp: number) => {
       : dayjsInstance.format("MMM D, YYYY")
 }
 
+export const getTextBoxDimensions = ({
+  text,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  lineHeight,
+}: {
+  text: string
+  fontFamily: string
+  fontSize: number
+  fontWeight: number
+  lineHeight: number
+}) => {
+  // Create a canvas element
+  const canvas = document.createElement("canvas")
+  const context = canvas.getContext("2d")!
+
+  context.font = `${fontWeight} ${fontSize}pt ${fontFamily}`
+  const metrics = context.measureText(text)
+
+  return { width: metrics.width, height: fontSize * lineHeight }
+}
+
 export const textProps = (props: ElementProps): TextConfig => {
-  return props.__typename === "Text"
-    ? {
-        text: props.text,
-        fill: props.textColor,
-        fontFamily: props.fontFamily,
-        fontSize: props.fontSize,
-        fontStyle: props.bold ? `${props.italic ? "italic" : ""} 700` : `${props.italic ? "italic" : ""} 400`,
-        textDecoration: props.underlined ? "underline" : "",
-        align: props.alignment,
-        lineHeight: props.lineHeight,
-      }
-    : {}
+  if (props.__typename !== "Text") return {}
+  // const { width, height } = getTextBoxDimensions({
+  //   text: props.text,
+  //   fontFamily: props.fontFamily,
+  //   fontSize: props.fontSize,
+  //   fontWeight: props.bold ? 700 : 400,
+  //   lineHeight: props.lineHeight,
+  // })
+
+  return {
+    // width,
+    // height,
+    text: props.text,
+    fill: props.textColor,
+    fontFamily: props.fontFamily,
+    fontSize: ptToPx(props.fontSize),
+    fontStyle: props.bold ? `${props.italic ? "italic" : ""} 700` : `${props.italic ? "italic" : ""} 400`,
+    textDecoration: props.underlined ? "underline" : "",
+    align: props.alignment,
+    verticalAlign: "middle",
+    lineHeight: props.lineHeight,
+  }
 }
 
 export const imageProps = (props: ElementProps): ImageConfig => {
@@ -71,7 +115,7 @@ export const shapeProps = (props: ElementProps): ShapesConfig => {
 }
 
 export const getElement = (element: ElementProps) => {
-  if (element.__typename === "Text") return KonvaText
+  if (element.__typename === "Text") return EditableText
   if (element.__typename === "Image") return KonvaImage
   if (element.__typename === "Shape")
     return element.type === "rectangle" || element.type === "square"
@@ -85,20 +129,22 @@ export const getElement = (element: ElementProps) => {
             : KonvaStar
 }
 
-export const getDefaultTextConfig = (props: AddTextPayload): ElementProps & { __typename: "Text" } => ({
+export const getDefaultTextConfig = (props: AddTextPayload): TextProps => ({
   __typename: "Text",
   id: Math.random(),
   x: props.x,
   y: props.y,
-  width: 50,
-  height: 50,
+  width: DEFAULT_TEXT_WIDTH,
+  height: DEFAULT_TEXT_HEIGHT,
   angle: 0,
-  text: "Text",
-  fillColor: "#fff",
-  borderColor: "#000",
-  textColor: "#000",
-  fontFamily: "Arial",
-  fontSize: 20,
+  scaleX: 1,
+  scaleY: 1,
+  text: "Some text",
+  fillColor: DEFAULT_FILL_COLOR,
+  borderColor: DEFAULT_BORDER_COLOR,
+  textColor: DEFAULT_TEXT_COLOR,
+  fontFamily: DEFAULT_FONT_FAMILY,
+  fontSize: DEFAULT_FONT_SIZE,
   bold: false,
   italic: false,
   underlined: false,
@@ -106,7 +152,7 @@ export const getDefaultTextConfig = (props: AddTextPayload): ElementProps & { __
   lineHeight: 1,
 })
 
-export const getDefaultImageConfig = (props: AddImagePayload): ElementProps & { __typename: "Image" } => ({
+export const getDefaultImageConfig = (props: AddImagePayload): ImageProps => ({
   __typename: "Image",
   id: Math.random(),
   imageUrl: props.imageUrl,
@@ -115,9 +161,11 @@ export const getDefaultImageConfig = (props: AddImagePayload): ElementProps & { 
   width: 200,
   height: 200,
   angle: 0,
+  scaleX: 1,
+  scaleY: 1,
 })
 
-export const getDefaultShapeConfig = (props: AddShapePayload): ElementProps & { __typename: "Shape" } => ({
+export const getDefaultShapeConfig = (props: AddShapePayload): ShapeProps => ({
   __typename: "Shape",
   id: Math.random(),
   type: props.type,
@@ -126,6 +174,8 @@ export const getDefaultShapeConfig = (props: AddShapePayload): ElementProps & { 
   width: 200,
   height: 200,
   angle: 0,
+  scaleX: 1,
+  scaleY: 1,
   fillColor: "#000",
   strokeColor: "#000",
   strokeWidth: 0,

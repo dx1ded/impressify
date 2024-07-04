@@ -18,14 +18,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from "~/shared/ui-ki
 import { ToggleGroup, ToggleGroupItem } from "~/shared/ui-kit/toggle-group"
 
 export function Mode() {
-  const { mode, shape } = useAppSelector((state) => state.presentation)
+  const { toolbar } = useAppSelector((state) => state.presentation)
   const dispatch = useAppDispatch()
 
   return (
     <ToggleGroup
       className="gap-2"
       type="single"
-      defaultValue={mode}
+      defaultValue={toolbar.mode}
       onValueChange={(value: IMode) => dispatch(setMode(value))}>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -57,15 +57,15 @@ export function Mode() {
             <ToggleGroupItem value="shape" asChild>
               <ToolbarButton
                 Icon={
-                  shape === "line"
+                  toolbar.shape === "line"
                     ? MinusIcon
-                    : shape === "square"
+                    : toolbar.shape === "square"
                       ? SquareIcon
-                      : shape === "rectangle"
+                      : toolbar.shape === "rectangle"
                         ? RectangleHorizontalIcon
-                        : shape === "circle"
+                        : toolbar.shape === "circle"
                           ? CircleIcon
-                          : shape === "arrow"
+                          : toolbar.shape === "arrow"
                             ? ArrowRightIcon
                             : StarIcon
                 }
@@ -74,7 +74,7 @@ export function Mode() {
           </TooltipTrigger>
           <TooltipContent>Shape</TooltipContent>
         </Tooltip>
-        <Select defaultValue={shape} onValueChange={(value: Shapes) => dispatch(setShape(value))}>
+        <Select defaultValue={toolbar.shape} onValueChange={(value: Shapes) => dispatch(setShape(value))}>
           <SelectTrigger className="h-6 w-4 justify-center border-none bg-transparent p-0" />
           <SelectContent>
             <SelectItem value="line">

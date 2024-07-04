@@ -22,6 +22,8 @@ export type Element = {
   angle: Scalars['Int']['output'];
   height: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
+  scaleX: Scalars['Int']['output'];
+  scaleY: Scalars['Int']['output'];
   slide: Slide;
   width: Scalars['Int']['output'];
   x: Scalars['Int']['output'];
@@ -49,6 +51,8 @@ export type Image = Element & {
   height: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   imageUrl: Scalars['String']['output'];
+  scaleX: Scalars['Int']['output'];
+  scaleY: Scalars['Int']['output'];
   slide: Slide;
   width: Scalars['Int']['output'];
   x: Scalars['Int']['output'];
@@ -130,6 +134,8 @@ export type Shape = Element & {
   height: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   proportional: Scalars['Boolean']['output'];
+  scaleX: Scalars['Int']['output'];
+  scaleY: Scalars['Int']['output'];
   slide: Slide;
   strokeColor: Scalars['String']['output'];
   strokeWidth: Scalars['Int']['output'];
@@ -161,6 +167,8 @@ export type Text = Element & {
   id: Scalars['Int']['output'];
   italic: Scalars['Boolean']['output'];
   lineHeight: Scalars['Int']['output'];
+  scaleX: Scalars['Int']['output'];
+  scaleY: Scalars['Int']['output'];
   slide: Slide;
   text: Scalars['String']['output'];
   textColor: Scalars['String']['output'];
@@ -302,6 +310,8 @@ export type ElementResolvers<ContextType = any, ParentType extends ResolversPare
   angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleX?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleY?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   x?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -328,6 +338,8 @@ export type ImageResolvers<ContextType = any, ParentType extends ResolversParent
   height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   imageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  scaleX?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleY?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   x?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -364,6 +376,8 @@ export type ShapeResolvers<ContextType = any, ParentType extends ResolversParent
   height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   proportional?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  scaleX?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleY?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
   strokeColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   strokeWidth?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -395,6 +409,8 @@ export type TextResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   italic?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lineHeight?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleX?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleY?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   textColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

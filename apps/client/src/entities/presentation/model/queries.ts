@@ -38,6 +38,8 @@ export const GET_PRESENTATION = gql(`#graphql
           width
           height
           angle
+          scaleX
+          scaleY
 
           ... on Text {
             text

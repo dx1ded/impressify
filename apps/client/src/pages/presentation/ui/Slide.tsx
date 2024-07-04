@@ -13,7 +13,7 @@ import {
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 export function Slide() {
-  const { presentation, currentSlide, mode, selectedId, isLoading } = useAppSelector((state) => state.presentation)
+  const { presentation, currentSlide, toolbar, selectedId, isLoading } = useAppSelector((state) => state.presentation)
   const dispatch = useAppDispatch()
 
   const slide = presentation.slides[currentSlide]
@@ -23,7 +23,8 @@ export function Slide() {
     if (!stage) return
     const pointerPosition = stage.getPointerPosition()
     if (!pointerPosition) return
-    if (mode === "cursor") {
+
+    if (toolbar.mode === "cursor") {
       // drop selected item (if something is selected)
       if (e.target instanceof StageClass) return dispatch(setSelectedId(-1))
       return

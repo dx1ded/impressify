@@ -1,8 +1,7 @@
-import type { KonvaEventObject } from "konva/lib/Node"
 import { useEffect, useRef } from "react"
 import { Transformer } from "react-konva"
-import { Shape } from "konva/lib/Shape"
 import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
+import { useDebouncedCallback } from "use-debounce"
 
 import {
   type ElementProps,
@@ -11,8 +10,11 @@ import {
   shapeProps,
   textProps,
   setSelectedId,
+  editElement,
 } from "~/entities/presentation"
 import { useAppDispatch } from "~/shared/model"
+
+const DEBOUNCE_EDIT_TIME = 3000
 
 interface ElementWrapperProps {
   Element: ElementComponent | undefined
@@ -32,9 +34,9 @@ export function ElementWrapper({ Element, props, isSelected }: ElementWrapperPro
     }
   }, [isSelected])
 
-  const clickHandler = (e: KonvaEventObject<MouseEvent>) => {
-    dispatch(setSelectedId(props.id))
-  }
+  const debouncedEdit = useDebouncedCallback((newProps: ElementProps) => {
+    dispatch(editElement(newProps))
+  }, DEBOUNCE_EDIT_TIME)
 
   return (
     Element && (
@@ -43,34 +45,42 @@ export function ElementWrapper({ Element, props, isSelected }: ElementWrapperPro
           ref={elementRef}
           x={props.x}
           y={props.y}
-          width={props.width}
-          height={props.height}
+          width={props.width * props.scaleX}
+          height={props.height * props.scaleY}
           rotation={props.angle}
           {...textProps(props)}
           {...imageProps(props)}
           {...shapeProps(props)}
           draggable
-          onClick={clickHandler}
-          onDragEnd={(e: KonvaEventObject<DragEvent>) => {
-            // here I save it to my state
+          onClick={() => dispatch(setSelectedId(props.id))}
+          onDragStart={() => !isSelected && dispatch(setSelectedId(props.id))}
+          onDragEnd={(e) => debouncedEdit({ ...props, x: e.target.x(), y: e.target.y() })}
+          onTransform={(e) => {
+            const node = e.target
+            node.width(node.width() * node.scaleX())
+            node.height(node.height() * node.scaleY())
+            node.scaleX(1)
+            node.scaleY(1)
           }}
-          onTransformEnd={(e: KonvaEventObject<Event>) => {
-            const node = elementRef.current as Shape | null
-            if (!node) return
-
-            const scaleX = node.scaleX()
-            const scaleY = node.scaleY()
-
-            // // Reset scale to 1 to get the actual size
-            // node.scaleX(1)
-            // node.scaleY(1)
-            // here I save it to my state
-          }}
+          onTransformEnd={(e) =>
+            debouncedEdit({
+              ...props,
+              width: e.target.width(),
+              height: e.target.height(),
+              scaleX: e.target.scaleX(),
+              scaleY: e.target.scaleY(),
+            })
+          }
+          {...(props.__typename === "Text"
+            ? {
+                onChange: (value: string) => dispatch(editElement({ ...props, text: value })),
+                onToggleEdit: (value: boolean) => console.log(value),
+              }
+            : {})}
         />
         {isSelected && (
           <Transformer
             ref={trRef}
-            flipEnabled={false}
             boundBoxFunc={(oldBox, newBox) =>
               Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5 ? oldBox : newBox
             }

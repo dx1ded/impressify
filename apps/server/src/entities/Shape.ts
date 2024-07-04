@@ -26,6 +26,8 @@ export class Shape extends Element implements IShape {
       width,
       height,
       angle,
+      scaleX,
+      scaleY,
       fillColor,
       strokeColor,
       strokeWidth,
@@ -39,6 +41,8 @@ export class Shape extends Element implements IShape {
       width,
       height,
       angle,
+      scaleX,
+      scaleY,
       slide,
     })
     this.fillColor = fillColor
