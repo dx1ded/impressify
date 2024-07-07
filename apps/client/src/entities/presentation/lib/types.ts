@@ -3,10 +3,11 @@ import type { CircleConfig } from "konva/lib/shapes/Circle"
 import type { LineConfig } from "konva/lib/shapes/Line"
 import type { RectConfig } from "konva/lib/shapes/Rect"
 import type { StarConfig } from "konva/lib/shapes/Star"
-import type { Text, Image, Line, Rect, Circle, Arrow, Star } from "react-konva"
+import type { Image, Line, Rect, Circle, Arrow, Star } from "react-konva"
 
 import type { FindUserPresentationsQuery, GetPresentationQuery } from "~/__generated__/graphql"
 import type { ArrayElement } from "~/shared/lib"
+import type { EditableText } from "~/shared/ui/EditableText"
 
 export type FindPresentationItem = ArrayElement<NonNullable<FindUserPresentationsQuery["findUserPresentations"]>>
 export type Presentation = NonNullable<GetPresentationQuery["getPresentation"]>
@@ -38,10 +39,10 @@ export type TextEditProps = Pick<
   | "textColor"
   | "alignment"
   | "lineHeight"
->
+> & { isEditing: boolean }
 
 export type ElementComponent =
-  | typeof Text
+  | typeof EditableText
   | typeof Image
   | typeof Line
   | typeof Rect

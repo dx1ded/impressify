@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import _ from "lodash"
 
 import {
   type Presentation,
@@ -26,7 +27,7 @@ interface PresentationState {
   isLoading: boolean
 }
 
-const _textProps = getDefaultTextConfig({ x: 0, y: 0 })
+const defaultTextConfig = getDefaultTextConfig({ x: 0, y: 0 })
 
 const initialState: PresentationState = {
   presentation: {
@@ -38,16 +39,17 @@ const initialState: PresentationState = {
     mode: "cursor",
     shape: "line",
     textProps: {
-      fillColor: _textProps.fillColor,
-      borderColor: _textProps.borderColor,
-      fontFamily: _textProps.fontFamily,
-      fontSize: _textProps.fontSize,
-      bold: _textProps.bold,
-      italic: _textProps.italic,
-      underlined: _textProps.underlined,
-      textColor: _textProps.textColor,
-      alignment: _textProps.alignment,
-      lineHeight: _textProps.lineHeight,
+      fillColor: defaultTextConfig.fillColor,
+      borderColor: defaultTextConfig.borderColor,
+      fontFamily: defaultTextConfig.fontFamily,
+      fontSize: defaultTextConfig.fontSize,
+      bold: defaultTextConfig.bold,
+      italic: defaultTextConfig.italic,
+      underlined: defaultTextConfig.underlined,
+      textColor: defaultTextConfig.textColor,
+      alignment: defaultTextConfig.alignment,
+      lineHeight: defaultTextConfig.lineHeight,
+      isEditing: false,
     },
   },
   currentSlide: 0,
@@ -85,19 +87,14 @@ const presentationSlice = createSlice({
         slide.elements = [
           ...slide.elements,
           (newEl = {
-            ..._textProps,
+            // Taking default props
+            ...defaultTextConfig,
+            // Taking actual user props
+            ..._.omit(state.toolbar.textProps, "isEditing"),
+            // Changing id and coordinates
+            id: Math.random(),
             x: payload.x,
             y: payload.y,
-            fillColor: state.toolbar.textProps.fillColor,
-            borderColor: state.toolbar.textProps.borderColor,
-            fontFamily: state.toolbar.textProps.fontFamily,
-            fontSize: state.toolbar.textProps.fontSize,
-            bold: state.toolbar.textProps.bold,
-            italic: state.toolbar.textProps.italic,
-            underlined: state.toolbar.textProps.underlined,
-            textColor: state.toolbar.textProps.textColor,
-            alignment: state.toolbar.textProps.alignment,
-            lineHeight: state.toolbar.textProps.lineHeight,
           }),
         ]
       } else if (state.toolbar.mode === "image") {
@@ -108,11 +105,13 @@ const presentationSlice = createSlice({
 
       state.selectedId = newEl!.id
     },
-    editElement: (state, { payload }: PayloadAction<ElementProps>) => {
+    editElement: (state, { payload }: PayloadAction<Partial<ElementProps>>) => {
       const slide = state.presentation.slides[state.currentSlide]
-      slide.elements = slide.elements.map((element) => (element.id === payload.id ? payload : element))
+      slide.elements = slide.elements.map((element) =>
+        element.id === payload.id ? ({ ...element, ...payload } as ElementProps) : element,
+      )
     },
-    changeTextProps: (state, { payload }: PayloadAction<Partial<PresentationState["toolbar"]["textProps"]>>) => {
+    changeTextProps: (state, { payload }: PayloadAction<Partial<TextEditProps>>) => {
       state.toolbar.textProps = { ...state.toolbar.textProps, ...payload }
     },
   },

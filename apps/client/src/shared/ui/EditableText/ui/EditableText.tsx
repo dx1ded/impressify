@@ -1,28 +1,44 @@
-import { useState, type KeyboardEvent, forwardRef } from "react"
+import { type KeyboardEvent, forwardRef } from "react"
 import { Text } from "react-konva"
+import type { DebouncedState } from "use-debounce"
 import type { Text as TextClass, TextConfig } from "konva/lib/shapes/Text"
 
-import { EditableTextInput } from "~/entities/presentation/ui/EditableTextInput"
+import type { ElementProps } from "~/entities/presentation"
+
+import { EditableTextInput } from "./EditableTextInput"
 
 interface EditableTextInputProps extends TextConfig {
-  onChange(value: string): void
+  isEditing: boolean
+  debouncedEdit: DebouncedState<(newProps: Partial<ElementProps>) => void>
   onToggleEdit(isEditing: boolean): void
 }
 
 export const EditableText = forwardRef<TextClass, EditableTextInputProps>(function EditableText(
-  { onChange, onToggleEdit, ...props },
+  { isEditing, debouncedEdit, onToggleEdit, ...props },
   ref,
 ) {
-  const [isEditing, setIsEditing] = useState(false)
-
   const handleEscapeKeys = (e: KeyboardEvent<HTMLDivElement>) => {
-    if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape") {
-      setIsEditing(false)
+    if ((e.key === "Enter" && !e.shiftKey) || e.key === "Escape" || e.key === "Tab") {
       onToggleEdit(false)
     }
   }
 
-  const { x, y, text, width, height, fill, fontSize, fontFamily, fontStyle, textDecoration, lineHeight } = props
+  const {
+    x,
+    y,
+    text,
+    width,
+    height,
+    scaleX,
+    scaleY,
+    fill,
+    fontSize,
+    fontFamily,
+    fontStyle,
+    textDecoration,
+    lineHeight,
+    rotation,
+  } = props
 
   if (isEditing) {
     return (
@@ -31,14 +47,18 @@ export const EditableText = forwardRef<TextClass, EditableTextInputProps>(functi
         y={y}
         width={width}
         height={height}
+        scaleX={scaleX}
+        scaleY={scaleY}
         fill={fill}
         fontSize={fontSize}
         fontFamily={fontFamily}
         fontStyle={fontStyle}
         textDecoration={textDecoration}
         lineHeight={lineHeight}
+        rotation={rotation}
         value={text}
-        onInput={(e) => onChange(e.currentTarget.textContent || "")}
+        onBlur={() => debouncedEdit.flush()}
+        onInput={(e) => debouncedEdit({ text: e.currentTarget.textContent || "" })}
         onKeyDown={handleEscapeKeys}
       />
     )
@@ -47,7 +67,7 @@ export const EditableText = forwardRef<TextClass, EditableTextInputProps>(functi
     <Text
       ref={ref}
       onDblClick={() => {
-        setIsEditing(true)
+        debouncedEdit.flush()
         onToggleEdit(true)
       }}
       {...props}

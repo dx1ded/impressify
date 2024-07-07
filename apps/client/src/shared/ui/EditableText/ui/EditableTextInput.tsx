@@ -16,7 +16,9 @@ export function EditableTextInput({
   textDecoration,
   lineHeight,
   align,
+  rotation,
   value,
+  onBlur,
   onInput,
   onKeyDown,
 }: EditableTextInputProps) {
@@ -24,7 +26,7 @@ export function EditableTextInput({
   // textValue is created to avoid div rerender once the value is changed
   const textValue = useRef<string>(value)
 
-  const [_, style, weight] = fontStyle!.split(" ")
+  const [style, weight] = fontStyle!.split(" ")
 
   // Autofocus on mount
   useEffect(() => {
@@ -40,22 +42,20 @@ export function EditableTextInput({
   }, [])
 
   return (
-    <Html groupProps={{ x, y }} divProps={{ style: { opacity: 1 } }}>
+    <Html groupProps={{ x, y, rotation }} divProps={{ style: { width: `${width}px`, height: `${height}px` } }}>
       <div
         ref={divRef}
-        className="m-0 flex resize-none items-center overflow-hidden bg-none p-0 outline-0"
+        className="m-0 flex h-full w-full items-center whitespace-pre-wrap break-all border-2 border-blue-300 bg-none p-0 outline-0"
         role="textbox"
         aria-multiline="true"
         aria-label="Editable text area"
         aria-placeholder="Enter text here"
         tabIndex={0}
         style={{
-          width: `${width}px`,
-          height: `${height}px`,
           color: fill,
           fontSize,
           fontFamily,
-          fontWeight: weight,
+          fontWeight: +weight,
           fontStyle: style,
           textDecoration,
           lineHeight,
@@ -63,6 +63,7 @@ export function EditableTextInput({
         }}
         contentEditable
         suppressContentEditableWarning
+        onBlur={onBlur}
         onInput={onInput}
         onKeyDown={onKeyDown}>
         {textValue.current}

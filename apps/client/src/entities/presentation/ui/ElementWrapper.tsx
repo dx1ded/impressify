@@ -11,6 +11,10 @@ import {
   textProps,
   setSelectedId,
   editElement,
+  changeTextProps,
+  setMode,
+  setShape,
+  type Shapes,
 } from "~/entities/presentation"
 import { useAppDispatch } from "~/shared/model"
 
@@ -20,9 +24,10 @@ interface ElementWrapperProps {
   Element: ElementComponent | undefined
   props: ElementProps
   isSelected: boolean
+  isEditing: boolean
 }
 
-export function ElementWrapper({ Element, props, isSelected }: ElementWrapperProps) {
+export function ElementWrapper({ Element, props, isSelected, isEditing }: ElementWrapperProps) {
   const dispatch = useAppDispatch()
   const elementRef = useRef<never>(null)
   const trRef = useRef<ITransformer>(null)
@@ -32,29 +37,53 @@ export function ElementWrapper({ Element, props, isSelected }: ElementWrapperPro
       trRef.current.nodes([elementRef.current])
       trRef.current.getLayer()?.batchDraw()
     }
-  }, [isSelected])
+  }, [isSelected, isEditing])
 
-  const debouncedEdit = useDebouncedCallback((newProps: ElementProps) => {
-    dispatch(editElement(newProps))
+  const debouncedEdit = useDebouncedCallback((newProps: Partial<ElementProps>) => {
+    dispatch(editElement({ ...newProps, id: props.id }))
   }, DEBOUNCE_EDIT_TIME)
+
+  const selectElement = () => {
+    if (!isSelected) dispatch(setSelectedId(+props.id))
+    const type = props.__typename
+    if (type === "Text") dispatch(setMode("text"))
+    else if (type === "Image") dispatch(setMode("image"))
+    else if (type === "Shape") {
+      dispatch(setMode("shape"))
+      dispatch(setShape(props.type as Shapes))
+    }
+  }
 
   return (
     Element && (
       <>
         <Element
           ref={elementRef}
+          id={`${props.id}`}
           x={props.x}
           y={props.y}
-          width={props.width * props.scaleX}
-          height={props.height * props.scaleY}
+          width={props.width}
+          height={props.height}
           rotation={props.angle}
           {...textProps(props)}
           {...imageProps(props)}
           {...shapeProps(props)}
           draggable
-          onClick={() => dispatch(setSelectedId(props.id))}
-          onDragStart={() => !isSelected && dispatch(setSelectedId(props.id))}
-          onDragEnd={(e) => debouncedEdit({ ...props, x: e.target.x(), y: e.target.y() })}
+          onClick={selectElement}
+          onDragStart={selectElement}
+          onDragEnd={(e) =>
+            /*
+              I'm using the same props (width / height / angle) as for onTransformEnd (and vice versa) because since the function is debounced,
+              the previous transformation / drag might be lost. That's why, I need to get the most recent properties for the `ref`
+            */
+            debouncedEdit({
+              x: e.target.x(),
+              y: e.target.y(),
+              width: e.target.width(),
+              height: e.target.height(),
+              angle: e.target.rotation(),
+            })
+          }
           onTransform={(e) => {
             const node = e.target
             node.width(node.width() * node.scaleX())
@@ -64,21 +93,22 @@ export function ElementWrapper({ Element, props, isSelected }: ElementWrapperPro
           }}
           onTransformEnd={(e) =>
             debouncedEdit({
-              ...props,
+              x: e.target.x(),
+              y: e.target.y(),
               width: e.target.width(),
               height: e.target.height(),
-              scaleX: e.target.scaleX(),
-              scaleY: e.target.scaleY(),
+              angle: e.target.rotation(),
             })
           }
           {...(props.__typename === "Text"
             ? {
-                onChange: (value: string) => dispatch(editElement({ ...props, text: value })),
-                onToggleEdit: (value: boolean) => console.log(value),
+                isEditing,
+                debouncedEdit,
+                onToggleEdit: (value: boolean) => dispatch(changeTextProps({ isEditing: value })),
               }
             : {})}
         />
-        {isSelected && (
+        {isSelected && !isEditing && (
           <Transformer
             ref={trRef}
             boundBoxFunc={(oldBox, newBox) =>

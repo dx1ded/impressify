@@ -27,8 +27,8 @@ import {
   type ShapesConfig,
   type TextProps,
 } from "~/entities/presentation"
-import { EditableText } from "~/entities/presentation/ui/EditableText"
 import { ptToPx } from "~/shared/lib"
+import { EditableText } from "~/shared/ui/EditableText"
 
 export const formatDate = (timestamp: number) => {
   const dateNow = Date.now()
@@ -41,50 +41,19 @@ export const formatDate = (timestamp: number) => {
       : dayjsInstance.format("MMM D, YYYY")
 }
 
-export const getTextBoxDimensions = ({
-  text,
-  fontFamily,
-  fontSize,
-  fontWeight,
-  lineHeight,
-}: {
-  text: string
-  fontFamily: string
-  fontSize: number
-  fontWeight: number
-  lineHeight: number
-}) => {
-  // Create a canvas element
-  const canvas = document.createElement("canvas")
-  const context = canvas.getContext("2d")!
-
-  context.font = `${fontWeight} ${fontSize}pt ${fontFamily}`
-  const metrics = context.measureText(text)
-
-  return { width: metrics.width, height: fontSize * lineHeight }
-}
-
 export const textProps = (props: ElementProps): TextConfig => {
   if (props.__typename !== "Text") return {}
-  // const { width, height } = getTextBoxDimensions({
-  //   text: props.text,
-  //   fontFamily: props.fontFamily,
-  //   fontSize: props.fontSize,
-  //   fontWeight: props.bold ? 700 : 400,
-  //   lineHeight: props.lineHeight,
-  // })
 
   return {
-    // width,
-    // height,
     text: props.text,
     fill: props.textColor,
     fontFamily: props.fontFamily,
     fontSize: ptToPx(props.fontSize),
-    fontStyle: props.bold ? `${props.italic ? "italic" : ""} 700` : `${props.italic ? "italic" : ""} 400`,
+    fontStyle: props.bold ? `${props.italic ? "italic" : "normal"} 700` : `${props.italic ? "italic" : "normal"} 400`,
     textDecoration: props.underlined ? "underline" : "",
     align: props.alignment,
     verticalAlign: "middle",
+    wrap: "char",
     lineHeight: props.lineHeight,
   }
 }
@@ -139,7 +108,7 @@ export const getDefaultTextConfig = (props: AddTextPayload): TextProps => ({
   angle: 0,
   scaleX: 1,
   scaleY: 1,
-  text: "Some text",
+  text: "",
   fillColor: DEFAULT_FILL_COLOR,
   borderColor: DEFAULT_BORDER_COLOR,
   textColor: DEFAULT_TEXT_COLOR,

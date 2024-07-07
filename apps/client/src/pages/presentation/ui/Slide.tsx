@@ -4,6 +4,7 @@ import { Stage as StageClass } from "konva/lib/Stage"
 
 import {
   addElement,
+  changeTextProps,
   ElementWrapper,
   getElement,
   setSelectedId,
@@ -24,13 +25,20 @@ export function Slide() {
     const pointerPosition = stage.getPointerPosition()
     if (!pointerPosition) return
 
-    if (toolbar.mode === "cursor") {
-      // drop selected item (if something is selected)
-      if (e.target instanceof StageClass) return dispatch(setSelectedId(-1))
-      return
+    // - Click logic -
+
+    if (toolbar.textProps.isEditing) return dispatch(changeTextProps({ isEditing: false }))
+
+    if (e.target instanceof StageClass) {
+      if (toolbar.mode === "cursor" && !toolbar.textProps.isEditing && selectedId !== -1) {
+        // drop selected item (if something is selected)
+        return dispatch(setSelectedId(-1))
+      }
     }
 
-    dispatch(addElement({ x: pointerPosition.x, y: pointerPosition.y }))
+    if (toolbar.mode !== "cursor") {
+      dispatch(addElement({ x: pointerPosition.x, y: pointerPosition.y }))
+    }
   }
 
   if (isLoading) return <p>Loading ...</p>
@@ -45,6 +53,9 @@ export function Slide() {
               Element={getElement(element)}
               props={element}
               isSelected={element.id === selectedId}
+              // Internal optimization here. `isEditing` is only needed for Text so for all the other Elements it's unnecessary to update
+              // So, when isEditing is updated, only Text elements are going to re-render (but not Image or Shape for example because it's always `false`)
+              isEditing={element.__typename === "Text" ? toolbar.textProps.isEditing : false}
             />
           ))}
         </Layer>
