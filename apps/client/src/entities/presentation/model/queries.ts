@@ -43,9 +43,9 @@ export const GET_PRESENTATION = gql(`#graphql
 
           ... on Text {
             text
+            textColor
             fillColor
             borderColor
-            textColor
             fontFamily
             fontSize
             bold

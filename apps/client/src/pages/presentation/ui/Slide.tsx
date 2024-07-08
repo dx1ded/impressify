@@ -1,6 +1,9 @@
 import { Layer, Stage } from "react-konva"
 import type { KonvaEventObject } from "konva/lib/Node"
 import { Stage as StageClass } from "konva/lib/Stage"
+import { Text as TextClass } from "konva/lib/shapes/Text"
+import { Image as ImageClass } from "konva/lib/shapes/Image"
+import { Shape as ShapeClass } from "konva/lib/Shape"
 
 import {
   addElement,
@@ -29,16 +32,25 @@ export function Slide() {
 
     if (toolbar.textProps.isEditing) return dispatch(changeTextProps({ isEditing: false }))
 
-    if (e.target instanceof StageClass) {
-      if (toolbar.mode === "cursor" && !toolbar.textProps.isEditing && selectedId !== -1) {
-        // drop selected item (if something is selected)
-        return dispatch(setSelectedId(-1))
-      }
+    if (
+      e.target instanceof StageClass &&
+      toolbar.mode === "cursor" &&
+      !toolbar.textProps.isEditing &&
+      selectedId !== -1
+    ) {
+      // dropping selected item (if something is selected)
+      return dispatch(setSelectedId(-1))
     }
 
-    if (toolbar.mode !== "cursor") {
-      dispatch(addElement({ x: pointerPosition.x, y: pointerPosition.y }))
-    }
+    if (
+      (e.target instanceof TextClass && toolbar.mode !== "text") ||
+      (e.target instanceof ImageClass && toolbar.mode !== "image") ||
+      (e.target instanceof ShapeClass && toolbar.mode !== "shape") ||
+      toolbar.mode === "cursor"
+    )
+      return
+
+    dispatch(addElement({ x: pointerPosition.x, y: pointerPosition.y }))
   }
 
   if (isLoading) return <p>Loading ...</p>
@@ -52,6 +64,7 @@ export function Slide() {
               key={i}
               Element={getElement(element)}
               props={element}
+              mode={toolbar.mode}
               isSelected={element.id === selectedId}
               // Internal optimization here. `isEditing` is only needed for Text so for all the other Elements it's unnecessary to update
               // So, when isEditing is updated, only Text elements are going to re-render (but not Image or Shape for example because it's always `false`)

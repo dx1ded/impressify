@@ -8,7 +8,6 @@ import {
   Star as KonvaStar,
 } from "react-konva"
 import type { ImageConfig } from "konva/lib/shapes/Image"
-import type { TextConfig } from "konva/lib/shapes/Text"
 
 import {
   type AddImagePayload,
@@ -18,6 +17,7 @@ import {
   DEFAULT_FILL_COLOR,
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,
+  DEFAULT_STROKE_COLOR,
   DEFAULT_TEXT_COLOR,
   DEFAULT_TEXT_HEIGHT,
   DEFAULT_TEXT_WIDTH,
@@ -28,7 +28,7 @@ import {
   type TextProps,
 } from "~/entities/presentation"
 import { ptToPx } from "~/shared/lib"
-import { EditableText } from "~/shared/ui/EditableText"
+import { EditableText, type EditableTextConfig } from "~/shared/ui/EditableText"
 
 export const formatDate = (timestamp: number) => {
   const dateNow = Date.now()
@@ -41,12 +41,14 @@ export const formatDate = (timestamp: number) => {
       : dayjsInstance.format("MMM D, YYYY")
 }
 
-export const textProps = (props: ElementProps): TextConfig => {
+export const textProps = (props: ElementProps): EditableTextConfig => {
   if (props.__typename !== "Text") return {}
 
   return {
     text: props.text,
-    fill: props.textColor,
+    textColor: props.textColor,
+    fill: props.fillColor,
+    borderColor: props.borderColor,
     fontFamily: props.fontFamily,
     fontSize: ptToPx(props.fontSize),
     fontStyle: props.bold ? `${props.italic ? "italic" : "normal"} 700` : `${props.italic ? "italic" : "normal"} 400`,
@@ -109,9 +111,9 @@ export const getDefaultTextConfig = (props: AddTextPayload): TextProps => ({
   scaleX: 1,
   scaleY: 1,
   text: "",
+  textColor: DEFAULT_TEXT_COLOR,
   fillColor: DEFAULT_FILL_COLOR,
   borderColor: DEFAULT_BORDER_COLOR,
-  textColor: DEFAULT_TEXT_COLOR,
   fontFamily: DEFAULT_FONT_FAMILY,
   fontSize: DEFAULT_FONT_SIZE,
   bold: false,

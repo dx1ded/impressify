@@ -39,16 +39,18 @@ const initialState: PresentationState = {
     mode: "cursor",
     shape: "line",
     textProps: {
-      fillColor: defaultTextConfig.fillColor,
-      borderColor: defaultTextConfig.borderColor,
-      fontFamily: defaultTextConfig.fontFamily,
-      fontSize: defaultTextConfig.fontSize,
-      bold: defaultTextConfig.bold,
-      italic: defaultTextConfig.italic,
-      underlined: defaultTextConfig.underlined,
-      textColor: defaultTextConfig.textColor,
-      alignment: defaultTextConfig.alignment,
-      lineHeight: defaultTextConfig.lineHeight,
+      ..._.pick(defaultTextConfig, [
+        "textColor",
+        "fillColor",
+        "borderColor",
+        "fontFamily",
+        "fontSize",
+        "bold",
+        "italic",
+        "underlined",
+        "alignment",
+        "lineHeight",
+      ]),
       isEditing: false,
     },
   },
@@ -93,8 +95,8 @@ const presentationSlice = createSlice({
             ..._.omit(state.toolbar.textProps, "isEditing"),
             // Changing id and coordinates
             id: Math.random(),
-            x: payload.x,
-            y: payload.y,
+            x: payload.x - defaultTextConfig.width / 2,
+            y: payload.y - defaultTextConfig.height / 2,
           }),
         ]
       } else if (state.toolbar.mode === "image") {
@@ -113,6 +115,11 @@ const presentationSlice = createSlice({
     },
     changeTextProps: (state, { payload }: PayloadAction<Partial<TextEditProps>>) => {
       state.toolbar.textProps = { ...state.toolbar.textProps, ...payload }
+      if (state.selectedId === -1) return
+      const slide = state.presentation.slides[state.currentSlide]
+      slide.elements = slide.elements.map((element) =>
+        element.id === state.selectedId ? { ...element, ...payload } : element,
+      )
     },
   },
 })

@@ -29,6 +29,7 @@ export type ShapeProps = ElementProps & { __typename: "Shape" }
 
 export type TextEditProps = Pick<
   TextProps,
+  | "textColor"
   | "fillColor"
   | "borderColor"
   | "fontFamily"
@@ -36,7 +37,6 @@ export type TextEditProps = Pick<
   | "bold"
   | "italic"
   | "underlined"
-  | "textColor"
   | "alignment"
   | "lineHeight"
 > & { isEditing: boolean }

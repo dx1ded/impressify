@@ -6,6 +6,8 @@ import { useDebouncedCallback } from "use-debounce"
 import {
   type ElementProps,
   type ElementComponent,
+  type Mode,
+  type Shapes,
   imageProps,
   shapeProps,
   textProps,
@@ -14,7 +16,6 @@ import {
   changeTextProps,
   setMode,
   setShape,
-  type Shapes,
 } from "~/entities/presentation"
 import { useAppDispatch } from "~/shared/model"
 
@@ -23,11 +24,12 @@ const DEBOUNCE_EDIT_TIME = 3000
 interface ElementWrapperProps {
   Element: ElementComponent | undefined
   props: ElementProps
+  mode: Mode
   isSelected: boolean
   isEditing: boolean
 }
 
-export function ElementWrapper({ Element, props, isSelected, isEditing }: ElementWrapperProps) {
+export function ElementWrapper({ Element, props, mode, isSelected, isEditing }: ElementWrapperProps) {
   const dispatch = useAppDispatch()
   const elementRef = useRef<never>(null)
   const trRef = useRef<ITransformer>(null)
@@ -44,8 +46,12 @@ export function ElementWrapper({ Element, props, isSelected, isEditing }: Elemen
   }, DEBOUNCE_EDIT_TIME)
 
   const selectElement = () => {
-    if (!isSelected) dispatch(setSelectedId(+props.id))
     const type = props.__typename
+    // type is lowercased because __typename has first letter uppercased and modes are all lowercased
+    if (mode !== type?.toLowerCase() && mode !== "cursor") return
+    // Select element
+    if (!isSelected) dispatch(setSelectedId(+props.id))
+    // After element is selected set a corresponding toolbar mode
     if (type === "Text") dispatch(setMode("text"))
     else if (type === "Image") dispatch(setMode("image"))
     else if (type === "Shape") {

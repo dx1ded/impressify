@@ -10,9 +10,9 @@ type Text implements Element {
   slide: Slide!
 
   text: String!
+  textColor: String!
   fillColor: String!
   borderColor: String!
-  textColor: String!
   fontFamily: String!
   fontSize: Int!
   bold: Boolean!

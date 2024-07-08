@@ -1,15 +1,18 @@
 import { type ComponentPropsWithoutRef, useEffect, useRef } from "react"
 import { Html } from "react-konva-utils"
-import type { TextConfig } from "konva/lib/shapes/Text"
 
-interface EditableTextInputProps extends Omit<TextConfig, "draggable">, ComponentPropsWithoutRef<"div"> {}
+import type { EditableTextConfig } from "~/shared/ui/EditableText"
+
+interface EditableTextInputProps extends Omit<EditableTextConfig, "draggable">, ComponentPropsWithoutRef<"div"> {}
 
 export function EditableTextInput({
   x,
   y,
   width,
   height,
+  textColor,
   fill,
+  borderColor,
   fontSize,
   fontFamily,
   fontStyle,
@@ -52,14 +55,16 @@ export function EditableTextInput({
         aria-placeholder="Enter text here"
         tabIndex={0}
         style={{
-          color: fill,
+          color: textColor,
+          backgroundColor: fill,
           fontSize,
           fontFamily,
           fontWeight: +weight,
           fontStyle: style,
           textDecoration,
           lineHeight,
-          justifyContent: align === "center" ? "center" : align === "end" ? "flex-end" : "flex-start",
+          justifyContent: align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
+          ...(borderColor !== "transparent" ? { borderColor } : {}),
         }}
         contentEditable
         suppressContentEditableWarning

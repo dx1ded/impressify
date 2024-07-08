@@ -8,13 +8,13 @@ export class Text extends Element implements IText {
   text: string
 
   @Column()
+  textColor: string
+
+  @Column()
   fillColor: string
 
   @Column()
   borderColor: string
-
-  @Column()
-  textColor: string
 
   @Column()
   fontFamily: string
@@ -49,9 +49,9 @@ export class Text extends Element implements IText {
       angle,
       scaleX,
       scaleY,
+      textColor,
       fillColor,
       borderColor,
-      textColor,
       fontFamily,
       fontSize,
       bold,
@@ -72,9 +72,9 @@ export class Text extends Element implements IText {
       scaleY,
       slide,
     })
+    this.textColor = textColor
     this.fillColor = fillColor
     this.borderColor = borderColor
-    this.textColor = textColor
     this.fontFamily = fontFamily
     this.fontSize = fontSize
     this.bold = bold

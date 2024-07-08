@@ -25,7 +25,7 @@ export function Mode() {
     <ToggleGroup
       className="gap-2"
       type="single"
-      defaultValue={toolbar.mode}
+      value={toolbar.mode}
       onValueChange={(value: IMode) => dispatch(setMode(value))}>
       <Tooltip>
         <TooltipTrigger asChild>
