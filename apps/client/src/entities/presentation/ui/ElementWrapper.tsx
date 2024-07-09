@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { memo, useEffect, useRef } from "react"
 import { Transformer } from "react-konva"
 import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
 import { useDebouncedCallback } from "use-debounce"
@@ -11,7 +11,7 @@ import {
   imageProps,
   shapeProps,
   textProps,
-  setSelectedId,
+  selectElement,
   editElement,
   changeTextProps,
   setMode,
@@ -29,7 +29,13 @@ interface ElementWrapperProps {
   isEditing: boolean
 }
 
-export function ElementWrapper({ Element, props, mode, isSelected, isEditing }: ElementWrapperProps) {
+export const ElementWrapper = memo(function ElementWrapper({
+  Element,
+  props,
+  mode,
+  isSelected,
+  isEditing,
+}: ElementWrapperProps) {
   const dispatch = useAppDispatch()
   const elementRef = useRef<never>(null)
   const trRef = useRef<ITransformer>(null)
@@ -42,19 +48,20 @@ export function ElementWrapper({ Element, props, mode, isSelected, isEditing }: 
   }, [isSelected, isEditing])
 
   const debouncedEdit = useDebouncedCallback((newProps: Partial<ElementProps>) => {
+    // Using id to avoid transformations being applied for `selectedId` (which would be used if not id provided)
     dispatch(editElement({ ...newProps, id: props.id }))
   }, DEBOUNCE_EDIT_TIME)
 
-  const selectElement = () => {
+  const selectElementHandler = () => {
     const type = props.__typename
     // type is lowercased because __typename has first letter uppercased and modes are all lowercased
     if (mode !== type?.toLowerCase() && mode !== "cursor") return
     // Select element
-    if (!isSelected) dispatch(setSelectedId(+props.id))
+    if (!isSelected) dispatch(selectElement(props.id))
     // After element is selected set a corresponding toolbar mode
-    if (type === "Text") dispatch(setMode("text"))
-    else if (type === "Image") dispatch(setMode("image"))
-    else if (type === "Shape") {
+    if (mode !== "text" && type === "Text") dispatch(setMode("text"))
+    else if (mode !== "image" && type === "Image") dispatch(setMode("image"))
+    else if (mode !== "shape" && type === "Shape") {
       dispatch(setMode("shape"))
       dispatch(setShape(props.type as Shapes))
     }
@@ -65,7 +72,6 @@ export function ElementWrapper({ Element, props, mode, isSelected, isEditing }: 
       <>
         <Element
           ref={elementRef}
-          id={`${props.id}`}
           x={props.x}
           y={props.y}
           width={props.width}
@@ -75,8 +81,8 @@ export function ElementWrapper({ Element, props, mode, isSelected, isEditing }: 
           {...imageProps(props)}
           {...shapeProps(props)}
           draggable
-          onClick={selectElement}
-          onDragStart={selectElement}
+          onClick={selectElementHandler}
+          onDragStart={selectElementHandler}
           onDragEnd={(e) =>
             /*
               I'm using the same props (width / height / angle) as for onTransformEnd (and vice versa) because since the function is debounced,
@@ -125,4 +131,4 @@ export function ElementWrapper({ Element, props, mode, isSelected, isEditing }: 
       </>
     )
   )
-}
+})

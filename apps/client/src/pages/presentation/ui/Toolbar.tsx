@@ -9,7 +9,7 @@ import { ImageMode } from "~/pages/presentation/ui/toolbar-items/ImageMode"
 import { ShapeMode } from "~/pages/presentation/ui/toolbar-items/ShapeMode"
 
 export function Toolbar() {
-  const { toolbar } = useAppSelector((state) => state.presentation)
+  const mode = useAppSelector((state) => state.presentation.toolbar.mode)
 
   return (
     <div className="bg-secondary mb-6 flex items-center rounded-3xl px-4 py-2">
@@ -19,15 +19,14 @@ export function Toolbar() {
       <ToolbarSeparator />
       <Mode />
       <ToolbarSeparator />
-      {toolbar.mode === "cursor" ? (
-        <CursorMode />
-      ) : toolbar.mode === "text" ? (
-        <TextMode />
-      ) : toolbar.mode === "image" ? (
-        <ImageMode />
-      ) : (
-        <ShapeMode />
-      )}
+      {/*
+        Modes only change their visibility, in fact they are always rendered. This is done for extra optimization
+        ... because there are some components like <ColorPicker> that take a bunch of time and resources to be rendered
+      */}
+      <CursorMode isActive={mode === "cursor"} />
+      <TextMode isActive={mode === "text"} />
+      <ImageMode isActive={mode === "image"} />
+      <ShapeMode isActive={mode === "shape"} />
     </div>
   )
 }

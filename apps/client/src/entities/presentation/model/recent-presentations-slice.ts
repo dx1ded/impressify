@@ -4,13 +4,13 @@ import type { FindPresentationItem } from "~/entities/presentation"
 import type { SortTypes, ViewTypes } from "~/features/sort-presentations"
 
 interface RecentPresentationsState {
-  recentPresentations: FindPresentationItem[]
+  items: FindPresentationItem[]
   view: ViewTypes
   sort: SortTypes
 }
 
 const initialState: RecentPresentationsState = {
-  recentPresentations: [],
+  items: [],
   view: "grid",
   sort: "newest",
 }
@@ -20,7 +20,7 @@ const recentPresentationsSlice = createSlice({
   initialState,
   reducers: {
     setRecentPresentations: (state, { payload }: PayloadAction<FindPresentationItem[]>) => {
-      state.recentPresentations = payload
+      state.items = payload
     },
     setView: (state, { payload }: PayloadAction<ViewTypes>) => {
       state.view = payload

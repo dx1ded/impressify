@@ -9,8 +9,9 @@ import {
   StarIcon,
   TypeIcon,
 } from "lucide-react"
+import { shallowEqual } from "react-redux"
 
-import { setMode, Mode as IMode, type Shapes, setShape } from "~/entities/presentation"
+import { Mode as IMode, type Shapes, setMode, setShape, resetToolbar, NOT_SELECTED } from "~/entities/presentation"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton } from "~/shared/ui/Toolbar"
@@ -18,15 +19,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from "~/shared/ui-ki
 import { ToggleGroup, ToggleGroupItem } from "~/shared/ui-kit/toggle-group"
 
 export function Mode() {
-  const { toolbar } = useAppSelector((state) => state.presentation)
+  // Done for optimization. You can use a couple of useSelector or this if all props are primitives like here
+  const { mode, shape, selectedId } = useAppSelector(
+    (state) => ({
+      mode: state.presentation.toolbar.mode,
+      shape: state.presentation.toolbar.shape,
+      selectedId: state.presentation.selectedId,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
 
+  const changeHandler = (newMode: IMode | "") => {
+    if (newMode === "") return
+    dispatch(setMode(newMode))
+    if (newMode === "cursor" && selectedId === NOT_SELECTED) dispatch(resetToolbar())
+  }
+
   return (
-    <ToggleGroup
-      className="gap-2"
-      type="single"
-      value={toolbar.mode}
-      onValueChange={(value: IMode) => dispatch(setMode(value))}>
+    <ToggleGroup type="single" className="gap-2" value={mode} onValueChange={changeHandler}>
       <Tooltip>
         <TooltipTrigger asChild>
           <ToggleGroupItem value="cursor" asChild>
@@ -57,15 +68,15 @@ export function Mode() {
             <ToggleGroupItem value="shape" asChild>
               <ToolbarButton
                 Icon={
-                  toolbar.shape === "line"
+                  shape === "line"
                     ? MinusIcon
-                    : toolbar.shape === "square"
+                    : shape === "square"
                       ? SquareIcon
-                      : toolbar.shape === "rectangle"
+                      : shape === "rectangle"
                         ? RectangleHorizontalIcon
-                        : toolbar.shape === "circle"
+                        : shape === "circle"
                           ? CircleIcon
-                          : toolbar.shape === "arrow"
+                          : shape === "arrow"
                             ? ArrowRightIcon
                             : StarIcon
                 }
@@ -74,7 +85,7 @@ export function Mode() {
           </TooltipTrigger>
           <TooltipContent>Shape</TooltipContent>
         </Tooltip>
-        <Select defaultValue={toolbar.shape} onValueChange={(value: Shapes) => dispatch(setShape(value))}>
+        <Select value={shape} onValueChange={(value: Shapes) => dispatch(setShape(value))}>
           <SelectTrigger className="h-6 w-4 justify-center border-none bg-transparent p-0" />
           <SelectContent>
             <SelectItem value="line">

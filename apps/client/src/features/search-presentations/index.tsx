@@ -13,7 +13,7 @@ import { Input } from "~/shared/ui-kit/input"
 export function SearchPresentations() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const { userId } = useAppSelector((state) => state.user)
+  const userId = useAppSelector((state) => state.user.userId)
   const [searchPresentations, { data }] = useLazyQuery<SearchPresentationsQuery, SearchPresentationsQueryVariables>(
     SEARCH_PRESENTATIONS,
     {

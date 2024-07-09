@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 export function RenamePresentation({ children }: ChildrenAsCallback<[string, string]>) {
   const dispatch = useAppDispatch()
-  const { recentPresentations } = useAppSelector((state) => state.recentPresentations)
+  const recentPresentations = useAppSelector((state) => state.recentPresentations.items)
   const [sendRenamePresentation, { loading }] = useMutation<
     RenamePresentationMutation,
     RenamePresentationMutationVariables

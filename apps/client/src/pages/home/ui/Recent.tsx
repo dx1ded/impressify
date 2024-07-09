@@ -12,8 +12,8 @@ import { Container } from "~/shared/ui/Container"
 import { Text } from "~/shared/ui/Typography"
 
 export function Recent() {
-  const { recentPresentations, view, sort } = useAppSelector((state) => state.recentPresentations)
-  const { userId } = useAppSelector((state) => state.user)
+  const { items, view, sort } = useAppSelector((state) => state.recentPresentations)
+  const userId = useAppSelector((state) => state.user.userId)
   const dispatch = useAppDispatch()
   const { loading } = useQuery<FindUserPresentationsQuery, FindUserPresentationsQueryVariables>(
     FIND_USER_PRESENTATIONS,
@@ -49,7 +49,7 @@ export function Recent() {
               {(DeleteAlert) => (
                 <RenamePresentationDialog>
                   {(RenameDialog) =>
-                    recentPresentations
+                    items
                       // Map to get only records for current user (so presentation.history.records[0] is going to be the needed record)
                       .map((presentation) => ({
                         ...presentation,

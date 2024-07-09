@@ -1,9 +1,10 @@
+import type { ModeProps } from "~/pages/presentation/lib"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolbar"
 
-export function CursorMode() {
+export function CursorMode({ isActive }: ModeProps) {
   return (
-    <>
+    <div style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
       <ToolbarGroup>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -21,6 +22,6 @@ export function CursorMode() {
           <TooltipContent>Slide transition</TooltipContent>
         </Tooltip>
       </ToolbarGroup>
-    </>
+    </div>
   )
 }

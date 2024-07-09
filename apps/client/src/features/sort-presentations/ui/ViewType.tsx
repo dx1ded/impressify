@@ -4,7 +4,7 @@ import { setView } from "~/entities/presentation"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 export function ViewType() {
-  const { view } = useAppSelector((state) => state.recentPresentations)
+  const view = useAppSelector((state) => state.recentPresentations.view)
   const dispatch = useAppDispatch()
 
   return (

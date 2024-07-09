@@ -14,6 +14,7 @@ import { SelectTrigger as NativeSelectTrigger } from "@radix-ui/react-select"
 import { Fragment } from "react"
 
 import { changeTextProps, DEFAULT_FONT_LIST } from "~/entities/presentation"
+import type { ModeProps } from "~/pages/presentation/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 import {
   Select,
@@ -31,18 +32,14 @@ import { ColorPicker } from "~/shared/ui/ColorPicker"
 import { Counter } from "~/shared/ui/Counter"
 import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolbar"
 
-export function TextMode() {
-  const {
-    toolbar: { textProps },
-  } = useAppSelector((state) => state.presentation)
+export function TextMode({ isActive }: ModeProps) {
+  const textProps = useAppSelector((state) => state.presentation.toolbar.textProps)
   const dispatch = useAppDispatch()
 
   return (
-    <>
+    <div style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
       <ToolbarGroup>
-        <ColorPicker
-          defaultColor={textProps.fillColor}
-          onChange={(value) => dispatch(changeTextProps({ fillColor: value }))}>
+        <ColorPicker color={textProps.fillColor} onChange={(value) => dispatch(changeTextProps({ fillColor: value }))}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={PaintBucketIcon} />
@@ -51,7 +48,7 @@ export function TextMode() {
           </Tooltip>
         </ColorPicker>
         <ColorPicker
-          defaultColor={textProps.borderColor}
+          color={textProps.borderColor}
           onChange={(value) => dispatch(changeTextProps({ borderColor: value }))}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -64,7 +61,7 @@ export function TextMode() {
       <ToolbarSeparator />
       <ToolbarGroup>
         <Select
-          defaultValue={textProps.fontFamily}
+          value={textProps.fontFamily}
           onValueChange={(value) => dispatch(changeTextProps({ fontFamily: value }))}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -95,7 +92,7 @@ export function TextMode() {
       <ToolbarGroup>
         <Counter
           className="w-10"
-          defaultValue={textProps.fontSize}
+          value={textProps.fontSize}
           onChange={(value) => dispatch(changeTextProps({ fontSize: value }))}
         />
       </ToolbarGroup>
@@ -103,7 +100,7 @@ export function TextMode() {
       <ToggleGroup
         type="multiple"
         className="gap-2"
-        defaultValue={[
+        value={[
           textProps.bold ? "bold" : "",
           textProps.italic ? "italic" : "",
           textProps.underlined ? "underlined" : "",
@@ -141,9 +138,7 @@ export function TextMode() {
           </TooltipTrigger>
           <TooltipContent>Underlined (⌘+U)</TooltipContent>
         </Tooltip>
-        <ColorPicker
-          defaultColor={textProps.textColor}
-          onChange={(value) => dispatch(changeTextProps({ textColor: value }))}>
+        <ColorPicker color={textProps.textColor} onChange={(value) => dispatch(changeTextProps({ textColor: value }))}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={TypeIcon} />
@@ -154,13 +149,19 @@ export function TextMode() {
       </ToggleGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Select
-          defaultValue={textProps.alignment}
-          onValueChange={(value) => dispatch(changeTextProps({ alignment: value }))}>
+        <Select value={textProps.alignment} onValueChange={(value) => dispatch(changeTextProps({ alignment: value }))}>
           <Tooltip>
             <TooltipTrigger asChild>
               <NativeSelectTrigger asChild>
-                <ToolbarButton Icon={AlignLeftIcon} />
+                <ToolbarButton
+                  Icon={
+                    textProps.alignment === "left"
+                      ? AlignLeftIcon
+                      : textProps.alignment === "center"
+                        ? AlignCenterIcon
+                        : AlignRightIcon
+                  }
+                />
               </NativeSelectTrigger>
             </TooltipTrigger>
             <TooltipContent>Align</TooltipContent>
@@ -181,7 +182,7 @@ export function TextMode() {
           </SelectContent>
         </Select>
         <Select
-          defaultValue={`${textProps.lineHeight}`}
+          value={`${textProps.lineHeight}`}
           onValueChange={(value) => dispatch(changeTextProps({ lineHeight: +value }))}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -199,6 +200,6 @@ export function TextMode() {
           </SelectContent>
         </Select>
       </ToolbarGroup>
-    </>
+    </div>
   )
 }

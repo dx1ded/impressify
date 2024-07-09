@@ -152,3 +152,16 @@ export const getDefaultShapeConfig = (props: AddShapePayload): ShapeProps => ({
   strokeWidth: 0,
   proportional: props.type === "square" || props.type === "circle",
 })
+
+export const toolbarTextProps: (keyof TextProps)[] = [
+  "textColor",
+  "fillColor",
+  "borderColor",
+  "fontFamily",
+  "fontSize",
+  "bold",
+  "italic",
+  "underlined",
+  "alignment",
+  "lineHeight",
+]

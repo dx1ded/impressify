@@ -29,8 +29,6 @@ export function EditableTextInput({
   // textValue is created to avoid div rerender once the value is changed
   const textValue = useRef<string>(value)
 
-  const [style, weight] = fontStyle!.split(" ")
-
   // Autofocus on mount
   useEffect(() => {
     if (!divRef.current) return
@@ -43,6 +41,8 @@ export function EditableTextInput({
     selection.removeAllRanges()
     selection.addRange(range)
   }, [])
+
+  const [style, weight] = fontStyle!.split(" ")
 
   return (
     <Html groupProps={{ x, y, rotation }} divProps={{ style: { width: `${width}px`, height: `${height}px` } }}>

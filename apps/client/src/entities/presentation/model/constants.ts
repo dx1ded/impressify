@@ -25,3 +25,4 @@ export const SLIDE_WIDTH = 1156
 export const SLIDE_HEIGHT = 760
 
 export const DEFAULT_NAME = "New presentation"
+export const NOT_SELECTED = -1

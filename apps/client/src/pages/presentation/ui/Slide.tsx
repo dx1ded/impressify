@@ -1,4 +1,5 @@
-import { Layer, Stage } from "react-konva"
+import { Layer, Rect, Stage } from "react-konva"
+import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
 import { Stage as StageClass } from "konva/lib/Stage"
 import { Text as TextClass } from "konva/lib/shapes/Text"
@@ -10,17 +11,28 @@ import {
   changeTextProps,
   ElementWrapper,
   getElement,
-  setSelectedId,
+  resetToolbar,
+  setMode,
+  selectElement,
   SLIDE_HEIGHT,
   SLIDE_WIDTH,
+  NOT_SELECTED,
 } from "~/entities/presentation"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 export function Slide() {
-  const { presentation, currentSlide, toolbar, selectedId, isLoading } = useAppSelector((state) => state.presentation)
+  const slides = useAppSelector((state) => state.presentation.presentation.slides)
+  const { currentSlide, selectedId, isLoading, isEditing, mode } = useAppSelector(
+    (state) => ({
+      currentSlide: state.presentation.currentSlide,
+      selectedId: state.presentation.selectedId,
+      isLoading: state.presentation.isLoading,
+      isEditing: state.presentation.toolbar.textProps.isEditing,
+      mode: state.presentation.toolbar.mode,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
-
-  const slide = presentation.slides[currentSlide]
 
   const handleStageClick = (e: KonvaEventObject<MouseEvent>) => {
     const stage = e.target.getStage()
@@ -30,47 +42,47 @@ export function Slide() {
 
     // - Click logic -
 
-    if (toolbar.textProps.isEditing) return dispatch(changeTextProps({ isEditing: false }))
+    if (isEditing) return dispatch(changeTextProps({ isEditing: false }))
 
-    if (
-      e.target instanceof StageClass &&
-      toolbar.mode === "cursor" &&
-      !toolbar.textProps.isEditing &&
-      selectedId !== -1
-    ) {
+    if (e.target instanceof StageClass && !isEditing && selectedId !== NOT_SELECTED) {
       // dropping selected item (if something is selected)
-      return dispatch(setSelectedId(-1))
+      dispatch(selectElement(NOT_SELECTED))
+      dispatch(setMode("cursor"))
+      dispatch(resetToolbar())
+      return
     }
 
     if (
-      (e.target instanceof TextClass && toolbar.mode !== "text") ||
-      (e.target instanceof ImageClass && toolbar.mode !== "image") ||
-      (e.target instanceof ShapeClass && toolbar.mode !== "shape") ||
-      toolbar.mode === "cursor"
+      (e.target instanceof TextClass && mode !== "text") ||
+      (e.target instanceof ImageClass && mode !== "image") ||
+      (e.target instanceof ShapeClass && mode !== "shape") ||
+      mode === "cursor"
     )
       return
 
     dispatch(addElement({ x: pointerPosition.x, y: pointerPosition.y }))
   }
 
-  if (isLoading) return <p>Loading ...</p>
+  const slide = slides[currentSlide]
 
   return (
     <div className="flex flex-1 items-center justify-center">
       <Stage width={SLIDE_WIDTH} height={SLIDE_HEIGHT} className="border bg-white" onClick={handleStageClick}>
         <Layer>
-          {slide.elements.map((element, i) => (
-            <ElementWrapper
-              key={i}
-              Element={getElement(element)}
-              props={element}
-              mode={toolbar.mode}
-              isSelected={element.id === selectedId}
-              // Internal optimization here. `isEditing` is only needed for Text so for all the other Elements it's unnecessary to update
-              // So, when isEditing is updated, only Text elements are going to re-render (but not Image or Shape for example because it's always `false`)
-              isEditing={element.__typename === "Text" ? toolbar.textProps.isEditing : false}
-            />
-          ))}
+          {isLoading ? (
+            <Rect x={0} y={0} width={SLIDE_WIDTH} height={SLIDE_HEIGHT} fill="rgba(0, 0, 0, 0.025)" />
+          ) : (
+            slide.elements.map((element, i) => (
+              <ElementWrapper
+                key={i}
+                Element={getElement(element)}
+                props={element}
+                mode={mode}
+                isSelected={element.id === selectedId}
+                isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
+              />
+            ))
+          )}
         </Layer>
       </Stage>
     </div>

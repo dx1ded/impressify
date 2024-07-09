@@ -6,13 +6,15 @@ import {
   type AddTextPayload,
   type AddImagePayload,
   type AddShapePayload,
-  getDefaultTextConfig,
-  getDefaultImageConfig,
-  getDefaultShapeConfig,
   type ElementProps,
   type Mode,
   type Shapes,
   type TextEditProps,
+  NOT_SELECTED,
+  toolbarTextProps,
+  getDefaultShapeConfig,
+  getDefaultTextConfig,
+  getDefaultImageConfig,
 } from "~/entities/presentation"
 
 interface PresentationState {
@@ -39,23 +41,12 @@ const initialState: PresentationState = {
     mode: "cursor",
     shape: "line",
     textProps: {
-      ..._.pick(defaultTextConfig, [
-        "textColor",
-        "fillColor",
-        "borderColor",
-        "fontFamily",
-        "fontSize",
-        "bold",
-        "italic",
-        "underlined",
-        "alignment",
-        "lineHeight",
-      ]),
+      ..._.pick(defaultTextConfig, toolbarTextProps),
       isEditing: false,
     },
   },
   currentSlide: 0,
-  selectedId: -1,
+  selectedId: NOT_SELECTED,
   isLoading: true,
 }
 
@@ -68,9 +59,6 @@ const presentationSlice = createSlice({
     },
     setCurrentSlide: (state, { payload }: PayloadAction<number>) => {
       state.currentSlide = payload
-    },
-    setSelectedId: (state, { payload }: PayloadAction<number>) => {
-      state.selectedId = payload
     },
     setMode: (state, { payload }: PayloadAction<Mode>) => {
       state.toolbar.mode = payload
@@ -107,6 +95,18 @@ const presentationSlice = createSlice({
 
       state.selectedId = newEl!.id
     },
+    selectElement: (state, { payload }: PayloadAction<number>) => {
+      state.selectedId = payload
+      if (payload === NOT_SELECTED) return
+      // Changing toolbar values corresponding the element
+      const selectedItem = state.presentation.slides[state.currentSlide].elements.find((el) => el.id === payload)!
+      if (selectedItem.__typename === "Text") {
+        state.toolbar.textProps = {
+          isEditing: false,
+          ..._.pick(selectedItem, toolbarTextProps),
+        }
+      }
+    },
     editElement: (state, { payload }: PayloadAction<Partial<ElementProps>>) => {
       const slide = state.presentation.slides[state.currentSlide]
       slide.elements = slide.elements.map((element) =>
@@ -115,11 +115,14 @@ const presentationSlice = createSlice({
     },
     changeTextProps: (state, { payload }: PayloadAction<Partial<TextEditProps>>) => {
       state.toolbar.textProps = { ...state.toolbar.textProps, ...payload }
-      if (state.selectedId === -1) return
+      if (state.selectedId === NOT_SELECTED) return
       const slide = state.presentation.slides[state.currentSlide]
       slide.elements = slide.elements.map((element) =>
         element.id === state.selectedId ? { ...element, ...payload } : element,
       )
+    },
+    resetToolbar: (state) => {
+      state.toolbar.textProps = initialState.toolbar.textProps
     },
   },
 })
@@ -127,12 +130,13 @@ const presentationSlice = createSlice({
 export const {
   setPresentation,
   setCurrentSlide,
-  setSelectedId,
   setMode,
   setShape,
   setIsLoading,
   addElement,
+  selectElement,
   editElement,
   changeTextProps,
+  resetToolbar,
 } = presentationSlice.actions
 export const presentationReducer = presentationSlice.reducer
