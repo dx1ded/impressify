@@ -7,15 +7,14 @@ import {
   type ElementProps,
   type ElementComponent,
   type Mode,
-  type Shapes,
   imageProps,
   shapeProps,
   textProps,
   selectElement,
   editElement,
-  changeTextProps,
+  changeShapeProps,
   setMode,
-  setShape,
+  setIsEditing,
 } from "~/entities/presentation"
 import { useAppDispatch } from "~/shared/model"
 
@@ -26,6 +25,7 @@ interface ElementWrapperProps {
   props: ElementProps
   mode: Mode
   isSelected: boolean
+  isCreating: boolean
   isEditing: boolean
 }
 
@@ -34,6 +34,7 @@ export const ElementWrapper = memo(function ElementWrapper({
   props,
   mode,
   isSelected,
+  isCreating,
   isEditing,
 }: ElementWrapperProps) {
   const dispatch = useAppDispatch()
@@ -54,16 +55,13 @@ export const ElementWrapper = memo(function ElementWrapper({
 
   const selectElementHandler = () => {
     const type = props.__typename
-    // type is lowercased because __typename has first letter uppercased and modes are all lowercased
-    if (mode !== type?.toLowerCase() && mode !== "cursor") return
-    // Select element
-    if (!isSelected) dispatch(selectElement(props.id))
+    if (!isSelected && !isCreating) dispatch(selectElement(props.id))
     // After element is selected set a corresponding toolbar mode
     if (mode !== "text" && type === "Text") dispatch(setMode("text"))
     else if (mode !== "image" && type === "Image") dispatch(setMode("image"))
     else if (mode !== "shape" && type === "Shape") {
       dispatch(setMode("shape"))
-      dispatch(setShape(props.type as Shapes))
+      dispatch(changeShapeProps({ type: props.type }))
     }
   }
 
@@ -116,13 +114,27 @@ export const ElementWrapper = memo(function ElementWrapper({
             ? {
                 isEditing,
                 debouncedEdit,
-                onToggleEdit: (value: boolean) => dispatch(changeTextProps({ isEditing: value })),
+                onToggleEdit: (value: boolean) => dispatch(setIsEditing(value)),
               }
             : {})}
         />
         {isSelected && !isEditing && (
           <Transformer
             ref={trRef}
+            enabledAnchors={
+              props.__typename === "Shape" && props.type === "square"
+                ? ["top-left", "top-right", "bottom-left", "bottom-right"]
+                : [
+                    "top-left",
+                    "top-right",
+                    "bottom-left",
+                    "bottom-right",
+                    "middle-left",
+                    "middle-right",
+                    "bottom-center",
+                    "top-center",
+                  ]
+            }
             boundBoxFunc={(oldBox, newBox) =>
               Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5 ? oldBox : newBox
             }

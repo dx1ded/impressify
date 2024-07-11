@@ -17,9 +17,9 @@ export type Shapes = "line" | "square" | "rectangle" | "circle" | "arrow" | "sta
 export type ShapesConfig = RectConfig & LineConfig & CircleConfig & ArrowConfig & StarConfig
 
 export type Coordinates = { x: number; y: number }
-export type AddTextPayload = Coordinates
-export type AddImagePayload = Coordinates & { imageUrl: string }
-export type AddShapePayload = Coordinates & { type: string }
+export type AddTextProps = Coordinates & TextEditProps
+export type AddImageProps = Coordinates & ImageEditProps
+export type AddShapeProps = Coordinates & ShapeEditProps
 
 export type ElementProps = Presentation["slides"][number]["elements"][number]
 
@@ -39,7 +39,9 @@ export type TextEditProps = Pick<
   | "underlined"
   | "alignment"
   | "lineHeight"
-> & { isEditing: boolean }
+>
+export type ImageEditProps = Pick<ImageProps, "imageUrl">
+export type ShapeEditProps = Pick<ShapeProps, "type" | "fillColor" | "strokeColor" | "strokeWidth">
 
 export type ElementComponent =
   | typeof EditableText

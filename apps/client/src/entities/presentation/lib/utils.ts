@@ -10,22 +10,20 @@ import {
 import type { ImageConfig } from "konva/lib/shapes/Image"
 
 import {
-  type AddImagePayload,
-  type AddShapePayload,
-  type AddTextPayload,
-  DEFAULT_BORDER_COLOR,
-  DEFAULT_FILL_COLOR,
-  DEFAULT_FONT_FAMILY,
-  DEFAULT_FONT_SIZE,
-  DEFAULT_STROKE_COLOR,
-  DEFAULT_TEXT_COLOR,
-  DEFAULT_TEXT_HEIGHT,
-  DEFAULT_TEXT_WIDTH,
+  type AddImageProps,
+  type AddShapeProps,
+  type AddTextProps,
   type ElementProps,
   type ImageProps,
   type ShapeProps,
   type ShapesConfig,
   type TextProps,
+  DEFAULT_IMAGE_HEIGHT,
+  DEFAULT_IMAGE_WIDTH,
+  DEFAULT_SHAPE_HEIGHT,
+  DEFAULT_SHAPE_WIDTH,
+  DEFAULT_TEXT_HEIGHT,
+  DEFAULT_TEXT_WIDTH,
 } from "~/entities/presentation"
 import { ptToPx } from "~/shared/lib"
 import { EditableText, type EditableTextConfig } from "~/shared/ui/EditableText"
@@ -75,8 +73,11 @@ export const shapeProps = (props: ElementProps): ShapesConfig => {
       strokeWidth: props.strokeWidth,
     }
 
-    if (props.type === "arrow") {
-      return { ...commonProps, points: [0, 0, props.width / 2, props.height / 2] } as ShapesConfig
+    if (props.type === "line" || props.type === "arrow") {
+      return { ...commonProps, points: [0, props.height / 2, props.width, props.height / 2] } as ShapesConfig
+    }
+    if (props.type === "star") {
+      return { ...commonProps, numPoints: 5, innerRadius: 30, outerRadius: 70 } as ShapesConfig
     }
 
     return commonProps as ShapesConfig
@@ -100,68 +101,43 @@ export const getElement = (element: ElementProps) => {
             : KonvaStar
 }
 
-export const getDefaultTextConfig = (props: AddTextPayload): TextProps => ({
+export const getTextConfig = (props: AddTextProps): TextProps => ({
   __typename: "Text",
   id: Math.random(),
-  x: props.x,
-  y: props.y,
   width: DEFAULT_TEXT_WIDTH,
   height: DEFAULT_TEXT_HEIGHT,
   angle: 0,
   scaleX: 1,
   scaleY: 1,
   text: "",
-  textColor: DEFAULT_TEXT_COLOR,
-  fillColor: DEFAULT_FILL_COLOR,
-  borderColor: DEFAULT_BORDER_COLOR,
-  fontFamily: DEFAULT_FONT_FAMILY,
-  fontSize: DEFAULT_FONT_SIZE,
-  bold: false,
-  italic: false,
-  underlined: false,
-  alignment: "left",
-  lineHeight: 1,
+  ...props,
+  x: props.x - DEFAULT_TEXT_WIDTH / 2,
+  y: props.y - DEFAULT_TEXT_HEIGHT / 2,
 })
 
-export const getDefaultImageConfig = (props: AddImagePayload): ImageProps => ({
+export const getImageConfig = (props: AddImageProps): ImageProps => ({
   __typename: "Image",
   id: Math.random(),
-  imageUrl: props.imageUrl,
-  x: props.x,
-  y: props.y,
-  width: 200,
-  height: 200,
+  width: DEFAULT_IMAGE_WIDTH,
+  height: DEFAULT_IMAGE_HEIGHT,
   angle: 0,
   scaleX: 1,
   scaleY: 1,
+  ...props,
+  x: props.x - DEFAULT_IMAGE_WIDTH / 2,
+  y: props.y - DEFAULT_IMAGE_HEIGHT / 2,
 })
 
-export const getDefaultShapeConfig = (props: AddShapePayload): ShapeProps => ({
+export const getShapeConfig = (props: AddShapeProps): ShapeProps => ({
   __typename: "Shape",
   id: Math.random(),
-  type: props.type,
-  x: props.x,
-  y: props.y,
-  width: 200,
-  height: 200,
+  width: DEFAULT_SHAPE_WIDTH,
+  height: DEFAULT_SHAPE_HEIGHT,
   angle: 0,
   scaleX: 1,
   scaleY: 1,
-  fillColor: "#000",
-  strokeColor: "#000",
-  strokeWidth: 0,
   proportional: props.type === "square" || props.type === "circle",
+  ...props,
+  x: props.type === "circle" || props.type === "star" ? props.x : props.x - DEFAULT_SHAPE_WIDTH / 2,
+  y: props.type === "circle" || props.type === "star" ? props.y : props.y - DEFAULT_SHAPE_HEIGHT / 2,
 })
-
-export const toolbarTextProps: (keyof TextProps)[] = [
-  "textColor",
-  "fillColor",
-  "borderColor",
-  "fontFamily",
-  "fontSize",
-  "bold",
-  "italic",
-  "underlined",
-  "alignment",
-  "lineHeight",
-]
