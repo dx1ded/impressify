@@ -1,5 +1,11 @@
-import type { ReactNode } from "react"
+import type { ComponentPropsWithoutRef } from "react"
 
-export function ToolbarGroup({ children }: { children: ReactNode }) {
-  return <div className="flex items-center gap-2">{children}</div>
+import { cn } from "~/shared/lib"
+
+export function ToolbarGroup({ children, className, ...props }: ComponentPropsWithoutRef<"div">) {
+  return (
+    <div className={cn("flex items-center gap-2", className)} {...props}>
+      {children}
+    </div>
+  )
 }

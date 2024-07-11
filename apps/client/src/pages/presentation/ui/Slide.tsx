@@ -20,7 +20,7 @@ import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 export function Slide() {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const { currentSlide, selectedId, isLoading, isCreating, isEditing, mode } = useAppSelector(
+  const { currentSlide, selectedId, isLoading, isCreating, isEditing, mode, imageHeight } = useAppSelector(
     (state) => ({
       currentSlide: state.presentation.currentSlide,
       selectedId: state.presentation.selectedId,
@@ -28,6 +28,7 @@ export function Slide() {
       isCreating: state.presentation.isCreating,
       isEditing: state.presentation.isEditing,
       mode: state.presentation.toolbar.mode,
+      imageHeight: state.presentation.toolbar.imageProps.height,
     }),
     shallowEqual,
   )
@@ -52,7 +53,14 @@ export function Slide() {
     }
 
     if (isCreating) {
-      dispatch(addElement({ x: pointerPosition.x, y: pointerPosition.y }))
+      dispatch(
+        addElement({
+          x: pointerPosition.x,
+          y: pointerPosition.y,
+          // Height will be ignored for Text and Shape but used for Image only
+          height: imageHeight,
+        }),
+      )
       dispatch(setIsCreating(false))
     }
   }
@@ -61,7 +69,12 @@ export function Slide() {
 
   return (
     <div className="flex flex-1 items-center justify-center">
-      <Stage width={SLIDE_WIDTH} height={SLIDE_HEIGHT} className="border bg-white" onClick={handleStageClick}>
+      <Stage
+        width={SLIDE_WIDTH}
+        height={SLIDE_HEIGHT}
+        className="border bg-white"
+        style={{ cursor: isCreating ? "crosshair" : "default" }}
+        onClick={handleStageClick}>
         <Layer>
           {isLoading ? (
             <Rect x={0} y={0} width={SLIDE_WIDTH} height={SLIDE_HEIGHT} fill="rgba(0, 0, 0, 0.025)" />

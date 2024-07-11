@@ -18,7 +18,11 @@ import {
   resetToolbar,
   NOT_SELECTED,
   setIsCreating,
+  changeImageProps,
+  DEFAULT_IMAGE_WIDTH,
+  selectElement,
 } from "~/entities/presentation"
+import { convertFileToDataUrl, getNormalizedImageHeight } from "~/shared/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton } from "~/shared/ui/Toolbar"
@@ -43,6 +47,26 @@ export function Mode() {
     dispatch(setMode(newMode))
     if (newMode !== "cursor") dispatch(setIsCreating(true))
     if (newMode === "cursor" && selectedId === NOT_SELECTED) dispatch(resetToolbar())
+    // selecting image file
+    // I made it here as an element creating because ToolbarGroupItem calls e.preventDefault() and file selection doesn't appear
+    if (newMode === "image") {
+      const _ = document.createElement("input")
+      _.type = "file"
+      _.accept = "image/*"
+      _.click()
+      _.onchange = async (e) => {
+        const target = e.target as HTMLInputElement
+        if (!target.files?.length) return
+        const dataUrl = await convertFileToDataUrl(target.files[0])
+        const height = await getNormalizedImageHeight(dataUrl, DEFAULT_IMAGE_WIDTH)
+        dispatch(selectElement(NOT_SELECTED))
+        dispatch(changeImageProps({ imageUrl: dataUrl, height }))
+      }
+      _.oncancel = () => {
+        dispatch(setMode("cursor"))
+        dispatch(setIsCreating(false))
+      }
+    }
   }
 
   const shapesChangeHandler = (type: string) => {

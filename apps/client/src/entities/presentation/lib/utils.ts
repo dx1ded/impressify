@@ -18,7 +18,6 @@ import {
   type ShapeProps,
   type ShapesConfig,
   type TextProps,
-  DEFAULT_IMAGE_HEIGHT,
   DEFAULT_IMAGE_WIDTH,
   DEFAULT_SHAPE_HEIGHT,
   DEFAULT_SHAPE_WIDTH,
@@ -62,7 +61,7 @@ export const imageProps = (props: ElementProps): ImageConfig => {
   if (props.__typename !== "Image") return {} as ImageConfig
   const image = new Image()
   image.src = props.imageUrl
-  return { image }
+  return { image, height: props.height }
 }
 
 export const shapeProps = (props: ElementProps): ShapesConfig => {
@@ -102,6 +101,8 @@ export const getElement = (element: ElementProps) => {
 }
 
 export const getTextConfig = (props: AddTextProps): TextProps => ({
+  // Leave ...props on top because `height` (which is used for Image) is going to be 0
+  ...props,
   __typename: "Text",
   id: Math.random(),
   width: DEFAULT_TEXT_WIDTH,
@@ -110,25 +111,25 @@ export const getTextConfig = (props: AddTextProps): TextProps => ({
   scaleX: 1,
   scaleY: 1,
   text: "",
-  ...props,
   x: props.x - DEFAULT_TEXT_WIDTH / 2,
   y: props.y - DEFAULT_TEXT_HEIGHT / 2,
 })
 
 export const getImageConfig = (props: AddImageProps): ImageProps => ({
+  ...props,
   __typename: "Image",
   id: Math.random(),
   width: DEFAULT_IMAGE_WIDTH,
-  height: DEFAULT_IMAGE_HEIGHT,
   angle: 0,
   scaleX: 1,
   scaleY: 1,
-  ...props,
   x: props.x - DEFAULT_IMAGE_WIDTH / 2,
-  y: props.y - DEFAULT_IMAGE_HEIGHT / 2,
+  y: props.y - props.height / 2,
 })
 
 export const getShapeConfig = (props: AddShapeProps): ShapeProps => ({
+  // Leave ...props on top because `height` (which is used for Image) is going to be 0
+  ...props,
   __typename: "Shape",
   id: Math.random(),
   width: DEFAULT_SHAPE_WIDTH,
@@ -137,7 +138,6 @@ export const getShapeConfig = (props: AddShapeProps): ShapeProps => ({
   scaleX: 1,
   scaleY: 1,
   proportional: props.type === "square" || props.type === "circle",
-  ...props,
   x: props.type === "circle" || props.type === "star" ? props.x : props.x - DEFAULT_SHAPE_WIDTH / 2,
   y: props.type === "circle" || props.type === "star" ? props.y : props.y - DEFAULT_SHAPE_HEIGHT / 2,
 })

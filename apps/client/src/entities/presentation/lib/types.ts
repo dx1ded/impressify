@@ -17,6 +17,7 @@ export type Shapes = "line" | "square" | "rectangle" | "circle" | "arrow" | "sta
 export type ShapesConfig = RectConfig & LineConfig & CircleConfig & ArrowConfig & StarConfig
 
 export type Coordinates = { x: number; y: number }
+export type AddElementPayload = Coordinates & { height: number }
 export type AddTextProps = Coordinates & TextEditProps
 export type AddImageProps = Coordinates & ImageEditProps
 export type AddShapeProps = Coordinates & ShapeEditProps
@@ -40,7 +41,7 @@ export type TextEditProps = Pick<
   | "alignment"
   | "lineHeight"
 >
-export type ImageEditProps = Pick<ImageProps, "imageUrl">
+export type ImageEditProps = Pick<ImageProps, "imageUrl" | "height">
 export type ShapeEditProps = Pick<ShapeProps, "type" | "fillColor" | "strokeColor" | "strokeWidth">
 
 export type ElementComponent =

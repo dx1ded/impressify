@@ -12,29 +12,25 @@ export function ShapeMode({ isActive }: ModeProps) {
   const dispatch = useAppDispatch()
 
   return (
-    <div style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
-      <ToolbarGroup>
-        <ColorPicker
-          color={shapeProps.fillColor}
-          onChange={(value) => dispatch(changeShapeProps({ fillColor: value }))}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarButton Icon={PaintBucketIcon} />
-            </TooltipTrigger>
-            <TooltipContent>Fill color</TooltipContent>
-          </Tooltip>
-        </ColorPicker>
-        <ColorPicker
-          color={shapeProps.strokeColor}
-          onChange={(value) => dispatch(changeShapeProps({ strokeColor: value }))}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ToolbarButton Icon={PencilIcon} />
-            </TooltipTrigger>
-            <TooltipContent>Stroke color</TooltipContent>
-          </Tooltip>
-        </ColorPicker>
-      </ToolbarGroup>
-    </div>
+    <ToolbarGroup style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
+      <ColorPicker color={shapeProps.fillColor} onChange={(value) => dispatch(changeShapeProps({ fillColor: value }))}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ToolbarButton Icon={PaintBucketIcon} />
+          </TooltipTrigger>
+          <TooltipContent>Fill color</TooltipContent>
+        </Tooltip>
+      </ColorPicker>
+      <ColorPicker
+        color={shapeProps.strokeColor}
+        onChange={(value) => dispatch(changeShapeProps({ strokeColor: value }))}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <ToolbarButton Icon={PencilIcon} />
+          </TooltipTrigger>
+          <TooltipContent>Stroke color</TooltipContent>
+        </Tooltip>
+      </ColorPicker>
+    </ToolbarGroup>
   )
 }

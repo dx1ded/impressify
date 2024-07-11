@@ -5,7 +5,7 @@ import {
   type Presentation,
   type ElementProps,
   type Mode,
-  type Coordinates,
+  type AddElementPayload,
   type TextEditProps,
   type ImageEditProps,
   type ShapeEditProps,
@@ -59,6 +59,7 @@ const initialState: PresentationState = {
     },
     imageProps: {
       imageUrl: "",
+      height: 0,
     },
     shapeProps: {
       type: "line",
@@ -101,7 +102,7 @@ const presentationSlice = createSlice({
     setIsEditing: (state, { payload }: PayloadAction<boolean>) => {
       state.isEditing = payload
     },
-    addElement: (state, { payload }: PayloadAction<Coordinates>) => {
+    addElement: (state, { payload }: PayloadAction<AddElementPayload>) => {
       const slide = state.presentation.slides[state.currentSlide]
       let newEl
 
