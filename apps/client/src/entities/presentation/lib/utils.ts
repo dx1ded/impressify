@@ -74,7 +74,7 @@ export const shapeProps = (props: ElementProps): ShapesConfig => {
     }
 
     if (props.type === "line" || props.type === "arrow") {
-      return { ...commonProps, points: [0, 0, props.width, 0], closed: true } as ShapesConfig
+      return { ...commonProps, points: [0, 0, props.width, 0] } as ShapesConfig
     }
     if (props.type === "star") {
       return { ...commonProps, numPoints: 5, innerRadius: 30, outerRadius: 70 } as ShapesConfig
@@ -99,6 +99,23 @@ export const getElement = (element: ElementProps) => {
           : element.type === "arrow"
             ? KonvaArrow
             : KonvaStar
+}
+
+export const getAnchors = (element: ElementProps) => {
+  if (element.__typename === "Shape") {
+    if (element.proportional) return ["top-left", "top-right", "bottom-left", "bottom-right"]
+    if (element.type === "arrow" || element.type === "line") return ["middle-left", "middle-right"]
+  }
+  return [
+    "top-left",
+    "top-right",
+    "bottom-left",
+    "bottom-right",
+    "middle-left",
+    "middle-right",
+    "bottom-center",
+    "top-center",
+  ]
 }
 
 export const getTextConfig = (props: AddTextProps): TextProps => ({
@@ -139,6 +156,6 @@ export const getShapeConfig = (props: AddShapeProps): ShapeProps => ({
   scaleX: 1,
   scaleY: 1,
   proportional: props.type === "square" || props.type === "circle",
-  x: props.type === "circle" || props.type === "star" ? props.x : props.x - DEFAULT_SHAPE_WIDTH / 2,
-  y: props.type === "circle" || props.type === "star" ? props.y : props.y - DEFAULT_SHAPE_HEIGHT / 2,
+  x: ["circle", "star"].includes(props.type) ? props.x : props.x - DEFAULT_SHAPE_WIDTH / 2,
+  y: ["circle", "star", "line", "arrow"].includes(props.type) ? props.y : props.y - DEFAULT_SHAPE_HEIGHT / 2,
 })

@@ -18,6 +18,9 @@ export const DEFAULT_BORDER_COLOR = "transparent"
 
 export const DEFAULT_STROKE_WIDTH = 2
 
+export const MIN_ELEMENT_WIDTH = 50
+export const MIN_ELEMENT_HEIGHT = 50
+
 export const DEFAULT_TEXT_WIDTH = 180
 export const DEFAULT_TEXT_HEIGHT = 60
 

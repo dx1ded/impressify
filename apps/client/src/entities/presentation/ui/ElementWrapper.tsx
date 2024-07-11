@@ -1,4 +1,4 @@
-import type { Arrow } from "konva/lib/shapes/Arrow"
+import type { KonvaEventObject } from "konva/lib/Node"
 import { memo, useEffect, useRef } from "react"
 import { Transformer } from "react-konva"
 import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
@@ -16,6 +16,9 @@ import {
   changeShapeProps,
   setMode,
   setIsEditing,
+  getAnchors,
+  MIN_ELEMENT_WIDTH,
+  MIN_ELEMENT_HEIGHT,
 } from "~/entities/presentation"
 import { useAppDispatch } from "~/shared/model"
 
@@ -54,6 +57,22 @@ export const ElementWrapper = memo(function ElementWrapper({
     dispatch(editElement({ ...newProps, id: props.id }))
   }, DEBOUNCE_EDIT_TIME)
 
+  const transformElement = (e: KonvaEventObject<Event>) => {
+    debouncedEdit({
+      x: e.target.x(),
+      y: e.target.y(),
+      width: e.target.width(),
+      height: e.target.height(),
+      angle: e.target.rotation(),
+      ...(props.__typename !== "Text"
+        ? {
+            scaleX: e.target.scaleX(),
+            scaleY: e.target.scaleY(),
+          }
+        : {}),
+    })
+  }
+
   const selectElementHandler = () => {
     const type = props.__typename
     if (isCreating) return
@@ -76,6 +95,8 @@ export const ElementWrapper = memo(function ElementWrapper({
           y={props.y}
           width={props.width}
           height={props.height}
+          scaleX={props.scaleX}
+          scaleY={props.scaleY}
           rotation={props.angle}
           {...textProps(props)}
           {...imageProps(props)}
@@ -83,39 +104,20 @@ export const ElementWrapper = memo(function ElementWrapper({
           draggable
           onClick={selectElementHandler}
           onDragStart={selectElementHandler}
-          onDragEnd={(e) =>
-            /*
-              I'm using the same props (width / height / angle) as for onTransformEnd (and vice versa) because since the function is debounced,
-              the previous transformation / drag might be lost. That's why, I need to get the most recent properties for the `ref`
-            */
-            debouncedEdit({
-              x: e.target.x(),
-              y: e.target.y(),
-              width: e.target.width(),
-              height: e.target.height(),
-              angle: e.target.rotation(),
-            })
-          }
+          onDragEnd={transformElement}
+          onTransformEnd={transformElement}
           onTransform={(e) => {
+            /*
+              Transform by default changes scaleX and scaleY instead of width and height. We don't want textbox to have
+              scaleX and scaleY, so we only change its width and height and then reset the scales.
+            */
+            if (props.__typename !== "Text") return
             const node = e.target
             node.width(node.width() * node.scaleX())
             node.height(node.height() * node.scaleY())
             node.scaleX(1)
             node.scaleY(1)
-            if (props.__typename === "Shape" && props.type === "arrow") {
-              const _node = node as Arrow
-              console.log(_node.getAbsoluteTransform())
-            }
           }}
-          onTransformEnd={(e) =>
-            debouncedEdit({
-              x: e.target.x(),
-              y: e.target.y(),
-              width: e.target.width(),
-              height: e.target.height(),
-              angle: e.target.rotation(),
-            })
-          }
           {...(props.__typename === "Text"
             ? {
                 isEditing,
@@ -128,24 +130,14 @@ export const ElementWrapper = memo(function ElementWrapper({
           <Transformer
             ref={trRef}
             flipEnabled={false}
-            enabledAnchors={
-              props.__typename === "Shape" && props.proportional
-                ? ["top-left", "top-right", "bottom-left", "bottom-right"]
-                : props.__typename === "Shape" && props.type === "line"
-                  ? ["middle-left", "middle-right"]
-                  : [
-                      "top-left",
-                      "top-right",
-                      "bottom-left",
-                      "bottom-right",
-                      "middle-left",
-                      "middle-right",
-                      "bottom-center",
-                      "top-center",
-                    ]
-            }
+            enabledAnchors={getAnchors(props)}
             boundBoxFunc={(oldBox, newBox) =>
-              Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5 ? oldBox : newBox
+              Math.abs(newBox.width) < MIN_ELEMENT_WIDTH ||
+              (props.__typename === "Shape" && (props.type === "line" || props.type === "arrow")
+                ? false
+                : Math.abs(newBox.height) < MIN_ELEMENT_HEIGHT)
+                ? oldBox
+                : newBox
             }
           />
         )}
