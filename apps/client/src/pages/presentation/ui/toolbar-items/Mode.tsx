@@ -45,8 +45,13 @@ export function Mode() {
   const changeHandler = (newMode: IMode | "") => {
     if (newMode === "") return
     dispatch(setMode(newMode))
-    if (newMode !== "cursor") dispatch(setIsCreating(true))
-    if (newMode === "cursor" && selectedId === NOT_SELECTED) dispatch(resetToolbar())
+
+    if (newMode !== "cursor" && !isCreating) dispatch(setIsCreating(true))
+    else if (newMode === "cursor") {
+      dispatch(setIsCreating(false))
+      if (selectedId === NOT_SELECTED) dispatch(resetToolbar())
+    }
+
     // selecting image file
     // I made it here as an element creating because ToolbarGroupItem calls e.preventDefault() and file selection doesn't appear
     if (newMode === "image") {
@@ -71,6 +76,7 @@ export function Mode() {
 
   const shapesChangeHandler = (type: string) => {
     if (shape !== type) {
+      dispatch(selectElement(NOT_SELECTED))
       dispatch(changeShapeProps({ type }))
       dispatch(setIsCreating(true))
     }

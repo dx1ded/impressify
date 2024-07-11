@@ -23,6 +23,7 @@ import {
   DEFAULT_SHAPE_WIDTH,
   DEFAULT_TEXT_HEIGHT,
   DEFAULT_TEXT_WIDTH,
+  DEFAULT_STROKE_WIDTH,
 } from "~/entities/presentation"
 import { ptToPx } from "~/shared/lib"
 import { EditableText, type EditableTextConfig } from "~/shared/ui/EditableText"
@@ -73,7 +74,7 @@ export const shapeProps = (props: ElementProps): ShapesConfig => {
     }
 
     if (props.type === "line" || props.type === "arrow") {
-      return { ...commonProps, points: [0, props.height / 2, props.width, props.height / 2] } as ShapesConfig
+      return { ...commonProps, points: [0, 0, props.width, 0], closed: true } as ShapesConfig
     }
     if (props.type === "star") {
       return { ...commonProps, numPoints: 5, innerRadius: 30, outerRadius: 70 } as ShapesConfig
@@ -133,7 +134,7 @@ export const getShapeConfig = (props: AddShapeProps): ShapeProps => ({
   __typename: "Shape",
   id: Math.random(),
   width: DEFAULT_SHAPE_WIDTH,
-  height: DEFAULT_SHAPE_HEIGHT,
+  height: props.type === "line" || props.type === "arrow" ? DEFAULT_STROKE_WIDTH : DEFAULT_SHAPE_HEIGHT,
   angle: 0,
   scaleX: 1,
   scaleY: 1,

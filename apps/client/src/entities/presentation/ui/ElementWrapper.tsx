@@ -1,3 +1,4 @@
+import type { Arrow } from "konva/lib/shapes/Arrow"
 import { memo, useEffect, useRef } from "react"
 import { Transformer } from "react-konva"
 import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
@@ -55,7 +56,8 @@ export const ElementWrapper = memo(function ElementWrapper({
 
   const selectElementHandler = () => {
     const type = props.__typename
-    if (!isSelected && !isCreating) dispatch(selectElement(props.id))
+    if (isCreating) return
+    if (!isSelected) dispatch(selectElement(props.id))
     // After element is selected set a corresponding toolbar mode
     if (mode !== "text" && type === "Text") dispatch(setMode("text"))
     else if (mode !== "image" && type === "Image") dispatch(setMode("image"))
@@ -100,6 +102,10 @@ export const ElementWrapper = memo(function ElementWrapper({
             node.height(node.height() * node.scaleY())
             node.scaleX(1)
             node.scaleY(1)
+            if (props.__typename === "Shape" && props.type === "arrow") {
+              const _node = node as Arrow
+              console.log(_node.getAbsoluteTransform())
+            }
           }}
           onTransformEnd={(e) =>
             debouncedEdit({
@@ -121,19 +127,22 @@ export const ElementWrapper = memo(function ElementWrapper({
         {isSelected && !isEditing && (
           <Transformer
             ref={trRef}
+            flipEnabled={false}
             enabledAnchors={
-              props.__typename === "Shape" && props.type === "square"
+              props.__typename === "Shape" && props.proportional
                 ? ["top-left", "top-right", "bottom-left", "bottom-right"]
-                : [
-                    "top-left",
-                    "top-right",
-                    "bottom-left",
-                    "bottom-right",
-                    "middle-left",
-                    "middle-right",
-                    "bottom-center",
-                    "top-center",
-                  ]
+                : props.__typename === "Shape" && props.type === "line"
+                  ? ["middle-left", "middle-right"]
+                  : [
+                      "top-left",
+                      "top-right",
+                      "bottom-left",
+                      "bottom-right",
+                      "middle-left",
+                      "middle-right",
+                      "bottom-center",
+                      "top-center",
+                    ]
             }
             boundBoxFunc={(oldBox, newBox) =>
               Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5 ? oldBox : newBox
