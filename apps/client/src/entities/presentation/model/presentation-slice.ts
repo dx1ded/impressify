@@ -102,6 +102,21 @@ const presentationSlice = createSlice({
     setIsEditing: (state, { payload }: PayloadAction<boolean>) => {
       state.isEditing = payload
     },
+    setBackground: (state, { payload }: PayloadAction<string>) => {
+      state.presentation.slides = state.presentation.slides.map((slide, i) =>
+        i === state.currentSlide ? { ...slide, bgColor: payload } : slide,
+      )
+    },
+    setTransition: (state, { payload }: PayloadAction<string>) => {
+      state.presentation.slides = state.presentation.slides.map((slide, i) =>
+        i === state.currentSlide ? { ...slide, transition: payload } : slide,
+      )
+    },
+    setThumbnail: (state, { payload }: PayloadAction<string>) => {
+      state.presentation.slides = state.presentation.slides.map((slide, i) =>
+        i === state.currentSlide ? { ...slide, thumbnailUrl: payload } : slide,
+      )
+    },
     addElement: (state, { payload }: PayloadAction<AddElementPayload>) => {
       const slide = state.presentation.slides[state.currentSlide]
       let newEl
@@ -177,6 +192,9 @@ export const {
   setIsLoading,
   setIsCreating,
   setIsEditing,
+  setBackground,
+  setTransition,
+  setThumbnail,
   addElement,
   selectElement,
   editElement,

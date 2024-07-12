@@ -19,6 +19,12 @@ export class Slide implements ISlide {
   presentation: Relation<Presentation>
 
   @Column()
+  bgColor: string
+
+  @Column()
+  transition: string
+
+  @Column()
   thumbnailUrl: string
 
   @CreateDateColumn()
@@ -27,6 +33,8 @@ export class Slide implements ISlide {
   constructor(presentation: Relation<Presentation>) {
     this.id = nanoid(8)
     this.presentation = presentation
+    this.bgColor = "rgb(255, 255, 255)"
+    this.transition = "none"
     // Plain white background
     this.thumbnailUrl =
       "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/erDEdIAAAAASUVORK5CYII="

@@ -29,8 +29,10 @@ export const GET_PRESENTATION = gql(`#graphql
       id
       name
       slides {
-        thumbnailUrl
         id
+        bgColor
+        transition
+        thumbnailUrl
         elements {
           id
           x

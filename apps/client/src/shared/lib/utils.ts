@@ -13,6 +13,16 @@ export function ptToPx(pt: number) {
   return pt * 1.333
 }
 
+export function isColor(str: string) {
+  return str.startsWith("rgb") || str.startsWith("#")
+}
+
+export function createImage(url: string) {
+  const img = new Image()
+  img.src = url
+  return img
+}
+
 export function convertFileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader()

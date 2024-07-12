@@ -11,9 +11,10 @@ export const DEFAULT_FONT_LIST = [
 ]
 export const DEFAULT_FONT_FAMILY = "Arial"
 
-export const DEFAULT_TEXT_COLOR = "black"
+export const DEFAULT_BG_COLOR = "rgb(255, 255, 255)"
+export const DEFAULT_TEXT_COLOR = "rgb(0, 0, 0)"
 export const DEFAULT_FILL_COLOR = "transparent"
-export const DEFAULT_STROKE_COLOR = "black"
+export const DEFAULT_STROKE_COLOR = "rgb(0, 0, 0)"
 export const DEFAULT_BORDER_COLOR = "transparent"
 
 export const DEFAULT_STROKE_WIDTH = 2

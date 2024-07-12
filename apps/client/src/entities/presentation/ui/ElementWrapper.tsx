@@ -11,12 +11,12 @@ import {
   imageProps,
   shapeProps,
   textProps,
+  getAnchors,
   selectElement,
   editElement,
   changeShapeProps,
   setMode,
   setIsEditing,
-  getAnchors,
   MIN_ELEMENT_WIDTH,
   MIN_ELEMENT_HEIGHT,
 } from "~/entities/presentation"

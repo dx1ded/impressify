@@ -2,6 +2,7 @@ import { SelectTrigger, SelectItem } from "@radix-ui/react-select"
 import { TooltipTrigger } from "@radix-ui/react-tooltip"
 import { memo, type ReactNode, useMemo } from "react"
 
+import { isColor } from "~/shared/lib"
 import { Button } from "~/shared/ui-kit/button"
 import { Select, SelectContent } from "~/shared/ui-kit/select"
 import { Tooltip, TooltipContent } from "~/shared/ui-kit/tooltip"
@@ -43,7 +44,7 @@ export const ColorPicker = memo(function ColorPicker({ color, children, onChange
       <SelectTrigger asChild>
         <div className="relative">
           {children}
-          <div className="absolute -bottom-0.5 h-1 w-full" style={{ backgroundColor: color }} />
+          {isColor(color) && <div className="absolute -bottom-0.5 h-1 w-full" style={{ backgroundColor: color }} />}
         </div>
       </SelectTrigger>
       <SelectContent>

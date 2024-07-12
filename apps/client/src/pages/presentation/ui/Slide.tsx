@@ -16,6 +16,7 @@ import {
   NOT_SELECTED,
   setIsCreating,
 } from "~/entities/presentation"
+import { createImage, isColor } from "~/shared/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 export function Slide() {
@@ -72,24 +73,38 @@ export function Slide() {
       <Stage
         width={SLIDE_WIDTH}
         height={SLIDE_HEIGHT}
-        className="border bg-white"
-        style={{ cursor: isCreating ? "crosshair" : "default" }}
+        className="border"
+        style={{
+          cursor: isCreating ? "crosshair" : "default",
+        }}
         onClick={handleStageClick}>
         <Layer>
           {isLoading ? (
             <Rect x={0} y={0} width={SLIDE_WIDTH} height={SLIDE_HEIGHT} fill="rgba(0, 0, 0, 0.025)" />
           ) : (
-            slide.elements.map((element, i) => (
-              <ElementWrapper
-                key={i}
-                Element={getElement(element)}
-                props={element}
-                mode={mode}
-                isSelected={element.id === selectedId}
-                isCreating={isCreating}
-                isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
+            <>
+              <Rect
+                x={0}
+                y={0}
+                width={SLIDE_WIDTH}
+                height={SLIDE_HEIGHT}
+                listening={false}
+                {...(isColor(slide.bgColor)
+                  ? { fill: slide.bgColor }
+                  : { fillPatternImage: createImage(slide.bgColor) })}
               />
-            ))
+              {slide.elements.map((element, i) => (
+                <ElementWrapper
+                  key={i}
+                  Element={getElement(element)}
+                  props={element}
+                  mode={mode}
+                  isSelected={element.id === selectedId}
+                  isCreating={isCreating}
+                  isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
+                />
+              ))}
+            </>
           )}
         </Layer>
       </Stage>

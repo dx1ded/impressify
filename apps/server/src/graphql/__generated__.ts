@@ -147,11 +147,13 @@ export type Shape = Element & {
 
 export type Slide = {
   __typename?: 'Slide';
+  bgColor: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   elements: Array<Element>;
   id: Scalars['ID']['output'];
   presentation: Presentation;
   thumbnailUrl: Scalars['String']['output'];
+  transition: Scalars['String']['output'];
 };
 
 export type Text = Element & {
@@ -389,11 +391,13 @@ export type ShapeResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type SlideResolvers<ContextType = any, ParentType extends ResolversParentTypes['Slide'] = ResolversParentTypes['Slide']> = ResolversObject<{
+  bgColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   elements?: Resolver<Array<ResolversTypes['Element']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   presentation?: Resolver<ResolversTypes['Presentation'], ParentType, ContextType>;
   thumbnailUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -2,6 +2,8 @@ type Slide {
   id: ID!
   elements: [Element!]!
   presentation: Presentation!
+  bgColor: String!
+  transition: String!
   thumbnailUrl: String!
   createdAt: Date!
 }
