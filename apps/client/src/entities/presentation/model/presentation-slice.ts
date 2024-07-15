@@ -233,7 +233,10 @@ const presentationSlice = createSlice({
     resetToolbar: (state) => {
       state.toolbar.textProps = initialState.toolbar.textProps
       state.toolbar.imageProps = initialState.toolbar.imageProps
-      state.toolbar.shapeProps = initialState.toolbar.shapeProps
+      state.toolbar.shapeProps = {
+        ...initialState.toolbar.shapeProps,
+        type: state.toolbar.shapeProps.type,
+      }
     },
   },
 })
