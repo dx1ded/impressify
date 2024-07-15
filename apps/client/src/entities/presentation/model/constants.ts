@@ -37,3 +37,4 @@ export const SLIDE_HEIGHT = 760
 
 export const DEFAULT_NAME = "New presentation"
 export const NOT_SELECTED = -1
+export const MAX_HISTORY_LENGTH = 10

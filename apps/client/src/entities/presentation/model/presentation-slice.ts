@@ -4,6 +4,7 @@ import _ from "lodash"
 import {
   type Presentation,
   type ElementProps,
+  type HistoryRecord,
   type Mode,
   type AddElementPayload,
   type TextEditProps,
@@ -20,10 +21,15 @@ import {
   DEFAULT_FONT_SIZE,
   DEFAULT_STROKE_COLOR,
   DEFAULT_STROKE_WIDTH,
+  MAX_HISTORY_LENGTH,
 } from "~/entities/presentation"
 
 interface PresentationState {
   presentation: Presentation
+  history: {
+    undoStack: HistoryRecord[]
+    redoStack: HistoryRecord[]
+  }
   toolbar: {
     mode: Mode
     textProps: TextEditProps
@@ -42,6 +48,10 @@ const initialState: PresentationState = {
     id: "",
     name: "",
     slides: [],
+  },
+  history: {
+    undoStack: [],
+    redoStack: [],
   },
   toolbar: {
     mode: "cursor",
@@ -102,6 +112,29 @@ const presentationSlice = createSlice({
     setIsEditing: (state, { payload }: PayloadAction<boolean>) => {
       state.isEditing = payload
     },
+    applyHistory: (state, { payload }: PayloadAction<"UNDO" | "REDO">) => {
+      const historyStack = payload === "UNDO" ? state.history.undoStack : state.history.redoStack
+      const invertedHistoryStack = payload === "UNDO" ? state.history.redoStack : state.history.undoStack
+      const record = historyStack.pop()
+      const slide = state.presentation.slides[state.currentSlide]
+      if (!record) return
+      if (record.type === "ADD") {
+        slide.elements.splice(record.position, 0, record.element)
+        invertedHistoryStack.push({ type: "DELETE", id: record.element.id })
+      } else if (record.type === "EDIT") {
+        invertedHistoryStack.push({
+          type: "EDIT",
+          oldProps: _.pick(slide.elements.find((el) => el.id === record.oldProps.id)!, Object.keys(record.oldProps)),
+        })
+        slide.elements = slide.elements.map((element) =>
+          element.id === record.oldProps.id ? { ...element, ...record.oldProps } : element,
+        ) as ElementProps[]
+      } else if (record.type === "DELETE") {
+        const index = slide.elements.findIndex((el) => el.id === record.id)!
+        invertedHistoryStack.push({ type: "ADD", element: slide.elements[index], position: index })
+        slide.elements = slide.elements.filter((element) => element.id !== record.id)
+      }
+    },
     setBackground: (state, { payload }: PayloadAction<string>) => {
       state.presentation.slides = state.presentation.slides.map((slide, i) =>
         i === state.currentSlide ? { ...slide, bgColor: payload } : slide,
@@ -122,14 +155,18 @@ const presentationSlice = createSlice({
       let newEl
 
       if (state.toolbar.mode === "text") {
-        slide.elements = [...slide.elements, (newEl = getTextConfig({ ...state.toolbar.textProps, ...payload }))]
+        slide.elements.push((newEl = getTextConfig({ ...state.toolbar.textProps, ...payload })))
       } else if (state.toolbar.mode === "image") {
-        slide.elements = [...slide.elements, (newEl = getImageConfig({ ...state.toolbar.imageProps, ...payload }))]
+        slide.elements.push((newEl = getImageConfig({ ...state.toolbar.imageProps, ...payload })))
       } else if (state.toolbar.mode === "shape") {
-        slide.elements = [...slide.elements, (newEl = getShapeConfig({ ...state.toolbar.shapeProps, ...payload }))]
+        slide.elements.push((newEl = getShapeConfig({ ...state.toolbar.shapeProps, ...payload })))
       }
 
       state.selectedId = newEl!.id
+      // Pushing record to history
+      state.history.undoStack.push({ type: "DELETE", id: newEl!.id })
+      if (state.history.undoStack.length > MAX_HISTORY_LENGTH) state.history.undoStack.pop()
+      state.history.redoStack = []
     },
     selectElement: (state, { payload }: PayloadAction<number>) => {
       state.selectedId = payload
@@ -152,9 +189,25 @@ const presentationSlice = createSlice({
     },
     editElement: (state, { payload }: PayloadAction<Partial<ElementProps>>) => {
       const slide = state.presentation.slides[state.currentSlide]
+      const element = slide.elements.find((el) => el.id === payload.id)!
+      // Pushing record to history (payload always has .id in it)
+      state.history.undoStack.push({ type: "EDIT", oldProps: _.pick(element, Object.keys(payload)) })
+      if (state.history.undoStack.length > MAX_HISTORY_LENGTH) state.history.undoStack.pop()
+      state.history.redoStack = []
+      // Updating state
       slide.elements = slide.elements.map((element) =>
         element.id === payload.id ? ({ ...element, ...payload } as ElementProps) : element,
       )
+    },
+    deleteElement: (state, { payload }: PayloadAction<number>) => {
+      const slide = state.presentation.slides[state.currentSlide]
+      const index = slide.elements.findIndex((el) => el.id === payload)!
+      // Pushing record to history
+      state.history.undoStack.push({ type: "ADD", element: slide.elements[index], position: index })
+      if (state.history.undoStack.length > MAX_HISTORY_LENGTH) state.history.undoStack.pop()
+      state.history.redoStack = []
+      // Updating state
+      slide.elements = slide.elements.filter((el) => el.id !== payload)
     },
     changeTextProps: (state, { payload }: PayloadAction<Partial<TextEditProps>>) => {
       state.toolbar.textProps = { ...state.toolbar.textProps, ...payload }
@@ -192,12 +245,14 @@ export const {
   setIsLoading,
   setIsCreating,
   setIsEditing,
+  applyHistory,
   setBackground,
   setTransition,
   setThumbnail,
   addElement,
   selectElement,
   editElement,
+  deleteElement,
   changeTextProps,
   changeImageProps,
   changeShapeProps,

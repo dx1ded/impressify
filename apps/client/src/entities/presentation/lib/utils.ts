@@ -25,7 +25,7 @@ import {
   DEFAULT_TEXT_WIDTH,
   DEFAULT_STROKE_WIDTH,
 } from "~/entities/presentation"
-import { ptToPx } from "~/shared/lib"
+import { createImage, ptToPx } from "~/shared/lib"
 import { EditableText, type EditableTextConfig } from "~/shared/ui/EditableText"
 
 export const formatDate = (timestamp: number) => {
@@ -60,9 +60,7 @@ export const textProps = (props: ElementProps): EditableTextConfig => {
 
 export const imageProps = (props: ElementProps): ImageConfig => {
   if (props.__typename !== "Image") return {} as ImageConfig
-  const image = new Image()
-  image.src = props.imageUrl
-  return { image, height: props.height }
+  return { image: createImage(props.imageUrl), height: props.height }
 }
 
 export const shapeProps = (props: ElementProps): ShapesConfig => {

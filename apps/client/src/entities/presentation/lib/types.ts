@@ -52,3 +52,12 @@ export type ElementComponent =
   | typeof Circle
   | typeof Arrow
   | typeof Star
+
+export type HistoryRecord =
+  | {
+      type: "ADD"
+      element: ElementProps
+      position: number
+    }
+  | { type: "EDIT"; oldProps: Partial<ElementProps> }
+  | { type: "DELETE"; id: ElementProps["id"] }
