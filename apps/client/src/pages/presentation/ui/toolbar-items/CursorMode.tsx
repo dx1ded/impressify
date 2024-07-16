@@ -2,7 +2,7 @@ import { PaintBucketIcon } from "lucide-react"
 import type { ChangeEvent } from "react"
 import { shallowEqual } from "react-redux"
 
-import { DEFAULT_BG_COLOR, setBackground, setTransition } from "~/entities/presentation"
+import { DEFAULT_BG_COLOR, setBackground, setTransition, useScreenshot } from "~/entities/presentation"
 import type { ModeProps } from "~/pages/presentation/lib"
 import { convertFileToDataUrl } from "~/shared/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
@@ -41,15 +41,21 @@ export function CursorMode({ isActive }: ModeProps) {
     shallowEqual,
   )
   const dispatch = useAppDispatch()
+  const { takeScreenshot } = useScreenshot()
 
   const slide = presentation.slides[currentSlide]
   if (!slide) return
+
+  const changeBackground = (dataUrl: string) => {
+    dispatch(setBackground(dataUrl))
+    if (takeScreenshot) takeScreenshot()
+  }
 
   const fileChangeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
     if (!files || !files.length) return
     const dataUrl = await convertFileToDataUrl(files[0])
-    dispatch(setBackground(dataUrl))
+    changeBackground(dataUrl)
   }
 
   return (
@@ -72,7 +78,7 @@ export function CursorMode({ isActive }: ModeProps) {
             <div className="grid gap-3">
               <div className="flex items-center justify-between">
                 <Small className="text-grayish">Color</Small>
-                <ColorPicker color={slide.bgColor} onChange={(color) => dispatch(setBackground(color))}>
+                <ColorPicker color={slide.bgColor} onChange={(color) => changeBackground(color)}>
                   <Button variant="outline" size="sm" className="rounded-b-none">
                     <PaintBucketIcon className="h-5 w-5" />
                   </Button>
@@ -95,7 +101,7 @@ export function CursorMode({ isActive }: ModeProps) {
               </div>
               <div className="flex items-center justify-between">
                 <Small className="text-grayish">Reset to theme</Small>
-                <Button variant="outline" size="sm" onClick={() => dispatch(setBackground(DEFAULT_BG_COLOR))}>
+                <Button variant="outline" size="sm" onClick={() => changeBackground(DEFAULT_BG_COLOR)}>
                   Reset
                 </Button>
               </div>

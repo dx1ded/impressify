@@ -10,6 +10,7 @@ import {
   type TextEditProps,
   type ImageEditProps,
   type ShapeEditProps,
+  getSlideConfig,
   getTextConfig,
   getImageConfig,
   getShapeConfig,
@@ -99,6 +100,11 @@ const presentationSlice = createSlice({
     },
     setCurrentSlide: (state, { payload }: PayloadAction<number>) => {
       state.currentSlide = payload
+      state.isEditing = false
+      state.isCreating = false
+      state.selectedId = NOT_SELECTED
+      state.history = initialState.history
+      state.toolbar = initialState.toolbar
     },
     setMode: (state, { payload }: PayloadAction<Mode>) => {
       state.toolbar.mode = payload
@@ -111,6 +117,37 @@ const presentationSlice = createSlice({
     },
     setIsEditing: (state, { payload }: PayloadAction<boolean>) => {
       state.isEditing = payload
+    },
+    addSlide: (state) => {
+      state.presentation.slides.push(getSlideConfig())
+      presentationSlice.caseReducers.setCurrentSlide(state, {
+        payload: state.presentation.slides.length - 1,
+      } as PayloadAction<number>)
+    },
+    copySlide: (state, { payload }: PayloadAction<string>) => {
+      const index = state.presentation.slides.findIndex((slide) => slide.id === payload)!
+      const slide = state.presentation.slides[index]
+      state.presentation.slides.splice(index + 1, 0, {
+        ...slide,
+        // It is necessary to change slide id and its elements' ids to avoid collision
+        id: `${Math.random()}`,
+        elements: slide.elements.map((el) => ({ ...el, id: Math.random() })),
+      })
+      presentationSlice.caseReducers.setCurrentSlide(state, {
+        payload: index + 1,
+      } as PayloadAction<number>)
+    },
+    deleteSlide: (state, { payload }: PayloadAction<string>) => {
+      if (state.presentation.slides.length === 1) return
+      const index = state.presentation.slides.findIndex((slide) => slide.id === payload)!
+      let nextCurrentSlide = index
+      if (index === state.presentation.slides.length - 1) {
+        nextCurrentSlide = index - 1
+      }
+      presentationSlice.caseReducers.setCurrentSlide(state, {
+        payload: nextCurrentSlide,
+      } as PayloadAction<number>)
+      state.presentation.slides.splice(index, 1)
     },
     applyHistory: (state, { payload }: PayloadAction<"UNDO" | "REDO">) => {
       const historyStack = payload === "UNDO" ? state.history.undoStack : state.history.redoStack
@@ -189,7 +226,8 @@ const presentationSlice = createSlice({
     },
     editElement: (state, { payload }: PayloadAction<Partial<ElementProps>>) => {
       const slide = state.presentation.slides[state.currentSlide]
-      const element = slide.elements.find((el) => el.id === payload.id)!
+      const element = slide.elements.find((el) => el.id === payload.id)
+      if (!element) return
       // Pushing record to history (payload always has .id in it)
       state.history.undoStack.push({ type: "EDIT", oldProps: _.pick(element, Object.keys(payload)) })
       if (state.history.undoStack.length > MAX_HISTORY_LENGTH) state.history.undoStack.pop()
@@ -248,6 +286,9 @@ export const {
   setIsLoading,
   setIsCreating,
   setIsEditing,
+  addSlide,
+  copySlide,
+  deleteSlide,
   applyHistory,
   setBackground,
   setTransition,

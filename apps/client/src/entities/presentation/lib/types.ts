@@ -22,6 +22,7 @@ export type AddTextProps = Coordinates & TextEditProps
 export type AddImageProps = Coordinates & ImageEditProps
 export type AddShapeProps = Coordinates & ShapeEditProps
 
+export type SlideProps = Presentation["slides"][number]
 export type ElementProps = Presentation["slides"][number]["elements"][number]
 
 export type TextProps = ElementProps & { __typename: "Text" }

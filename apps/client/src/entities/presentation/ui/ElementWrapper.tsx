@@ -1,13 +1,14 @@
-import type { KonvaEventObject } from "konva/lib/Node"
 import { memo, useEffect, useRef } from "react"
 import { Transformer } from "react-konva"
-import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
 import { useDebouncedCallback } from "use-debounce"
+import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
+import type { KonvaEventObject } from "konva/lib/Node"
 
 import {
   type ElementProps,
   type ElementComponent,
   type Mode,
+  type IScreenshotContext,
   imageProps,
   shapeProps,
   textProps,
@@ -22,7 +23,7 @@ import {
 } from "~/entities/presentation"
 import { useAppDispatch } from "~/shared/model"
 
-const DEBOUNCE_EDIT_TIME = 3000
+const DEBOUNCE_EDIT_TIME = 350
 
 interface ElementWrapperProps {
   Element: ElementComponent | undefined
@@ -31,6 +32,7 @@ interface ElementWrapperProps {
   isSelected: boolean
   isCreating: boolean
   isEditing: boolean
+  takeScreenshot: IScreenshotContext["takeScreenshot"]
 }
 
 export const ElementWrapper = memo(function ElementWrapper({
@@ -40,6 +42,7 @@ export const ElementWrapper = memo(function ElementWrapper({
   isSelected,
   isCreating,
   isEditing,
+  takeScreenshot,
 }: ElementWrapperProps) {
   const dispatch = useAppDispatch()
   const elementRef = useRef<never>(null)
@@ -55,6 +58,7 @@ export const ElementWrapper = memo(function ElementWrapper({
   const debouncedEdit = useDebouncedCallback((newProps: Partial<ElementProps>) => {
     // Using id to avoid transformations being applied for `selectedId` (which would be used if not id provided)
     dispatch(editElement({ ...newProps, id: props.id }))
+    if (takeScreenshot) takeScreenshot()
   }, DEBOUNCE_EDIT_TIME)
 
   const transformElement = (e: KonvaEventObject<Event>) => {

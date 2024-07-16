@@ -18,6 +18,7 @@ import {
   type ShapeProps,
   type ShapesConfig,
   type TextProps,
+  type SlideProps,
   DEFAULT_IMAGE_WIDTH,
   DEFAULT_SHAPE_HEIGHT,
   DEFAULT_SHAPE_WIDTH,
@@ -115,6 +116,15 @@ export const getAnchors = (element: ElementProps) => {
     "top-center",
   ]
 }
+
+export const getSlideConfig = (): SlideProps => ({
+  id: `${Math.random()}`,
+  elements: [],
+  bgColor: "rgb(255, 255, 255)",
+  transition: "none",
+  thumbnailUrl:
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/erDEdIAAAAASUVORK5CYII=",
+})
 
 export const getTextConfig = (props: AddTextProps): TextProps => ({
   // Leave ...props on top because `height` (which is used for Image) is going to be 0

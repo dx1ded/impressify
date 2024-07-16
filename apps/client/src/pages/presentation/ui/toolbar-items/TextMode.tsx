@@ -13,7 +13,7 @@ import {
 import { SelectTrigger as NativeSelectTrigger } from "@radix-ui/react-select"
 import { Fragment } from "react"
 
-import { changeTextProps, DEFAULT_FONT_LIST } from "~/entities/presentation"
+import { changeTextProps, DEFAULT_FONT_LIST, type TextProps, useScreenshot } from "~/entities/presentation"
 import type { ModeProps } from "~/pages/presentation/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 import {
@@ -35,11 +35,17 @@ import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolb
 export function TextMode({ isActive }: ModeProps) {
   const textProps = useAppSelector((state) => state.presentation.toolbar.textProps)
   const dispatch = useAppDispatch()
+  const { takeScreenshot } = useScreenshot()
+
+  const applyChanges = (props: Partial<TextProps>) => {
+    dispatch(changeTextProps(props))
+    if (takeScreenshot) takeScreenshot()
+  }
 
   return (
     <div style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
       <ToolbarGroup>
-        <ColorPicker color={textProps.fillColor} onChange={(value) => dispatch(changeTextProps({ fillColor: value }))}>
+        <ColorPicker color={textProps.fillColor} onChange={(value) => applyChanges({ fillColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={PaintBucketIcon} />
@@ -47,9 +53,7 @@ export function TextMode({ isActive }: ModeProps) {
             <TooltipContent>Fill color</TooltipContent>
           </Tooltip>
         </ColorPicker>
-        <ColorPicker
-          color={textProps.borderColor}
-          onChange={(value) => dispatch(changeTextProps({ borderColor: value }))}>
+        <ColorPicker color={textProps.borderColor} onChange={(value) => applyChanges({ borderColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={PencilIcon} />
@@ -60,9 +64,7 @@ export function TextMode({ isActive }: ModeProps) {
       </ToolbarGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Select
-          value={textProps.fontFamily}
-          onValueChange={(value) => dispatch(changeTextProps({ fontFamily: value }))}>
+        <Select value={textProps.fontFamily} onValueChange={(value) => applyChanges({ fontFamily: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <SelectTrigger className="h-6 gap-4 border-none bg-transparent font-medium">
@@ -90,11 +92,7 @@ export function TextMode({ isActive }: ModeProps) {
       </ToolbarGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Counter
-          className="w-10"
-          value={textProps.fontSize}
-          onChange={(value) => dispatch(changeTextProps({ fontSize: value }))}
-        />
+        <Counter className="w-10" value={textProps.fontSize} onChange={(value) => applyChanges({ fontSize: value })} />
       </ToolbarGroup>
       <ToolbarSeparator />
       <ToggleGroup
@@ -106,13 +104,11 @@ export function TextMode({ isActive }: ModeProps) {
           textProps.underlined ? "underlined" : "",
         ]}
         onValueChange={(values) =>
-          dispatch(
-            changeTextProps({
-              bold: values.includes("bold"),
-              italic: values.includes("italic"),
-              underlined: values.includes("underlined"),
-            }),
-          )
+          applyChanges({
+            bold: values.includes("bold"),
+            italic: values.includes("italic"),
+            underlined: values.includes("underlined"),
+          })
         }>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -138,7 +134,7 @@ export function TextMode({ isActive }: ModeProps) {
           </TooltipTrigger>
           <TooltipContent>Underlined (⌘+U)</TooltipContent>
         </Tooltip>
-        <ColorPicker color={textProps.textColor} onChange={(value) => dispatch(changeTextProps({ textColor: value }))}>
+        <ColorPicker color={textProps.textColor} onChange={(value) => applyChanges({ textColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={TypeIcon} />
@@ -149,7 +145,7 @@ export function TextMode({ isActive }: ModeProps) {
       </ToggleGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Select value={textProps.alignment} onValueChange={(value) => dispatch(changeTextProps({ alignment: value }))}>
+        <Select value={textProps.alignment} onValueChange={(value) => applyChanges({ alignment: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <NativeSelectTrigger asChild>
@@ -181,9 +177,7 @@ export function TextMode({ isActive }: ModeProps) {
             </SelectItem>
           </SelectContent>
         </Select>
-        <Select
-          value={`${textProps.lineHeight}`}
-          onValueChange={(value) => dispatch(changeTextProps({ lineHeight: +value }))}>
+        <Select value={`${textProps.lineHeight}`} onValueChange={(value) => applyChanges({ lineHeight: +value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <NativeSelectTrigger asChild>

@@ -1,12 +1,14 @@
+import { forwardRef } from "react"
 import { Layer, Rect, Stage } from "react-konva"
 import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
 import { Stage as StageClass } from "konva/lib/Stage"
 
 import {
-  addElement,
+  useScreenshot,
   ElementWrapper,
   getElement,
+  addElement,
   resetToolbar,
   setMode,
   setIsEditing,
@@ -19,7 +21,7 @@ import {
 import { createImage, isColor } from "~/shared/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 
-export function Slide() {
+export const Slide = forwardRef<StageClass>(function Slide(_, ref) {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const { currentSlide, selectedId, isLoading, isCreating, isEditing, mode, imageHeight } = useAppSelector(
     (state) => ({
@@ -34,6 +36,7 @@ export function Slide() {
     shallowEqual,
   )
   const dispatch = useAppDispatch()
+  const { takeScreenshot } = useScreenshot()
 
   const handleStageClick = (e: KonvaEventObject<MouseEvent>) => {
     const stage = e.target.getStage()
@@ -50,7 +53,6 @@ export function Slide() {
       dispatch(selectElement(NOT_SELECTED))
       dispatch(setMode("cursor"))
       dispatch(resetToolbar())
-      return
     }
 
     if (isCreating) {
@@ -63,6 +65,7 @@ export function Slide() {
         }),
       )
       dispatch(setIsCreating(false))
+      if (takeScreenshot) takeScreenshot()
     }
   }
 
@@ -71,6 +74,7 @@ export function Slide() {
   return (
     <div className="flex flex-1 items-center justify-center">
       <Stage
+        ref={ref}
         width={SLIDE_WIDTH}
         height={SLIDE_HEIGHT}
         className="border"
@@ -93,15 +97,16 @@ export function Slide() {
                   ? { fill: slide.bgColor }
                   : { fillPatternImage: createImage(slide.bgColor) })}
               />
-              {slide.elements.map((element, i) => (
+              {slide.elements.map((element) => (
                 <ElementWrapper
-                  key={i}
+                  key={element.id}
                   Element={getElement(element)}
                   props={element}
                   mode={mode}
                   isSelected={element.id === selectedId}
                   isCreating={isCreating}
                   isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
+                  takeScreenshot={takeScreenshot}
                 />
               ))}
             </>
@@ -110,4 +115,4 @@ export function Slide() {
       </Stage>
     </div>
   )
-}
+})
