@@ -1,13 +1,23 @@
 import { UserButton } from "@clerk/clerk-react"
+import { useDebouncedCallback } from "use-debounce"
 
-import { MAX_NAME_LENGTH } from "~/entities/presentation"
+import { MAX_NAME_LENGTH, setName } from "~/entities/presentation"
 import { Menubar } from "~/pages/presentation/ui/Menubar"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
+import { useAppDispatch } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import { Logo } from "~/shared/ui/Logo"
 import { ResizableInput } from "~/shared/ui/ResizableInput"
 
+const DEBOUNCED_CHANGE_NAME_TIME = 2000
+
 export function Header() {
+  const dispatch = useAppDispatch()
+
+  const debouncedChangeName = useDebouncedCallback((value: string) => {
+    dispatch(setName(value))
+  }, DEBOUNCED_CHANGE_NAME_TIME)
+
   return (
     <header className="flex items-center justify-between py-2">
       <div className="flex items-start gap-1.5">
@@ -20,6 +30,7 @@ export function Header() {
                 className="rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-gray-300"
                 defaultValue="Inquiry Assignment - Before Reading"
                 data-toast="Presentation name"
+                onChange={(e) => debouncedChangeName(e.target.value)}
               />
             </ResizableInput>
             <SavingIcon />

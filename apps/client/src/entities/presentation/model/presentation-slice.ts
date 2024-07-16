@@ -98,6 +98,9 @@ const presentationSlice = createSlice({
     setPresentation: (state, { payload }: PayloadAction<Presentation>) => {
       state.presentation = payload
     },
+    setName: (state, { payload }: PayloadAction<string>) => {
+      state.presentation.name = payload
+    },
     setCurrentSlide: (state, { payload }: PayloadAction<number>) => {
       state.currentSlide = payload
       state.isEditing = false
@@ -281,6 +284,7 @@ const presentationSlice = createSlice({
 
 export const {
   setPresentation,
+  setName,
   setCurrentSlide,
   setMode,
   setIsLoading,
