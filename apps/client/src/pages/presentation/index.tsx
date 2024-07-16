@@ -20,9 +20,9 @@ import {
 import { ADD_RECORD } from "~/entities/record"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
-import { Toolbar } from "~/pages/presentation/ui/Toolbar"
 import { Header } from "~/pages/presentation/ui/Header"
 import { useAppDispatch } from "~/shared/model"
+import { Toolbar } from "~/widgets/toolbar"
 import { Toaster } from "~/shared/ui-kit/sonner"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 

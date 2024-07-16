@@ -14,7 +14,7 @@ import { SelectTrigger as NativeSelectTrigger } from "@radix-ui/react-select"
 import { Fragment } from "react"
 
 import { changeTextProps, DEFAULT_FONT_LIST, type TextProps, useScreenshot } from "~/entities/presentation"
-import type { ModeProps } from "~/pages/presentation/lib"
+import type { ModeProps } from "~/widgets/toolbar/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 import {
   Select,

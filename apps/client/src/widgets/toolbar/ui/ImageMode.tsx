@@ -2,7 +2,7 @@ import { TooltipTrigger } from "@radix-ui/react-tooltip"
 import type { ChangeEvent } from "react"
 
 import { changeImageProps, useScreenshot } from "~/entities/presentation"
-import type { ModeProps } from "~/pages/presentation/lib"
+import type { ModeProps } from "~/widgets/toolbar/lib"
 import { convertFileToDataUrl } from "~/shared/lib"
 import { useAppDispatch } from "~/shared/model"
 import { Tooltip, TooltipContent } from "~/shared/ui-kit/tooltip"

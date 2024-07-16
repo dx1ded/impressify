@@ -1,7 +1,7 @@
 import { PaintBucketIcon, PencilIcon } from "lucide-react"
 
 import { changeShapeProps, type ShapeProps, useScreenshot } from "~/entities/presentation"
-import type { ModeProps } from "~/pages/presentation/lib"
+import type { ModeProps } from "~/widgets/toolbar/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ColorPicker } from "~/shared/ui/ColorPicker"

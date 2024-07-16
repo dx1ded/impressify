@@ -3,7 +3,7 @@ import type { ChangeEvent } from "react"
 import { shallowEqual } from "react-redux"
 
 import { DEFAULT_BG_COLOR, setBackground, setTransition, useScreenshot } from "~/entities/presentation"
-import type { ModeProps } from "~/pages/presentation/lib"
+import type { ModeProps } from "~/widgets/toolbar/lib"
 import { convertFileToDataUrl } from "~/shared/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"

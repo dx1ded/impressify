@@ -1,12 +1,12 @@
 import { useAppSelector } from "~/shared/model"
 import { ToolbarSeparator } from "~/shared/ui/Toolbar"
-import { Add } from "~/pages/presentation/ui/toolbar-items/Add"
-import { History } from "~/pages/presentation/ui/toolbar-items/History"
-import { Mode } from "~/pages/presentation/ui/toolbar-items/Mode"
-import { CursorMode } from "~/pages/presentation/ui/toolbar-items/CursorMode"
-import { TextMode } from "~/pages/presentation/ui/toolbar-items/TextMode"
-import { ImageMode } from "~/pages/presentation/ui/toolbar-items/ImageMode"
-import { ShapeMode } from "~/pages/presentation/ui/toolbar-items/ShapeMode"
+import { Add } from "~/widgets/toolbar/ui/Add"
+import { History } from "~/widgets/toolbar/ui/History"
+import { Mode } from "~/widgets/toolbar/ui/Mode"
+import { CursorMode } from "~/widgets/toolbar/ui/CursorMode"
+import { TextMode } from "~/widgets/toolbar/ui/TextMode"
+import { ImageMode } from "~/widgets/toolbar/ui/ImageMode"
+import { ShapeMode } from "~/widgets/toolbar/ui/ShapeMode"
 
 export function Toolbar() {
   const mode = useAppSelector((state) => state.presentation.toolbar.mode)

@@ -1,5 +1,7 @@
 import { DownloadIcon, Files, Info, PencilLine, SquarePlus, Trash2, UserPlus } from "lucide-react"
 
+import { DEFAULT_NAME } from "~/entities/presentation"
+import { CreatePresentation } from "~/features/create-presentation"
 import {
   MenubarContent,
   MenubarItem,
@@ -22,7 +24,11 @@ export function File() {
             New
           </MenubarSubTrigger>
           <MenubarSubContent>
-            <MenubarItem>Presentation</MenubarItem>
+            <CreatePresentation>
+              {(createPresentation) => (
+                <MenubarItem onClick={() => createPresentation(DEFAULT_NAME)}>Presentation</MenubarItem>
+              )}
+            </CreatePresentation>
           </MenubarSubContent>
         </MenubarSub>
         <MenubarSub>
