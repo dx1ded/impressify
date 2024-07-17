@@ -1,11 +1,10 @@
-import { forwardRef } from "react"
+import { useRef } from "react"
 import { Layer, Rect, Stage } from "react-konva"
 import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
 import { Stage as StageClass } from "konva/lib/Stage"
 
 import {
-  useScreenshot,
   ElementWrapper,
   getElement,
   addElement,
@@ -17,11 +16,15 @@ import {
   SLIDE_WIDTH,
   NOT_SELECTED,
   setIsCreating,
+  setThumbnail,
+  TAKE_SCREENSHOT_ID,
 } from "~/entities/presentation"
 import { createImage, isColor } from "~/shared/lib"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
-export const Slide = forwardRef<StageClass>(function Slide(_, ref) {
+const SCREENSHOT_DEBOUCE_TIME = 5000
+
+export function Slide() {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const { currentSlide, selectedId, isLoading, isCreating, isEditing, mode, imageHeight } = useAppSelector(
     (state) => ({
@@ -36,7 +39,26 @@ export const Slide = forwardRef<StageClass>(function Slide(_, ref) {
     shallowEqual,
   )
   const dispatch = useAppDispatch()
-  const { takeScreenshot } = useScreenshot()
+  const stageRef = useRef<StageClass>(null)
+  const { register } = useDebouncedFunctions()
+
+  let takeScreenshot: (() => void) | undefined
+
+  if (stageRef.current) {
+    takeScreenshot = register(
+      TAKE_SCREENSHOT_ID,
+      () => {
+        if (!stageRef.current) return
+        // Hiding transformers (if there are some)
+        const transformers = stageRef.current.find("Transformer")
+        transformers.forEach((tr) => tr.visible(false))
+        const url = stageRef.current.toDataURL()
+        transformers.forEach((tr) => tr.visible(true))
+        dispatch(setThumbnail(url))
+      },
+      SCREENSHOT_DEBOUCE_TIME,
+    )
+  }
 
   const handleStageClick = (e: KonvaEventObject<MouseEvent>) => {
     const stage = e.target.getStage()
@@ -74,7 +96,7 @@ export const Slide = forwardRef<StageClass>(function Slide(_, ref) {
   return (
     <div className="flex flex-1 items-center justify-center">
       <Stage
-        ref={ref}
+        ref={stageRef}
         width={SLIDE_WIDTH}
         height={SLIDE_HEIGHT}
         className="border"
@@ -106,7 +128,6 @@ export const Slide = forwardRef<StageClass>(function Slide(_, ref) {
                   isSelected={element.id === selectedId}
                   isCreating={isCreating}
                   isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
-                  takeScreenshot={takeScreenshot}
                 />
               ))}
             </>
@@ -115,4 +136,4 @@ export const Slide = forwardRef<StageClass>(function Slide(_, ref) {
       </Stage>
     </div>
   )
-})
+}

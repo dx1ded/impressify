@@ -1,13 +1,13 @@
 import { PlusIcon } from "lucide-react"
 
-import { addSlide, useScreenshot } from "~/entities/presentation"
-import { useAppDispatch } from "~/shared/model"
+import { addSlide, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function Add() {
   const dispatch = useAppDispatch()
-  const { takeScreenshot } = useScreenshot()
+  const { flush, flushWithPattern } = useDebouncedFunctions()
 
   return (
     <ToolbarGroup>
@@ -16,7 +16,8 @@ export function Add() {
           <ToolbarButton
             Icon={PlusIcon}
             onClick={() => {
-              takeScreenshot?.flush()
+              flush(TAKE_SCREENSHOT_ID)
+              flushWithPattern(EDIT_ELEMENT_ID)
               dispatch(addSlide())
             }}
           />

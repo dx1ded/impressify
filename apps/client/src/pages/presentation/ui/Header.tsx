@@ -1,10 +1,10 @@
 import { UserButton } from "@clerk/clerk-react"
-import { useDebouncedCallback } from "use-debounce"
 
-import { MAX_NAME_LENGTH, setName } from "~/entities/presentation"
-import { Menubar } from "~/pages/presentation/ui/Menubar"
+import { CHANGE_NAME_ID, MAX_NAME_LENGTH, setName } from "~/entities/presentation"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
-import { useAppDispatch } from "~/shared/model"
+import { Skeleton } from "~/shared/ui-kit/skeleton"
+import { Menubar } from "~/widgets/menubar"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import { Logo } from "~/shared/ui/Logo"
 import { ResizableInput } from "~/shared/ui/ResizableInput"
@@ -12,11 +12,18 @@ import { ResizableInput } from "~/shared/ui/ResizableInput"
 const DEBOUNCED_CHANGE_NAME_TIME = 2000
 
 export function Header() {
+  const name = useAppSelector((state) => state.presentation.presentation.name)
+  const isLoading = useAppSelector((state) => state.presentation.isLoading)
   const dispatch = useAppDispatch()
+  const { register } = useDebouncedFunctions()
 
-  const debouncedChangeName = useDebouncedCallback((value: string) => {
-    dispatch(setName(value))
-  }, DEBOUNCED_CHANGE_NAME_TIME)
+  const debouncedChangeName = register(
+    CHANGE_NAME_ID,
+    (value: string) => {
+      dispatch(setName(value))
+    },
+    DEBOUNCED_CHANGE_NAME_TIME,
+  )
 
   return (
     <header className="flex items-center justify-between py-2">
@@ -24,15 +31,19 @@ export function Header() {
         <Logo noText size={3.25} url="/home" />
         <div>
           <div className="flex items-center gap-3">
-            <ResizableInput maxLength={MAX_NAME_LENGTH}>
-              <input
-                type="text"
-                className="rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-gray-300"
-                defaultValue="Inquiry Assignment - Before Reading"
-                data-toast="Presentation name"
-                onChange={(e) => debouncedChangeName(e.target.value)}
-              />
-            </ResizableInput>
+            {isLoading ? (
+              <Skeleton className="h-[1.875rem] w-32" />
+            ) : (
+              <ResizableInput maxLength={MAX_NAME_LENGTH}>
+                <input
+                  type="text"
+                  className="rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-gray-300"
+                  defaultValue={name}
+                  data-toast="Presentation name"
+                  onChange={(e) => debouncedChangeName(e.target.value)}
+                />
+              </ResizableInput>
+            )}
             <SavingIcon />
           </div>
           <Menubar />

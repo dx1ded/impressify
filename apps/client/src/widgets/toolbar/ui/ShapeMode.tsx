@@ -1,8 +1,8 @@
 import { PaintBucketIcon, PencilIcon } from "lucide-react"
 
-import { changeShapeProps, type ShapeProps, useScreenshot } from "~/entities/presentation"
+import { type ShapeProps, changeShapeProps, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ColorPicker } from "~/shared/ui/ColorPicker"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
@@ -10,11 +10,11 @@ import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 export function ShapeMode({ isActive }: ModeProps) {
   const shapeProps = useAppSelector((state) => state.presentation.toolbar.shapeProps)
   const dispatch = useAppDispatch()
-  const { takeScreenshot } = useScreenshot()
+  const { call } = useDebouncedFunctions()
 
   const applyChanges = (props: Partial<ShapeProps>) => {
     dispatch(changeShapeProps(props))
-    if (takeScreenshot) takeScreenshot()
+    call(TAKE_SCREENSHOT_ID)
   }
 
   return (

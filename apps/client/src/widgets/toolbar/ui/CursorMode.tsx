@@ -2,10 +2,10 @@ import { PaintBucketIcon } from "lucide-react"
 import type { ChangeEvent } from "react"
 import { shallowEqual } from "react-redux"
 
-import { DEFAULT_BG_COLOR, setBackground, setTransition, useScreenshot } from "~/entities/presentation"
+import { DEFAULT_BG_COLOR, setBackground, setTransition, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { convertFileToDataUrl } from "~/shared/lib"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import {
   Dialog,
@@ -41,14 +41,14 @@ export function CursorMode({ isActive }: ModeProps) {
     shallowEqual,
   )
   const dispatch = useAppDispatch()
-  const { takeScreenshot } = useScreenshot()
+  const { call } = useDebouncedFunctions()
 
   const slide = presentation.slides[currentSlide]
   if (!slide) return
 
   const changeBackground = (dataUrl: string) => {
     dispatch(setBackground(dataUrl))
-    if (takeScreenshot) takeScreenshot()
+    call(TAKE_SCREENSHOT_ID)
   }
 
   const fileChangeHandler = async (e: ChangeEvent<HTMLInputElement>) => {

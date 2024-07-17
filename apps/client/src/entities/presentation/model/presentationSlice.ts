@@ -279,6 +279,16 @@ const presentationSlice = createSlice({
         type: state.toolbar.shapeProps.type,
       }
     },
+    clear: (state) => {
+      state.presentation = initialState.presentation
+      state.history = initialState.history
+      state.toolbar = initialState.toolbar
+      state.currentSlide = initialState.currentSlide
+      state.selectedId = initialState.selectedId
+      state.isLoading = initialState.isLoading
+      state.isCreating = initialState.isCreating
+      state.isEditing = initialState.isEditing
+    },
   },
 })
 
@@ -305,5 +315,6 @@ export const {
   changeImageProps,
   changeShapeProps,
   resetToolbar,
+  clear,
 } = presentationSlice.actions
 export const presentationReducer = presentationSlice.reducer

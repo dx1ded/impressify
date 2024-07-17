@@ -1,8 +1,15 @@
 import { CopyIcon, Trash2Icon } from "lucide-react"
 
-import { copySlide, deleteSlide, setCurrentSlide, type SlideProps, useScreenshot } from "~/entities/presentation"
+import {
+  type SlideProps,
+  copySlide,
+  deleteSlide,
+  EDIT_ELEMENT_ID,
+  setCurrentSlide,
+  TAKE_SCREENSHOT_ID,
+} from "~/entities/presentation"
 import { cn } from "~/shared/lib"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
 interface SlideItemProps {
   slide: SlideProps
@@ -12,7 +19,7 @@ interface SlideItemProps {
 export function SlideItem({ slide, index }: SlideItemProps) {
   const dispatch = useAppDispatch()
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
-  const { takeScreenshot } = useScreenshot()
+  const { flush, flushWithPattern, deleteWithPattern, cancel } = useDebouncedFunctions()
 
   return (
     <div className="group flex h-28 w-full flex-shrink-0 gap-2">
@@ -24,7 +31,9 @@ export function SlideItem({ slide, index }: SlideItemProps) {
           <CopyIcon
             className="h-full w-full"
             onClick={() => {
-              takeScreenshot?.flush()
+              flush(TAKE_SCREENSHOT_ID)
+              flushWithPattern(EDIT_ELEMENT_ID)
+              deleteWithPattern(EDIT_ELEMENT_ID)
               dispatch(copySlide(slide.id))
             }}
           />
@@ -35,7 +44,7 @@ export function SlideItem({ slide, index }: SlideItemProps) {
           <Trash2Icon
             className="h-full w-full"
             onClick={() => {
-              if (index === currentSlide) takeScreenshot?.cancel()
+              if (index === currentSlide) cancel(TAKE_SCREENSHOT_ID)
               dispatch(deleteSlide(slide.id))
             }}
           />
@@ -45,7 +54,9 @@ export function SlideItem({ slide, index }: SlideItemProps) {
         type="button"
         className="w-full"
         onClick={() => {
-          takeScreenshot?.flush()
+          flush(TAKE_SCREENSHOT_ID)
+          flushWithPattern(EDIT_ELEMENT_ID)
+          deleteWithPattern(EDIT_ELEMENT_ID)
           dispatch(setCurrentSlide(index))
         }}>
         <img

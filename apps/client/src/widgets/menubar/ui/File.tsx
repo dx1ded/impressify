@@ -2,6 +2,7 @@ import { DownloadIcon, Files, Info, PencilLine, SquarePlus, Trash2, UserPlus } f
 
 import { DEFAULT_NAME } from "~/entities/presentation"
 import { CreatePresentation } from "~/features/create-presentation"
+import { useDebouncedFunctions } from "~/shared/model"
 import {
   MenubarContent,
   MenubarItem,
@@ -14,6 +15,8 @@ import {
 } from "~/shared/ui-kit/menubar"
 
 export function File() {
+  const { flushAll, deleteAll } = useDebouncedFunctions()
+
   return (
     <MenubarMenu>
       <MenubarTrigger className="px-2 py-0.5">File</MenubarTrigger>
@@ -26,7 +29,14 @@ export function File() {
           <MenubarSubContent>
             <CreatePresentation>
               {(createPresentation) => (
-                <MenubarItem onClick={() => createPresentation(DEFAULT_NAME)}>Presentation</MenubarItem>
+                <MenubarItem
+                  onClick={() => {
+                    flushAll()
+                    deleteAll()
+                    createPresentation(DEFAULT_NAME)
+                  }}>
+                  Presentation
+                </MenubarItem>
               )}
             </CreatePresentation>
           </MenubarSubContent>

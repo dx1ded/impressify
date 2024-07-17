@@ -1,23 +1,23 @@
 import { TooltipTrigger } from "@radix-ui/react-tooltip"
 import type { ChangeEvent } from "react"
 
-import { changeImageProps, useScreenshot } from "~/entities/presentation"
+import { changeImageProps, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { convertFileToDataUrl } from "~/shared/lib"
-import { useAppDispatch } from "~/shared/model"
+import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 import { Tooltip, TooltipContent } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function ImageMode({ isActive }: ModeProps) {
   const dispatch = useAppDispatch()
-  const { takeScreenshot } = useScreenshot()
+  const { call } = useDebouncedFunctions()
 
   const replaceImageHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
     if (!files || !files.length) return
     const dataUrl = await convertFileToDataUrl(files[0])
     dispatch(changeImageProps({ imageUrl: dataUrl }))
-    if (takeScreenshot) takeScreenshot()
+    call(TAKE_SCREENSHOT_ID)
   }
 
   return (

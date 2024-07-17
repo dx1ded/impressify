@@ -30,6 +30,7 @@ export function ResizableInput({ children, maxLength }: ResizableInputProps) {
       })
     }
     setInputValue(e.target.value)
+    children.props.onChange(e)
   }
 
   useEffect(() => changeInputWidth(), [changeInputWidth, inputValue])

@@ -1,15 +1,15 @@
 import { Redo, Undo } from "lucide-react"
 
-import { applyHistory, useScreenshot } from "~/entities/presentation"
+import { applyHistory, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import { cn } from "~/shared/lib"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function History() {
   const { undoStack, redoStack } = useAppSelector((state) => state.presentation.history)
   const dispatch = useAppDispatch()
-  const { takeScreenshot } = useScreenshot()
+  const { call } = useDebouncedFunctions()
 
   return (
     <ToolbarGroup>
@@ -20,7 +20,7 @@ export function History() {
               Icon={Undo}
               onClick={() => {
                 dispatch(applyHistory("UNDO"))
-                if (takeScreenshot) takeScreenshot()
+                call(TAKE_SCREENSHOT_ID)
               }}
             />
           </div>
@@ -34,7 +34,7 @@ export function History() {
               Icon={Redo}
               onClick={() => {
                 dispatch(applyHistory("REDO"))
-                if (takeScreenshot) takeScreenshot()
+                call(TAKE_SCREENSHOT_ID)
               }}
             />
           </div>

@@ -13,9 +13,9 @@ import {
 import { SelectTrigger as NativeSelectTrigger } from "@radix-ui/react-select"
 import { Fragment } from "react"
 
-import { changeTextProps, DEFAULT_FONT_LIST, type TextProps, useScreenshot } from "~/entities/presentation"
+import { type TextProps, changeTextProps, DEFAULT_FONT_LIST, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import {
   Select,
   SelectContent,
@@ -35,11 +35,11 @@ import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolb
 export function TextMode({ isActive }: ModeProps) {
   const textProps = useAppSelector((state) => state.presentation.toolbar.textProps)
   const dispatch = useAppDispatch()
-  const { takeScreenshot } = useScreenshot()
+  const { call } = useDebouncedFunctions()
 
   const applyChanges = (props: Partial<TextProps>) => {
     dispatch(changeTextProps(props))
-    if (takeScreenshot) takeScreenshot()
+    call(TAKE_SCREENSHOT_ID)
   }
 
   return (
