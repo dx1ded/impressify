@@ -17,4 +17,5 @@ type Mutation {
   createPresentation(name: String!, template: String!): Presentation
   renamePresentation(id: ID!, name: String!): Presentation
   deletePresentation(id: ID!): Boolean
+  copyPresentation(id: ID!): Presentation
 }

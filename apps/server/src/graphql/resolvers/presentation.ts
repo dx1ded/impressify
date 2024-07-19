@@ -1,3 +1,4 @@
+import _ from "lodash"
 import { ILike, In } from "typeorm"
 import type { ApolloContext } from ".."
 import type { Resolvers } from "../__generated__"
@@ -5,6 +6,9 @@ import { presentationRepository, slideRepository, userRepository, historyReposit
 import { Presentation } from "../../entities/Presentation"
 import { History } from "../../entities/History"
 import { Slide } from "../../entities/Slide"
+import { Text } from "../../entities/Text"
+import { Image } from "../../entities/Image"
+import { Shape } from "../../entities/Shape"
 
 export default {
   Query: {
@@ -82,6 +86,61 @@ export default {
 
       await presentationRepository.delete({ id })
       return true
+    },
+    async copyPresentation(__, { id }, { user }) {
+      if (!user) return null
+
+      const presentation = await presentationRepository.findOne({
+        relations: ["slides", "slides.elements"],
+        where: { id },
+      })
+
+      const newPresentation = new Presentation(presentation.name, [await userRepository.findOneBy({ id: user.id })])
+      const history = new History(newPresentation)
+      history.records = []
+      newPresentation.history = history
+      newPresentation.slides = presentation.slides.map((slide) => {
+        const newSlide = new Slide(newPresentation)
+        newSlide.bgColor = slide.bgColor
+        newSlide.transition = slide.transition
+        newSlide.thumbnailUrl = slide.thumbnailUrl
+        newSlide.elements = slide.elements.map((element) => {
+          const commonProps = {
+            ..._.pick(element, ["id", "x", "y", "width", "height", "angle", "scaleX", "scaleY"]),
+            slide: newSlide,
+          }
+          if (element instanceof Text) {
+            return new Text({
+              ...commonProps,
+              ..._.pick(element, [
+                "text",
+                "textColor",
+                "fillColor",
+                "borderColor",
+                "fontFamily",
+                "fontSize",
+                "bold",
+                "italic",
+                "underlined",
+                "alignment",
+                "lineHeight",
+              ]),
+            })
+          }
+          if (element instanceof Image) {
+            return new Image({
+              ...commonProps,
+              imageUrl: element.imageUrl,
+            })
+          }
+          return new Shape({
+            ...commonProps,
+            ..._.pick(element, ["type", "fillColor", "strokeColor", "strokeWidth", "proportional"]),
+          })
+        })
+        return newSlide
+      })
+      return presentationRepository.save(newPresentation)
     },
   },
   Presentation: {

@@ -19,7 +19,7 @@ interface SlideItemProps {
 export function SlideItem({ slide, index }: SlideItemProps) {
   const dispatch = useAppDispatch()
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
-  const { flush, flushWithPattern, deleteWithPattern, cancel } = useDebouncedFunctions()
+  const { flush, flushWithPattern, deleteWithPattern, deleteDebounced, cancel } = useDebouncedFunctions()
 
   return (
     <div className="group flex h-28 w-full flex-shrink-0 gap-2">
@@ -31,9 +31,10 @@ export function SlideItem({ slide, index }: SlideItemProps) {
           <CopyIcon
             className="h-full w-full"
             onClick={() => {
-              flush(TAKE_SCREENSHOT_ID)
               flushWithPattern(EDIT_ELEMENT_ID)
+              flush(TAKE_SCREENSHOT_ID)
               deleteWithPattern(EDIT_ELEMENT_ID)
+              deleteDebounced(TAKE_SCREENSHOT_ID)
               dispatch(copySlide(slide.id))
             }}
           />
@@ -54,9 +55,10 @@ export function SlideItem({ slide, index }: SlideItemProps) {
         type="button"
         className="w-full"
         onClick={() => {
-          flush(TAKE_SCREENSHOT_ID)
           flushWithPattern(EDIT_ELEMENT_ID)
+          flush(TAKE_SCREENSHOT_ID)
           deleteWithPattern(EDIT_ELEMENT_ID)
+          deleteDebounced(TAKE_SCREENSHOT_ID)
           dispatch(setCurrentSlide(index))
         }}>
         <img

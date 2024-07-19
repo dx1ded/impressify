@@ -1,8 +1,10 @@
 import { DownloadIcon, Files, Info, PencilLine, SquarePlus, Trash2, UserPlus } from "lucide-react"
+import { useDispatch } from "react-redux"
 
-import { DEFAULT_NAME } from "~/entities/presentation"
+import { copySlide, DEFAULT_NAME, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import { CopyPresentation } from "~/features/copy-presentation"
 import { CreatePresentation } from "~/features/create-presentation"
-import { useDebouncedFunctions } from "~/shared/model"
+import { useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import {
   MenubarContent,
   MenubarItem,
@@ -15,7 +17,13 @@ import {
 } from "~/shared/ui-kit/menubar"
 
 export function File() {
-  const { flushAll, deleteAll } = useDebouncedFunctions()
+  const presentationId = useAppSelector((state) => state.presentation.presentation.id)
+  const slides = useAppSelector((state) => state.presentation.presentation.slides)
+  const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
+  const dispatch = useDispatch()
+  const { flush, flushAll, flushWithPattern, deleteAll } = useDebouncedFunctions()
+
+  const slide = slides[currentSlide]
 
   return (
     <MenubarMenu>
@@ -47,8 +55,25 @@ export function File() {
             Make a copy
           </MenubarSubTrigger>
           <MenubarSubContent>
-            <MenubarItem>Current slide</MenubarItem>
-            <MenubarItem>Entire presentation</MenubarItem>
+            <MenubarItem
+              onClick={() => {
+                flushWithPattern(EDIT_ELEMENT_ID)
+                flush(TAKE_SCREENSHOT_ID)
+                dispatch(copySlide(slide.id))
+              }}>
+              Current slide
+            </MenubarItem>
+            <CopyPresentation>
+              {(copyPresentation) => (
+                <MenubarItem
+                  onClick={() => {
+                    flushAll()
+                    copyPresentation(presentationId)
+                  }}>
+                  Entire presentation
+                </MenubarItem>
+              )}
+            </CopyPresentation>
           </MenubarSubContent>
         </MenubarSub>
         <MenubarSeparator />

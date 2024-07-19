@@ -62,6 +62,7 @@ export type Image = Element & {
 export type Mutation = {
   __typename?: 'Mutation';
   addRecord?: Maybe<HistoryRecord>;
+  copyPresentation?: Maybe<Presentation>;
   createPresentation?: Maybe<Presentation>;
   deletePresentation?: Maybe<Scalars['Boolean']['output']>;
   renamePresentation?: Maybe<Presentation>;
@@ -70,6 +71,11 @@ export type Mutation = {
 
 export type MutationAddRecordArgs = {
   presentationId: Scalars['String']['input'];
+};
+
+
+export type MutationCopyPresentationArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -351,6 +357,7 @@ export type ImageResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addRecord?: Resolver<Maybe<ResolversTypes['HistoryRecord']>, ParentType, ContextType, RequireFields<MutationAddRecordArgs, 'presentationId'>>;
+  copyPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCopyPresentationArgs, 'id'>>;
   createPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCreatePresentationArgs, 'name' | 'template'>>;
   deletePresentation?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePresentationArgs, 'id'>>;
   renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
