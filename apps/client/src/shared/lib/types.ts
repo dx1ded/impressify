@@ -6,7 +6,7 @@ export type PolymorphicProps<T extends ElementType> = {
 
 export type FeatureCallback<CallbackArguments extends unknown[] = []> = (
   ...args: CallbackArguments
-) => void | Promise<void>
+) => unknown | Promise<unknown>
 
 export type ChildrenAsCallback<CallbackArguments extends unknown[] = []> = {
   children(_: FeatureCallback<CallbackArguments>, loading: boolean): ReactNode

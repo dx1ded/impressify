@@ -54,15 +54,16 @@ export default async function (fastify: FastifyInstance) {
         })
       }
 
-      const { id, first_name, last_name, image_url } = evt.data as UserJSON
+      const { id, first_name, last_name, email_addresses, image_url } = evt.data as UserJSON
       const eventType = evt.type
 
       if (eventType === UserWebhookEventTypes.USER_CREATED) {
-        await userRepository.save(new User(id, first_name, last_name, image_url))
+        await userRepository.save(new User(id, first_name, last_name, email_addresses[0].email_address, image_url))
       } else if (eventType === UserWebhookEventTypes.USER_UPDATE) {
         const user = await userRepository.findOneBy({ id })
         user.name = `${first_name} ${last_name}`
         user.profilePicUrl = image_url
+        user.email = email_addresses[0].email_address
         await userRepository.save(user)
       } else if (eventType === UserWebhookEventTypes.USER_DELETED) {
         await userRepository.delete({ id })

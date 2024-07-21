@@ -58,6 +58,39 @@ export default {
         name: ILike(`${name}%`),
       })
     },
+    async getPresentationInfo(_, { id }, { user }) {
+      if (!user) return null
+
+      const presentation = await presentationRepository.findOne({
+        relations: ["users", "slides", "slides.elements"],
+        where: { id },
+      })
+
+      if (!presentation) return null
+
+      const totalSlides = presentation.slides.length
+      const totalUsers = presentation.users.length
+      const totalTextElements = presentation.slides.reduce(
+        (acc, slide) => acc + slide.elements.filter((el) => el instanceof Text).length,
+        0,
+      )
+      const totalImageElements = presentation.slides.reduce(
+        (acc, slide) => acc + slide.elements.filter((el) => el instanceof Image).length,
+        0,
+      )
+      const totalShapeElements = presentation.slides.reduce(
+        (acc, slide) => acc + slide.elements.filter((el) => el instanceof Shape).length,
+        0,
+      )
+
+      return {
+        totalSlides,
+        totalUsers,
+        totalTextElements,
+        totalImageElements,
+        totalShapeElements,
+      }
+    },
   },
   Mutation: {
     async createPresentation(_, { name }, { user }) {

@@ -12,6 +12,9 @@ export class User implements IUser {
   name: string
 
   @Column()
+  email: string
+
+  @Column()
   profilePicUrl: string
 
   @ManyToMany(() => Presentation, (presentation) => presentation.users)
@@ -20,9 +23,10 @@ export class User implements IUser {
   @OneToMany(() => HistoryRecord, (record) => record.user)
   records: Relation<HistoryRecord[]>
 
-  constructor(id: string, firstName: string, lastName: string, profilePicUrl: string) {
+  constructor(id: string, firstName: string, lastName: string, email: string, profilePicUrl: string) {
     this.id = id
     this.name = `${firstName} ${lastName}`
+    this.email = email
     this.profilePicUrl = profilePicUrl
   }
 }

@@ -19,8 +19,10 @@ const documents = {
     "#graphql\n  mutation CopyPresentation($id: ID!) {\n    copyPresentation(id: $id) {\n      id\n    }\n  }\n": types.CopyPresentationDocument,
     "#graphql\n  mutation CreatePresentation($name: String!, $template: String!) {\n    createPresentation(name: $name, template: $template) {\n      id\n    }\n  }\n": types.CreatePresentationDocument,
     "#graphql\n  mutation DeletePresentation($presentationId: ID!) {\n    deletePresentation(id: $presentationId)\n  }\n": types.DeletePresentationDocument,
+    "#graphql\n  query GetPresentationInfo($id: String!) {\n    getPresentationInfo(id: $id) {\n      totalImageElements\n      totalShapeElements\n      totalSlides\n      totalTextElements\n      totalUsers\n    }\n  }\n": types.GetPresentationInfoDocument,
     "#graphql\n  mutation RenamePresentation($presentationId: ID!, $name: String!) {\n    renamePresentation(id: $presentationId, name: $name) {\n      id\n    }\n  }\n": types.RenamePresentationDocument,
     "#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            id\n          }\n        }\n      }\n    }\n  }\n": types.SearchPresentationsDocument,
+    "#graphql\n  mutation Invite($email: String!, $presentationId: String!) {\n    invite(email: $email, presentationId: $presentationId)\n  }\n": types.InviteDocument,
 };
 
 /**
@@ -64,11 +66,19 @@ export function gql(source: "#graphql\n  mutation DeletePresentation($presentati
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "#graphql\n  query GetPresentationInfo($id: String!) {\n    getPresentationInfo(id: $id) {\n      totalImageElements\n      totalShapeElements\n      totalSlides\n      totalTextElements\n      totalUsers\n    }\n  }\n"): (typeof documents)["#graphql\n  query GetPresentationInfo($id: String!) {\n    getPresentationInfo(id: $id) {\n      totalImageElements\n      totalShapeElements\n      totalSlides\n      totalTextElements\n      totalUsers\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "#graphql\n  mutation RenamePresentation($presentationId: ID!, $name: String!) {\n    renamePresentation(id: $presentationId, name: $name) {\n      id\n    }\n  }\n"): (typeof documents)["#graphql\n  mutation RenamePresentation($presentationId: ID!, $name: String!) {\n    renamePresentation(id: $presentationId, name: $name) {\n      id\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            id\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            id\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "#graphql\n  mutation Invite($email: String!, $presentationId: String!) {\n    invite(email: $email, presentationId: $presentationId)\n  }\n"): (typeof documents)["#graphql\n  mutation Invite($email: String!, $presentationId: String!) {\n    invite(email: $email, presentationId: $presentationId)\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

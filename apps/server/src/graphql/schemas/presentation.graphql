@@ -11,6 +11,15 @@ type Query {
   findUserPresentations(preview: Boolean!, sortBy: String!): [Presentation!]
   getPresentation(id: String!): Presentation
   searchPresentations(name: String!): [Presentation!]
+  getPresentationInfo(id: String!): PresentationInfo
+}
+
+type PresentationInfo {
+  totalSlides: Int!
+  totalUsers: Int!
+  totalTextElements: Int!
+  totalImageElements: Int!
+  totalShapeElements: Int!
 }
 
 type Mutation {

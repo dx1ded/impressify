@@ -1,6 +1,7 @@
 type User {
   id: ID!
   name: String!
+  email: String!
   profilePicUrl: String!
   presentations: [Presentation!]!
   records: [HistoryRecord!]!
@@ -8,4 +9,8 @@ type User {
 
 type Query {
   user(id: ID!): User
+}
+
+type Mutation {
+  invite(email: String!, presentationId: String!): Boolean
 }

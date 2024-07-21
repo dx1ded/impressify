@@ -65,6 +65,7 @@ export type Mutation = {
   copyPresentation?: Maybe<Presentation>;
   createPresentation?: Maybe<Presentation>;
   deletePresentation?: Maybe<Scalars['Boolean']['output']>;
+  invite?: Maybe<Scalars['Boolean']['output']>;
   renamePresentation?: Maybe<Presentation>;
 };
 
@@ -90,6 +91,12 @@ export type MutationDeletePresentationArgs = {
 };
 
 
+export type MutationInviteArgs = {
+  email: Scalars['String']['input'];
+  presentationId: Scalars['String']['input'];
+};
+
+
 export type MutationRenamePresentationArgs = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
@@ -104,10 +111,20 @@ export type Presentation = {
   users: Array<User>;
 };
 
+export type PresentationInfo = {
+  __typename?: 'PresentationInfo';
+  totalImageElements: Scalars['Int']['output'];
+  totalShapeElements: Scalars['Int']['output'];
+  totalSlides: Scalars['Int']['output'];
+  totalTextElements: Scalars['Int']['output'];
+  totalUsers: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   findUserPresentations?: Maybe<Array<Presentation>>;
   getPresentation?: Maybe<Presentation>;
+  getPresentationInfo?: Maybe<PresentationInfo>;
   searchPresentations?: Maybe<Array<Presentation>>;
   user?: Maybe<User>;
 };
@@ -120,6 +137,11 @@ export type QueryFindUserPresentationsArgs = {
 
 
 export type QueryGetPresentationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryGetPresentationInfoArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -188,6 +210,7 @@ export type Text = Element & {
 
 export type User = {
   __typename?: 'User';
+  email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   presentations: Array<Presentation>;
@@ -281,6 +304,7 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Presentation: ResolverTypeWrapper<Presentation>;
+  PresentationInfo: ResolverTypeWrapper<PresentationInfo>;
   Query: ResolverTypeWrapper<{}>;
   Shape: ResolverTypeWrapper<Shape>;
   Slide: ResolverTypeWrapper<Omit<Slide, 'elements'> & { elements: Array<ResolversTypes['Element']> }>;
@@ -301,6 +325,7 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars['Int']['output'];
   Mutation: {};
   Presentation: Presentation;
+  PresentationInfo: PresentationInfo;
   Query: {};
   Shape: Shape;
   Slide: Omit<Slide, 'elements'> & { elements: Array<ResolversParentTypes['Element']> };
@@ -360,6 +385,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   copyPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCopyPresentationArgs, 'id'>>;
   createPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCreatePresentationArgs, 'name' | 'template'>>;
   deletePresentation?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePresentationArgs, 'id'>>;
+  invite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationInviteArgs, 'email' | 'presentationId'>>;
   renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
 }>;
 
@@ -372,9 +398,19 @@ export type PresentationResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PresentationInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationInfo'] = ResolversParentTypes['PresentationInfo']> = ResolversObject<{
+  totalImageElements?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalShapeElements?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalSlides?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalTextElements?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  totalUsers?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   findUserPresentations?: Resolver<Maybe<Array<ResolversTypes['Presentation']>>, ParentType, ContextType, RequireFields<QueryFindUserPresentationsArgs, 'preview' | 'sortBy'>>;
   getPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<QueryGetPresentationArgs, 'id'>>;
+  getPresentationInfo?: Resolver<Maybe<ResolversTypes['PresentationInfo']>, ParentType, ContextType, RequireFields<QueryGetPresentationInfoArgs, 'id'>>;
   searchPresentations?: Resolver<Maybe<Array<ResolversTypes['Presentation']>>, ParentType, ContextType, RequireFields<QuerySearchPresentationsArgs, 'name'>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
 }>;
@@ -433,6 +469,7 @@ export type TextResolvers<ContextType = any, ParentType extends ResolversParentT
 }>;
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   presentations?: Resolver<Array<ResolversTypes['Presentation']>, ParentType, ContextType>;
@@ -449,6 +486,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Image?: ImageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Presentation?: PresentationResolvers<ContextType>;
+  PresentationInfo?: PresentationInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Shape?: ShapeResolvers<ContextType>;
   Slide?: SlideResolvers<ContextType>;

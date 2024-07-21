@@ -45,15 +45,15 @@ function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
           </DialogHeader>
           <div className="!mt-4 flex items-center gap-2">
             <Input {...register("name")} />
-            <PopoverClose asChild>
-              <Button
-                size="sm"
-                className="h-full px-7"
-                // Extra callback because handleSubmit calls e.stopPropagation by default, and it doesn't close the popover
-                onClick={() => handleSubmit((data) => renamePresentation(presentationId, data.name))()}>
-                Save
-              </Button>
-            </PopoverClose>
+            {/* <PopoverClose asChild> */}
+            <Button
+              size="sm"
+              className="h-full px-7"
+              // Extra callback because handleSubmit calls e.stopPropagation by default, and it doesn't close the popover
+              onClick={() => handleSubmit((data) => renamePresentation(presentationId, data.name))()}>
+              Save
+            </Button>
+            {/* </PopoverClose> */}
           </div>
           {formState.errors.name && (
             <small className="!mt-3 block font-medium text-red-400">{formState.errors.name.message}</small>
@@ -66,6 +66,6 @@ function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
 
 export type IRenameDialog = ReturnType<typeof Wrapper>
 
-export function RenamePresentationDialog({ children }: { children: (alert: IRenameDialog) => ReactNode }) {
+export function RenamePresentationDialog({ children }: { children: (dialog: IRenameDialog) => ReactNode }) {
   return <RenamePresentation>{(renamePresentation) => children(Wrapper(renamePresentation))}</RenamePresentation>
 }

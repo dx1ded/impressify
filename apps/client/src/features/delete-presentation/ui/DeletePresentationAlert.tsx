@@ -16,7 +16,15 @@ import {
 } from "~/shared/ui-kit/alert-dialog"
 
 function Wrapper(deletePresentation: FeatureCallback<[string]>) {
-  return function DeleteAlert({ children, presentationId }: { children: ReactNode; presentationId: string }) {
+  return function DeleteAlert({
+    children,
+    presentationId,
+    beforeHandler,
+  }: {
+    children: ReactNode
+    presentationId: string
+    beforeHandler?: () => void
+  }) {
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -29,12 +37,18 @@ function Wrapper(deletePresentation: FeatureCallback<[string]>) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <PopoverClose asChild>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-            </PopoverClose>
-            <PopoverClose asChild>
-              <AlertDialogAction onClick={() => deletePresentation(presentationId)}>Delete</AlertDialogAction>
-            </PopoverClose>
+            {/* <PopoverClose asChild> */}
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            {/* </PopoverClose> */}
+            {/* <PopoverClose asChild> */}
+            <AlertDialogAction
+              onClick={() => {
+                if (beforeHandler) beforeHandler()
+                deletePresentation(presentationId)
+              }}>
+              Delete
+            </AlertDialogAction>
+            {/* </PopoverClose> */}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
