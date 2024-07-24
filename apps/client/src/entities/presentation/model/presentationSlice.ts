@@ -23,10 +23,14 @@ import {
   DEFAULT_STROKE_COLOR,
   DEFAULT_STROKE_WIDTH,
   MAX_HISTORY_LENGTH,
+  COPIED_ELEMENT_X_DIF,
+  COPIED_ELEMENT_Y_DIF,
+  type TextProps,
 } from "~/entities/presentation"
 
 interface PresentationState {
   presentation: Presentation
+  copiedElement: Omit<ElementProps, "id"> | null
   history: {
     undoStack: HistoryRecord[]
     redoStack: HistoryRecord[]
@@ -50,6 +54,7 @@ const initialState: PresentationState = {
     name: "",
     slides: [],
   },
+  copiedElement: null,
   history: {
     undoStack: [],
     redoStack: [],
@@ -240,15 +245,57 @@ const presentationSlice = createSlice({
         element.id === payload.id ? ({ ...element, ...payload } as ElementProps) : element,
       )
     },
-    deleteElement: (state, { payload }: PayloadAction<number>) => {
+    deleteElement: (state) => {
       const slide = state.presentation.slides[state.currentSlide]
-      const index = slide.elements.findIndex((el) => el.id === payload)!
+      const index = slide.elements.findIndex((el) => el.id === state.selectedId)!
       // Pushing record to history
       state.history.undoStack.push({ type: "ADD", element: slide.elements[index], position: index })
       if (state.history.undoStack.length > MAX_HISTORY_LENGTH) state.history.undoStack.pop()
       state.history.redoStack = []
       // Updating state
-      slide.elements = slide.elements.filter((el) => el.id !== payload)
+      slide.elements = slide.elements.filter((el) => el.id !== state.selectedId)
+    },
+    copyElement: (state) => {
+      const element = state.presentation.slides[state.currentSlide].elements.find((el) => el.id === state.selectedId)!
+      // It's not going to break the code if I don't omit id because getConfig functions would redefine it. However, it's always better to make sure
+      state.copiedElement = _.omit(element, ["id"])
+    },
+    pasteElement: (state) => {
+      const slide = state.presentation.slides[state.currentSlide]
+      const { copiedElement } = state
+      if (!copiedElement) return
+      const newEl = {
+        ...copiedElement,
+        id: Math.random(),
+        x: copiedElement.x + COPIED_ELEMENT_X_DIF,
+        y: copiedElement.y + COPIED_ELEMENT_Y_DIF,
+      } as ElementProps
+      slide.elements.push(newEl)
+      state.selectedId = newEl.id
+      // Redefining copiedElement so coordinates will not be the same when paste 2 and more elements
+      state.copiedElement = _.omit(newEl, ["id"])
+      // Pushing record to history
+      state.history.undoStack.push({ type: "DELETE", id: newEl.id })
+      if (state.history.undoStack.length > MAX_HISTORY_LENGTH) state.history.undoStack.pop()
+      state.history.redoStack = []
+    },
+    duplicateElement: (state) => {
+      const slide = state.presentation.slides[state.currentSlide]
+      const element = slide.elements.find((el) => el.id === state.selectedId)!
+      const duplicate = {
+        ...element,
+        id: Math.random(),
+        x: element.x + COPIED_ELEMENT_X_DIF,
+        y: element.y + COPIED_ELEMENT_Y_DIF,
+      } as ElementProps
+      slide.elements.push(duplicate)
+      state.selectedId = duplicate.id
+      // Redefining copiedElement so coordinates will not be the same when paste 2 and more elements
+      state.copiedElement = _.omit(duplicate, ["id"])
+      // Pushing record to history
+      state.history.undoStack.push({ type: "DELETE", id: duplicate.id })
+      if (state.history.undoStack.length > MAX_HISTORY_LENGTH) state.history.undoStack.pop()
+      state.history.redoStack = []
     },
     changeTextProps: (state, { payload }: PayloadAction<Partial<TextEditProps>>) => {
       state.toolbar.textProps = { ...state.toolbar.textProps, ...payload }
@@ -311,6 +358,9 @@ export const {
   selectElement,
   editElement,
   deleteElement,
+  copyElement,
+  pasteElement,
+  duplicateElement,
   changeTextProps,
   changeImageProps,
   changeShapeProps,

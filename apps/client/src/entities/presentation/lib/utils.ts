@@ -25,6 +25,7 @@ import {
   DEFAULT_TEXT_HEIGHT,
   DEFAULT_TEXT_WIDTH,
   DEFAULT_STROKE_WIDTH,
+  EDIT_ELEMENT_ID,
 } from "~/entities/presentation"
 import { createImage, ptToPx } from "~/shared/lib"
 import { EditableText, type EditableTextConfig } from "~/shared/ui/EditableText"
@@ -39,6 +40,8 @@ export const formatDate = (timestamp: number) => {
       ? `Yesterday, ${dayjsInstance.format("h.mm a")}`
       : dayjsInstance.format("MMM D, YYYY")
 }
+
+export const generateEditElementId = (id: number) => `${EDIT_ELEMENT_ID}-${id}`
 
 export const textProps = (props: ElementProps): EditableTextConfig => {
   if (props.__typename !== "Text") return {}

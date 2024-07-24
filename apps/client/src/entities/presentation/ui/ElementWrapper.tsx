@@ -7,6 +7,7 @@ import {
   type ElementProps,
   type ElementComponent,
   type Mode,
+  generateEditElementId,
   imageProps,
   shapeProps,
   textProps,
@@ -18,7 +19,6 @@ import {
   setIsEditing,
   MIN_ELEMENT_WIDTH,
   MIN_ELEMENT_HEIGHT,
-  EDIT_ELEMENT_ID,
   TAKE_SCREENSHOT_ID,
 } from "~/entities/presentation"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
@@ -55,7 +55,7 @@ export const ElementWrapper = memo(function ElementWrapper({
   }, [isSelected, isEditing])
 
   const debouncedEdit = register(
-    `${EDIT_ELEMENT_ID}-${props.id}`,
+    generateEditElementId(props.id),
     (newProps: Partial<ElementProps>) => {
       // Using id to avoid transformations being applied for `selectedId` (which would be used if not id provided)
       dispatch(editElement({ ...newProps, id: props.id }))
