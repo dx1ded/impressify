@@ -38,7 +38,7 @@ export function Templates() {
   return (
     <div className="grid grid-cols-6 gap-4">
       <CreatePresentation>
-        {(createPresentation, loading) => (
+        {(createPresentation, { loading }) => (
           <>
             {loading && <Loader />}
             {mock.map((template, i) => (

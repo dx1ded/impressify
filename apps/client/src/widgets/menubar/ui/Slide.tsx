@@ -1,8 +1,7 @@
 import { ArrowLeftRightIcon, Copy, DropletIcon, Plus, Trash2 } from "lucide-react"
 
 import { AddSlide } from "~/features/add-slide"
-import { ChangeSlideBackgroundDialog } from "~/features/change-slide-background"
-import { ChangeSlideTransitionSheet } from "~/features/change-slide-transition"
+import { ChangeSlideBackgroundDialog, ChangeSlideTransitionSheet } from "~/entities/presentation"
 import { DeleteSlide } from "~/features/delete-slide"
 import { DuplicateSlide } from "~/features/duplicate-slide/ui"
 import { useAppSelector } from "~/shared/model"

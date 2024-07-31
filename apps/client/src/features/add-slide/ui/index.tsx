@@ -1,12 +1,10 @@
-import { forwardRef, type ReactNode } from "react"
+import { forwardRef } from "react"
 
 import { addSlide, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 
-export const AddSlide = forwardRef<HTMLElement, { children: (_addSlide: () => void) => ReactNode }>(function AddSlide(
-  { children },
-  _,
-) {
+export const AddSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(function AddSlide({ children }, _) {
   const dispatch = useAppDispatch()
   const { flush, flushWithPattern } = useDebouncedFunctions()
 

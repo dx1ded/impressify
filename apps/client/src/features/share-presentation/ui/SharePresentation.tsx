@@ -1,17 +1,12 @@
-import { type MutationFunction, type MutationResult, useMutation } from "@apollo/client"
-import type { ReactNode } from "react"
+import { useMutation } from "@apollo/client"
 
 import type { InviteMutation, InviteMutationVariables } from "~/__generated__/graphql"
 import { INVITE_USER } from "~/features/share-presentation/model"
+import type { ChildrenAsCallbackWithApolloMutation } from "~/shared/lib"
 
 export function SharePresentation({
   children,
-}: {
-  children: (
-    sharePresentation: MutationFunction<InviteMutation, InviteMutationVariables>,
-    result: MutationResult<InviteMutation>,
-  ) => ReactNode
-}) {
+}: ChildrenAsCallbackWithApolloMutation<InviteMutation, InviteMutationVariables>) {
   const [sharePresentation, result] = useMutation<InviteMutation, InviteMutationVariables>(INVITE_USER)
 
   return children(sharePresentation, result)

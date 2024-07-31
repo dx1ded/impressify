@@ -1,4 +1,4 @@
-import { CopyIcon, Trash2Icon } from "lucide-react"
+import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
 
 import { type SlideProps, EDIT_ELEMENT_ID, setCurrentSlide, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import { DeleteSlide } from "~/features/delete-slide"
@@ -19,12 +19,13 @@ export function SlideItem({ slide, index }: SlideItemProps) {
   return (
     <div className="group flex h-28 w-full flex-shrink-0 gap-2">
       <div className="flex h-full flex-col items-center gap-2">
-        <small className="mb-auto font-bold">{index + 1}</small>
+        <small className="font-bold">{index + 1}</small>
+        {slide.transition !== "none" && <SparklesIcon className="h-[1.125rem] w-[1.125rem] text-yellow-500" />}
         <DuplicateSlide>
           {(duplicateSlide) => (
             <button
               type="button"
-              className="invisible h-[1.125rem] w-[1.125rem] opacity-0 transition duration-300 group-hover:visible group-hover:opacity-100"
+              className="invisible mt-auto h-[1.125rem] w-[1.125rem] opacity-0 transition duration-300 group-hover:visible group-hover:opacity-100"
               onClick={() => duplicateSlide(slide.id)}>
               <CopyIcon className="h-full w-full" />
             </button>

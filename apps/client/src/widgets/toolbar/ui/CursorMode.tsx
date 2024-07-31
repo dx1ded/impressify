@@ -1,6 +1,5 @@
 import type { ModeProps } from "~/widgets/toolbar/lib"
-import { ChangeSlideBackgroundDialog } from "~/features/change-slide-background"
-import { ChangeSlideTransitionSheet } from "~/features/change-slide-transition"
+import { ChangeSlideBackgroundDialog, ChangeSlideTransitionSheet } from "~/entities/presentation"
 import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolbar"
 
 export function CursorMode({ isActive }: ModeProps) {

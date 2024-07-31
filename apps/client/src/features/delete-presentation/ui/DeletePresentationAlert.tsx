@@ -1,4 +1,3 @@
-import { PopoverClose } from "@radix-ui/react-popover"
 import type { ReactNode } from "react"
 
 import { DeletePresentation } from "~/features/delete-presentation"
@@ -37,10 +36,7 @@ function Wrapper(deletePresentation: FeatureCallback<[string]>) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            {/* <PopoverClose asChild> */}
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            {/* </PopoverClose> */}
-            {/* <PopoverClose asChild> */}
             <AlertDialogAction
               onClick={() => {
                 if (beforeHandler) beforeHandler()
@@ -48,7 +44,6 @@ function Wrapper(deletePresentation: FeatureCallback<[string]>) {
               }}>
               Delete
             </AlertDialogAction>
-            {/* </PopoverClose> */}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

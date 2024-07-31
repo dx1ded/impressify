@@ -1,20 +1,25 @@
-import { useMutation } from "@apollo/client"
-import { useCallback } from "react"
+import { type MutationResult, useMutation } from "@apollo/client"
+import { type ReactNode, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
 import type { CreatePresentationMutation, CreatePresentationMutationVariables } from "~/__generated__/graphql"
 import { clear, DEFAULT_NAME } from "~/entities/presentation"
 import { CREATE_PRESENTATION } from "~/features/create-presentation/model"
-import type { ChildrenAsCallback } from "~/shared/lib"
 import { useAppDispatch } from "~/shared/model"
 
-export function CreatePresentation({ children }: ChildrenAsCallback<[string]>) {
+interface CreatePresentationProps {
+  children(
+    createPresentation: (template: string) => void,
+    result: MutationResult<CreatePresentationMutation>,
+  ): ReactNode
+}
+
+export function CreatePresentation({ children }: CreatePresentationProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const [sendCreatePresentation, { loading }] = useMutation<
-    CreatePresentationMutation,
-    CreatePresentationMutationVariables
-  >(CREATE_PRESENTATION)
+  const [sendCreatePresentation, result] = useMutation<CreatePresentationMutation, CreatePresentationMutationVariables>(
+    CREATE_PRESENTATION,
+  )
 
   const createPresentation = useCallback(
     async (template: string) => {
@@ -33,5 +38,5 @@ export function CreatePresentation({ children }: ChildrenAsCallback<[string]>) {
     [navigate, dispatch, sendCreatePresentation],
   )
 
-  return children(createPresentation, loading)
+  return children(createPresentation, result)
 }

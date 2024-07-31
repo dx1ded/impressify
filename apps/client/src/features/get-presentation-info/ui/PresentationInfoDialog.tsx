@@ -16,20 +16,20 @@ export function PresentationInfoDialog({ children, presentationId }: { children:
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent forceMount>
         <DialogHeader>
           <DialogTitle>Presentation information</DialogTitle>
           <DialogDescription hidden>Information about the presentation</DialogDescription>
         </DialogHeader>
         <GetPresentationInfo presentationId={presentationId}>
-          {(data, loading) => (
+          {({ data, loading }) => (
             <div className="grid gap-2.5">
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
                 <Small>Total slides</Small>
                 {loading ? (
                   <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Small className="!mt-0 font-semibold">{data?.totalSlides}</Small>
+                  <Small className="!mt-0 font-semibold">{data?.getPresentationInfo?.totalSlides}</Small>
                 )}
               </div>
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
@@ -37,7 +37,7 @@ export function PresentationInfoDialog({ children, presentationId }: { children:
                 {loading ? (
                   <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Small className="!mt-0 font-semibold">{data?.totalUsers}</Small>
+                  <Small className="!mt-0 font-semibold">{data?.getPresentationInfo?.totalUsers}</Small>
                 )}
               </div>
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
@@ -45,7 +45,7 @@ export function PresentationInfoDialog({ children, presentationId }: { children:
                 {loading ? (
                   <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Small className="!mt-0 font-semibold">{data?.totalTextElements}</Small>
+                  <Small className="!mt-0 font-semibold">{data?.getPresentationInfo?.totalTextElements}</Small>
                 )}
               </div>
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
@@ -53,7 +53,7 @@ export function PresentationInfoDialog({ children, presentationId }: { children:
                 {loading ? (
                   <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Small className="!mt-0 font-semibold">{data?.totalImageElements}</Small>
+                  <Small className="!mt-0 font-semibold">{data?.getPresentationInfo?.totalImageElements}</Small>
                 )}
               </div>
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
@@ -61,7 +61,7 @@ export function PresentationInfoDialog({ children, presentationId }: { children:
                 {loading ? (
                   <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Small className="!mt-0 font-semibold">{data?.totalShapeElements}</Small>
+                  <Small className="!mt-0 font-semibold">{data?.getPresentationInfo?.totalShapeElements}</Small>
                 )}
               </div>
             </div>

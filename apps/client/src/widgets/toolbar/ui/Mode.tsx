@@ -34,7 +34,7 @@ export function Mode() {
 
   const changeHandler = (newMode: IMode | "") => {
     if (newMode === "") return
-    // I only handle cursor here because the other mods are controller in InsertText / InsertImage / InsertShape
+    // I only handle cursor here because the other mods are controlled in InsertText / InsertImage / InsertShape
     if (newMode === "cursor") {
       dispatch(setMode("cursor"))
       dispatch(setIsCreating(false))
@@ -54,26 +54,34 @@ export function Mode() {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <ToggleGroupItem value="text" asChild>
-            <InsertText>{(insertText) => <ToolbarButton Icon={TypeIcon} onClick={insertText} />}</InsertText>
-          </ToggleGroupItem>
+          <InsertText>
+            {(insertText) => (
+              <ToggleGroupItem value="text" asChild>
+                <ToolbarButton Icon={TypeIcon} onClick={insertText} />
+              </ToggleGroupItem>
+            )}
+          </InsertText>
         </TooltipTrigger>
         <TooltipContent>Textbox</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <ToggleGroupItem value="image" asChild>
-            <InsertImage>{(insertImage) => <ToolbarButton Icon={ImageIcon} onClick={insertImage} />}</InsertImage>
-          </ToggleGroupItem>
+          <InsertImage>
+            {(insertImage) => (
+              <ToggleGroupItem value="image" asChild>
+                <ToolbarButton Icon={ImageIcon} onClick={insertImage} />
+              </ToggleGroupItem>
+            )}
+          </InsertImage>
         </TooltipTrigger>
         <TooltipContent>Image</TooltipContent>
       </Tooltip>
       <div className="flex items-center">
         <Tooltip>
           <TooltipTrigger asChild>
-            <ToggleGroupItem value="shape" asChild>
-              <InsertShape>
-                {(insertShape) => (
+            <InsertShape>
+              {(insertShape) => (
+                <ToggleGroupItem value="shape" asChild>
                   <ToolbarButton
                     Icon={
                       shape === "line"
@@ -90,9 +98,9 @@ export function Mode() {
                     }
                     onClick={insertShape}
                   />
-                )}
-              </InsertShape>
-            </ToggleGroupItem>
+                </ToggleGroupItem>
+              )}
+            </InsertShape>
           </TooltipTrigger>
           <TooltipContent>Shape</TooltipContent>
         </Tooltip>

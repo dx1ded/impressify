@@ -1,15 +1,11 @@
-import type { ReactNode } from "react"
 import { shallowEqual } from "react-redux"
 
 import { changeShapeProps, NOT_SELECTED, selectElement, setIsCreating, setMode } from "~/entities/presentation"
+import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 // I put this component in features/insert-element because it clearly depends on inserting shapes
-export function ChangeShapesType({
-  children,
-}: {
-  children: (changeShapesType: (newShape: string) => void) => ReactNode
-}) {
+export function ChangeShapesType({ children }: ChildrenAsCallbackWithFn<[string]>) {
   const { shape, mode } = useAppSelector(
     (state) => ({
       shape: state.presentation.toolbar.shapeProps.type,

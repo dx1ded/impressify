@@ -9,5 +9,3 @@ export function SortPresentations() {
     </div>
   )
 }
-
-export * from "./lib"
