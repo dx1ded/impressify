@@ -25,7 +25,6 @@ import {
   MAX_HISTORY_LENGTH,
   COPIED_ELEMENT_X_DIF,
   COPIED_ELEMENT_Y_DIF,
-  type TextProps,
 } from "~/entities/presentation"
 
 interface PresentationState {
@@ -132,7 +131,7 @@ const presentationSlice = createSlice({
         payload: state.presentation.slides.length - 1,
       } as PayloadAction<number>)
     },
-    copySlide: (state, { payload }: PayloadAction<string>) => {
+    duplicateSlide: (state, { payload }: PayloadAction<string>) => {
       const index = state.presentation.slides.findIndex((slide) => slide.id === payload)!
       const slide = state.presentation.slides[index]
       state.presentation.slides.splice(index + 1, 0, {
@@ -348,7 +347,7 @@ export const {
   setIsCreating,
   setIsEditing,
   addSlide,
-  copySlide,
+  duplicateSlide,
   deleteSlide,
   applyHistory,
   setBackground,

@@ -1,10 +1,11 @@
 import { DownloadIcon, Files, Info, PencilLine, SquarePlus, Trash2, UserPlus } from "lucide-react"
-import { shallowEqual, useDispatch } from "react-redux"
+import { shallowEqual } from "react-redux"
 
-import { copySlide, DEFAULT_NAME, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
-import { CopyPresentation } from "~/features/copy-presentation"
+import { DEFAULT_NAME } from "~/entities/presentation"
+import { DuplicatePresentation } from "~/features/duplicate-presentation"
 import { CreatePresentation } from "~/features/create-presentation"
 import { DeletePresentationAlert } from "~/features/delete-presentation"
+import { DuplicateSlide } from "~/features/duplicate-slide"
 import { PresentationInfoDialog } from "~/features/get-presentation-info"
 import { RenamePresentationDialog } from "~/features/rename-presentation"
 import { SharePresentationDialog } from "~/features/share-presentation"
@@ -21,17 +22,16 @@ import {
 } from "~/shared/ui-kit/menubar"
 
 export function File() {
-  const { presentationId, presentationName, currentSlide, slides } = useAppSelector(
+  const { presentationId, presentationName, currentSlide } = useAppSelector(
     (state) => ({
       presentationId: state.presentation.presentation.id,
       presentationName: state.presentation.presentation.name,
-      slides: state.presentation.presentation.slides,
       currentSlide: state.presentation.currentSlide,
     }),
     shallowEqual,
   )
-  const dispatch = useDispatch()
-  const { flush, flushAll, flushWithPattern, deleteAll } = useDebouncedFunctions()
+  const slides = useAppSelector((state) => state.presentation.presentation.slides)
+  const { flushAll, deleteAll } = useDebouncedFunctions()
 
   const slide = slides[currentSlide]
 
@@ -48,7 +48,7 @@ export function File() {
             <CreatePresentation>
               {(createPresentation) => (
                 <MenubarItem
-                  onClick={() => {
+                  onSelect={() => {
                     flushAll()
                     deleteAll()
                     createPresentation(DEFAULT_NAME)
@@ -65,25 +65,14 @@ export function File() {
             Make a copy
           </MenubarSubTrigger>
           <MenubarSubContent>
-            <MenubarItem
-              onClick={() => {
-                flushWithPattern(EDIT_ELEMENT_ID)
-                flush(TAKE_SCREENSHOT_ID)
-                dispatch(copySlide(slide.id))
-              }}>
-              Current slide
-            </MenubarItem>
-            <CopyPresentation>
-              {(copyPresentation) => (
-                <MenubarItem
-                  onClick={() => {
-                    flushAll()
-                    copyPresentation(presentationId)
-                  }}>
-                  Entire presentation
-                </MenubarItem>
+            <DuplicateSlide>
+              {(duplicateSlide) => <MenubarItem onSelect={() => duplicateSlide(slide.id)}>Current slide</MenubarItem>}
+            </DuplicateSlide>
+            <DuplicatePresentation>
+              {(duplicatePresentation) => (
+                <MenubarItem onSelect={() => duplicatePresentation(presentationId)}>Entire presentation</MenubarItem>
               )}
-            </CopyPresentation>
+            </DuplicatePresentation>
           </MenubarSubContent>
         </MenubarSub>
         <MenubarSeparator />

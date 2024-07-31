@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client"
 import { useCallback } from "react"
 
 import type { RenamePresentationMutation, RenamePresentationMutationVariables } from "~/__generated__/graphql"
-import { setRecentPresentations } from "~/entities/presentation"
+import { setName, setRecentPresentations } from "~/entities/presentation"
 import { RENAME_PRESENTATION } from "~/features/rename-presentation/model"
 import type { ChildrenAsCallback } from "~/shared/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
@@ -28,6 +28,7 @@ export function RenamePresentation({ children }: ChildrenAsCallback<[string, str
           ),
         ),
       )
+      dispatch(setName(name))
     },
     [dispatch, recentPresentations, sendRenamePresentation],
   )

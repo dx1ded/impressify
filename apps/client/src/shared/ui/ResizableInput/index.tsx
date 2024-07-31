@@ -1,21 +1,24 @@
-import { type ChangeEvent, cloneElement, type ReactElement, useCallback, useEffect, useRef, useState } from "react"
+import { type ChangeEvent, type ComponentPropsWithoutRef, useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 
-interface ResizableInputProps {
-  /**
-   * Input to render
-   */
-  children: ReactElement
+interface ResizableInputProps extends ComponentPropsWithoutRef<"input"> {
   maxLength?: number
+  // Redefined value because HTMLAttributes has value as string | null | undefined | readonly string
+  value: string
 }
 
 /**
  * To use this component you have to insert <Toaster /> in your main file
  */
-export function ResizableInput({ children, maxLength }: ResizableInputProps) {
-  const [inputValue, setInputValue] = useState(children.props.defaultValue || "")
+export function ResizableInput({ maxLength, value, className, onChange, ...props }: ResizableInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const spanRef = useRef<HTMLSpanElement>(null)
+
+  const changeValue = useCallback((value: string) => {
+    if (!inputRef.current || !spanRef.current) return
+    inputRef.current.value = value
+    spanRef.current.textContent = value
+  }, [])
 
   const changeInputWidth = useCallback(() => {
     if (!spanRef.current || !inputRef.current) return
@@ -24,26 +27,31 @@ export function ResizableInput({ children, maxLength }: ResizableInputProps) {
 
   const inputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (inputRef.current && maxLength && maxLength === e.target.value.length) {
-      inputRef.current.value = inputValue
       return toast.error(`${inputRef.current.dataset.toast} cannot be more than ${maxLength} symbols`, {
         position: "top-right",
       })
     }
-    setInputValue(e.target.value)
-    children.props.onChange(e)
+    changeValue(e.target.value)
+    changeInputWidth()
+    if (onChange) onChange(e)
   }
 
-  useEffect(() => changeInputWidth(), [changeInputWidth, inputValue])
+  useEffect(() => {
+    changeValue(value)
+    changeInputWidth()
+  }, [changeInputWidth, changeValue, value])
 
   return (
     <div className="inline-block">
-      <span ref={spanRef} className={`invisible absolute whitespace-pre ${children.props.className}`}>
-        {inputValue}
-      </span>
-      {cloneElement(children, {
-        ref: inputRef,
-        onChange: inputChangeHandler,
-      })}
+      <span ref={spanRef} className={`invisible absolute whitespace-pre ${className}`} />
+      <input
+        type="text"
+        ref={inputRef}
+        defaultValue={value}
+        className={className}
+        {...props}
+        onChange={inputChangeHandler}
+      />
     </div>
   )
 }

@@ -1,19 +1,16 @@
 import type { ReactNode } from "react"
 
 import { GetPresentationInfo } from "~/features/get-presentation-info/ui/GetPresentationInfo"
-import { Button } from "~/shared/ui-kit/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "~/shared/ui-kit/dialog"
 import { Skeleton } from "~/shared/ui-kit/skeleton"
-import { Small, Text } from "~/shared/ui/Typography"
+import { Small } from "~/shared/ui/Typography"
 
 export function PresentationInfoDialog({ children, presentationId }: { children: ReactNode; presentationId: string }) {
   return (
@@ -26,57 +23,50 @@ export function PresentationInfoDialog({ children, presentationId }: { children:
         </DialogHeader>
         <GetPresentationInfo presentationId={presentationId}>
           {(data, loading) => (
-            <div className="my-1 grid gap-1">
-              <div className="flex items-center justify-between border-b py-1">
+            <div className="grid gap-2.5">
+              <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
                 <Small>Total slides</Small>
                 {loading ? (
-                  <Skeleton className="h-7 w-5" />
+                  <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Text className="!mt-0 font-semibold">{data?.totalSlides}</Text>
+                  <Small className="!mt-0 font-semibold">{data?.totalSlides}</Small>
                 )}
               </div>
-              <div className="flex items-center justify-between border-b py-1">
+              <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
                 <Small>Total users</Small>
                 {loading ? (
-                  <Skeleton className="h-7 w-5" />
+                  <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Text className="!mt-0 font-semibold">{data?.totalUsers}</Text>
+                  <Small className="!mt-0 font-semibold">{data?.totalUsers}</Small>
                 )}
               </div>
-              <div className="flex items-center justify-between border-b py-1">
+              <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
                 <Small>Total text elements</Small>
                 {loading ? (
-                  <Skeleton className="h-7 w-5" />
+                  <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Text className="!mt-0 font-semibold">{data?.totalTextElements}</Text>
+                  <Small className="!mt-0 font-semibold">{data?.totalTextElements}</Small>
                 )}
               </div>
-              <div className="flex items-center justify-between border-b py-1">
+              <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
                 <Small>Total image elements</Small>
                 {loading ? (
-                  <Skeleton className="h-7 w-5" />
+                  <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Text className="!mt-0 font-semibold">{data?.totalImageElements}</Text>
+                  <Small className="!mt-0 font-semibold">{data?.totalImageElements}</Small>
                 )}
               </div>
-              <div className="flex items-center justify-between border-b py-1">
+              <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2.5">
                 <Small>Total shape elements</Small>
                 {loading ? (
-                  <Skeleton className="h-7 w-5" />
+                  <Skeleton className="h-[1.0625.rem] w-4" />
                 ) : (
-                  <Text className="!mt-0 font-semibold">{data?.totalShapeElements}</Text>
+                  <Small className="!mt-0 font-semibold">{data?.totalShapeElements}</Small>
                 )}
               </div>
             </div>
           )}
         </GetPresentationInfo>
-        <DialogFooter>
-          <DialogClose>
-            <Button variant="outline" size="sm" className="px-5">
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

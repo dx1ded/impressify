@@ -65,6 +65,7 @@ export type Mutation = {
   copyPresentation?: Maybe<Presentation>;
   createPresentation?: Maybe<Presentation>;
   deletePresentation?: Maybe<Scalars['Boolean']['output']>;
+  getHelp?: Maybe<Scalars['Boolean']['output']>;
   invite?: Maybe<Scalars['Boolean']['output']>;
   renamePresentation?: Maybe<Presentation>;
 };
@@ -88,6 +89,11 @@ export type MutationCreatePresentationArgs = {
 
 export type MutationDeletePresentationArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationGetHelpArgs = {
+  text: Scalars['String']['input'];
 };
 
 
@@ -385,6 +391,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   copyPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCopyPresentationArgs, 'id'>>;
   createPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCreatePresentationArgs, 'name' | 'template'>>;
   deletePresentation?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePresentationArgs, 'id'>>;
+  getHelp?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGetHelpArgs, 'text'>>;
   invite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationInviteArgs, 'email' | 'presentationId'>>;
   renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
 }>;

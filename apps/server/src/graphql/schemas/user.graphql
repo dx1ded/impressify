@@ -13,4 +13,5 @@ type Query {
 
 type Mutation {
   invite(email: String!, presentationId: String!): Boolean
+  getHelp(text: String!): Boolean
 }

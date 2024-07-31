@@ -1,6 +1,8 @@
 import { UserButton } from "@clerk/clerk-react"
+import { shallowEqual } from "react-redux"
 
 import { CHANGE_NAME_ID, MAX_NAME_LENGTH, setName } from "~/entities/presentation"
+import { SharePresentationDialog } from "~/features/share-presentation"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
 import { Skeleton } from "~/shared/ui-kit/skeleton"
 import { Menubar } from "~/widgets/menubar"
@@ -12,8 +14,14 @@ import { ResizableInput } from "~/shared/ui/ResizableInput"
 const DEBOUNCED_CHANGE_NAME_TIME = 2000
 
 export function Header() {
-  const name = useAppSelector((state) => state.presentation.presentation.name)
-  const isLoading = useAppSelector((state) => state.presentation.isLoading)
+  const { name, isLoading, presentationId } = useAppSelector(
+    (state) => ({
+      name: state.presentation.presentation.name,
+      isLoading: state.presentation.isLoading,
+      presentationId: state.presentation.presentation.id,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
   const { register } = useDebouncedFunctions()
 
@@ -34,15 +42,13 @@ export function Header() {
             {isLoading ? (
               <Skeleton className="h-[1.875rem] w-32" />
             ) : (
-              <ResizableInput maxLength={MAX_NAME_LENGTH}>
-                <input
-                  type="text"
-                  className="rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-gray-300"
-                  defaultValue={name}
-                  data-toast="Presentation name"
-                  onChange={(e) => debouncedChangeName(e.target.value)}
-                />
-              </ResizableInput>
+              <ResizableInput
+                maxLength={MAX_NAME_LENGTH}
+                value={name}
+                className="rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-gray-300"
+                data-toast="Presentation name"
+                onChange={(e) => debouncedChangeName(e.target.value)}
+              />
             )}
             <SavingIcon />
           </div>
@@ -53,9 +59,11 @@ export function Header() {
         <Button variant="outline" className="rounded-3xl px-6 font-semibold">
           Slideshow
         </Button>
-        <Button variant="blue" className="rounded-3xl px-6 font-semibold">
-          Share
-        </Button>
+        <SharePresentationDialog presentationId={presentationId}>
+          <Button variant="blue" className="rounded-3xl px-6 font-semibold">
+            Share
+          </Button>
+        </SharePresentationDialog>
         <UserButton appearance={{ elements: { userButtonAvatarBox: { width: "2rem", height: "2rem" } } }} />
       </div>
     </header>

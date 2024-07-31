@@ -1,5 +1,5 @@
 import { MenubarSeparator } from "@radix-ui/react-menubar"
-import { ClipboardPaste, Copy, CopyIcon, RedoIcon, Trash2, UndoIcon } from "lucide-react"
+import { ClipboardPaste, CopyIcon, RedoIcon, Trash2, UndoIcon } from "lucide-react"
 
 import {
   generateEditElementId,
@@ -25,7 +25,7 @@ export function Edit() {
       <MenubarTrigger className="px-2 py-0.5">Edit</MenubarTrigger>
       <MenubarContent>
         <MenubarItem
-          onClick={() => {
+          onSelect={() => {
             flush(EDIT_SELECTED_ELEMENT_ID)
             dispatch(applyHistory("UNDO"))
             call(TAKE_SCREENSHOT_ID)
@@ -35,7 +35,7 @@ export function Edit() {
           <MenubarShortcut>⌘Z</MenubarShortcut>
         </MenubarItem>
         <MenubarItem
-          onClick={() => {
+          onSelect={() => {
             flush(EDIT_SELECTED_ELEMENT_ID)
             dispatch(applyHistory("REDO"))
             call(TAKE_SCREENSHOT_ID)
@@ -46,7 +46,7 @@ export function Edit() {
         </MenubarItem>
         <MenubarSeparator />
         <MenubarItem
-          onClick={() => {
+          onSelect={() => {
             flush(EDIT_SELECTED_ELEMENT_ID)
             dispatch(copyElement())
           }}>
@@ -55,7 +55,7 @@ export function Edit() {
           <MenubarShortcut>⌘C</MenubarShortcut>
         </MenubarItem>
         <MenubarItem
-          onClick={() => {
+          onSelect={() => {
             flush(EDIT_SELECTED_ELEMENT_ID)
             dispatch(pasteElement())
             call(TAKE_SCREENSHOT_ID)
@@ -66,7 +66,7 @@ export function Edit() {
         </MenubarItem>
         <MenubarSeparator />
         <MenubarItem
-          onClick={() => {
+          onSelect={() => {
             deleteDebounced(EDIT_SELECTED_ELEMENT_ID)
             dispatch(deleteElement())
             call(TAKE_SCREENSHOT_ID)
@@ -75,12 +75,12 @@ export function Edit() {
           Delete
         </MenubarItem>
         <MenubarItem
-          onClick={() => {
+          onSelect={() => {
             flush(EDIT_SELECTED_ELEMENT_ID)
             dispatch(duplicateElement())
             call(TAKE_SCREENSHOT_ID)
           }}>
-          <Copy className="mr-2 h-5 w-5" />
+          <CopyIcon className="mr-2 h-5 w-5" />
           Duplicate
           <MenubarShortcut>⌘O</MenubarShortcut>
         </MenubarItem>

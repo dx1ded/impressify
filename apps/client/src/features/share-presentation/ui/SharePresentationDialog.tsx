@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogClose,
 } from "~/shared/ui-kit/dialog"
 
 export function SharePresentationDialog({ children, presentationId }: { children: ReactNode; presentationId: string }) {
@@ -29,23 +30,36 @@ export function SharePresentationDialog({ children, presentationId }: { children
           <DialogTitle>Share presentation</DialogTitle>
           <DialogDescription>You can share this presentation with someone else to work in a team!</DialogDescription>
         </DialogHeader>
-        <div className="!mt-4 flex items-center gap-2">
-          <Input {...register("email")} />
-          <SharePresentation>
-            {(sendInvite) => (
-              <Button
-                size="sm"
-                className="h-full px-7"
-                // Extra callback because handleSubmit calls e.stopPropagation by default, and it doesn't close the popover
-                onClick={() => handleSubmit((data) => sendInvite(data.email, presentationId))()}>
-                Save
-              </Button>
-            )}
-          </SharePresentation>
-        </div>
-        {formState.errors.email && (
-          <small className="!mt-3 block font-medium text-red-400">{formState.errors.email.message}</small>
-        )}
+        <SharePresentation>
+          {(sharePresentation, { data, loading, called }) => (
+            <>
+              <div className="flex items-center gap-2">
+                <Input {...register("email")} />
+                {data?.invite && called ? (
+                  <DialogClose className="h-full" asChild>
+                    <Button size="sm" className="h-full px-7">
+                      Close
+                    </Button>
+                  </DialogClose>
+                ) : (
+                  <Button
+                    disabled={loading}
+                    size="sm"
+                    className="h-full px-7"
+                    onClick={handleSubmit(({ email }) => sharePresentation({ variables: { email, presentationId } }))}>
+                    Save
+                  </Button>
+                )}
+              </div>
+              {formState.errors.email && (
+                <small className="block font-medium text-red-400">{formState.errors.email.message}</small>
+              )}
+              {data?.invite && called && (
+                <small className="block font-medium text-green-400">User has been invited</small>
+              )}
+            </>
+          )}
+        </SharePresentation>
       </DialogContent>
     </Dialog>
   )
