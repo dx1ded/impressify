@@ -1,3 +1,4 @@
+import { Draggable } from "@hello-pangea/dnd"
 import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
 
 import { type SlideProps, EDIT_ELEMENT_ID, setCurrentSlide, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
@@ -12,55 +13,78 @@ interface SlideItemProps {
 }
 
 export function SlideItem({ slide, index }: SlideItemProps) {
-  const dispatch = useAppDispatch()
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
+  const dispatch = useAppDispatch()
   const { flush, flushWithPattern, deleteWithPattern, deleteDebounced } = useDebouncedFunctions()
 
   return (
-    <div className="group flex h-28 w-full flex-shrink-0 gap-2">
-      <div className="flex h-full flex-col items-center gap-2">
-        <small className="font-bold">{index + 1}</small>
-        {slide.transition !== "none" && <SparklesIcon className="h-[1.125rem] w-[1.125rem] text-yellow-500" />}
-        <DuplicateSlide>
-          {(duplicateSlide) => (
+    <Draggable key={slide.id} draggableId={slide.id} index={index} disableInteractiveElementBlocking>
+      {(provided, snapshot) => {
+        // Restrict dragging to vertical axis
+        let transform = provided.draggableProps.style?.transform
+
+        if (snapshot.isDragging && transform) {
+          transform = transform.replace(/\(.+,/, "(0,")
+        }
+
+        const style = {
+          ...provided.draggableProps.style,
+          transform,
+        }
+
+        return (
+          <div
+            ref={provided.innerRef}
+            {...provided.dragHandleProps}
+            {...provided.draggableProps}
+            style={style}
+            className="group flex h-28 w-full flex-shrink-0 gap-2">
+            <div className="flex h-full flex-col items-center gap-2">
+              <small className="font-bold">{index + 1}</small>
+              {slide.transition !== "none" && <SparklesIcon className="h-[1.125rem] w-[1.125rem] text-yellow-500" />}
+              <DuplicateSlide>
+                {(duplicateSlide) => (
+                  <button
+                    type="button"
+                    className="invisible mt-auto h-[1.125rem] w-[1.125rem] opacity-0 transition duration-300 group-hover:visible group-hover:opacity-100"
+                    onClick={() => duplicateSlide(slide.id)}>
+                    <CopyIcon className="h-full w-full" />
+                  </button>
+                )}
+              </DuplicateSlide>
+              <DeleteSlide>
+                {(deleteSlide) => (
+                  <button
+                    type="button"
+                    className="invisible h-[1.125rem] w-[1.125rem] text-red-600 opacity-0 transition duration-300 group-hover:visible group-hover:opacity-100"
+                    onClick={() => deleteSlide(slide.id)}>
+                    <Trash2Icon className="h-full w-full" />
+                  </button>
+                )}
+              </DeleteSlide>
+            </div>
             <button
               type="button"
-              className="invisible mt-auto h-[1.125rem] w-[1.125rem] opacity-0 transition duration-300 group-hover:visible group-hover:opacity-100"
-              onClick={() => duplicateSlide(slide.id)}>
-              <CopyIcon className="h-full w-full" />
+              className="block flex-1"
+              onClick={() => {
+                flushWithPattern(EDIT_ELEMENT_ID)
+                flush(TAKE_SCREENSHOT_ID)
+                deleteWithPattern(EDIT_ELEMENT_ID)
+                deleteDebounced(TAKE_SCREENSHOT_ID)
+                dispatch(setCurrentSlide(index))
+              }}>
+              <img
+                src={slide.thumbnailUrl}
+                alt="Slide thumbnail"
+                className={cn(
+                  "h-full w-full max-w-[10.375rem] rounded-md border-2 border-white shadow",
+                  index === currentSlide && "border-blue-500",
+                )}
+              />
             </button>
-          )}
-        </DuplicateSlide>
-        <DeleteSlide>
-          {(deleteSlide) => (
-            <button
-              type="button"
-              className="invisible h-[1.125rem] w-[1.125rem] text-red-600 opacity-0 transition duration-300 group-hover:visible group-hover:opacity-100"
-              onClick={() => deleteSlide(slide.id)}>
-              <Trash2Icon className="h-full w-full" />
-            </button>
-          )}
-        </DeleteSlide>
-      </div>
-      <button
-        type="button"
-        className="w-full"
-        onClick={() => {
-          flushWithPattern(EDIT_ELEMENT_ID)
-          flush(TAKE_SCREENSHOT_ID)
-          deleteWithPattern(EDIT_ELEMENT_ID)
-          deleteDebounced(TAKE_SCREENSHOT_ID)
-          dispatch(setCurrentSlide(index))
-        }}>
-        <img
-          src={slide.thumbnailUrl}
-          alt="Slide thumbnail"
-          className={cn(
-            "h-full w-full max-w-[10.375rem] rounded-md border-2 border-white shadow",
-            index === currentSlide && "border-blue-500",
-          )}
-        />
-      </button>
-    </div>
+          </div>
+        )
+      }}
+    </Draggable>
   )
 }

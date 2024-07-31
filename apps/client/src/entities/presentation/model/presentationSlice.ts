@@ -131,6 +131,14 @@ const presentationSlice = createSlice({
         payload: state.presentation.slides.length - 1,
       } as PayloadAction<number>)
     },
+    moveSlide: (state, { payload }: PayloadAction<{ id: string; newIndex: number }>) => {
+      const { id, newIndex } = payload
+      const deleteIndex = state.presentation.slides.findIndex((slide) => slide.id === id)!
+      const slideCopy = { ...state.presentation.slides[deleteIndex] }
+      state.presentation.slides.splice(deleteIndex, 1)
+      state.presentation.slides.splice(newIndex, 0, slideCopy)
+      state.currentSlide = newIndex
+    },
     duplicateSlide: (state, { payload }: PayloadAction<string>) => {
       const index = state.presentation.slides.findIndex((slide) => slide.id === payload)!
       const slide = state.presentation.slides[index]
@@ -347,6 +355,7 @@ export const {
   setIsCreating,
   setIsEditing,
   addSlide,
+  moveSlide,
   duplicateSlide,
   deleteSlide,
   applyHistory,
