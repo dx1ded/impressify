@@ -17,7 +17,7 @@ interface DuplicatePresentationProps {
 export function DuplicatePresentation({ children }: DuplicatePresentationProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { flushAll } = useDebouncedFunctions()
+  const { flushAll, deleteAll } = useDebouncedFunctions()
   const [sendDuplicatePresentation, result] = useMutation<
     DuplicatePresentationMutation,
     DuplicatePresentationMutationVariables
@@ -26,6 +26,7 @@ export function DuplicatePresentation({ children }: DuplicatePresentationProps) 
   const duplicatePresentation = useCallback(
     async (id: string) => {
       flushAll()
+      deleteAll()
       const result = await sendDuplicatePresentation({
         variables: { id },
       })
@@ -35,7 +36,7 @@ export function DuplicatePresentation({ children }: DuplicatePresentationProps) 
       dispatch(clear())
       navigate(`/presentation/${data.id}`)
     },
-    [flushAll, navigate, dispatch, sendDuplicatePresentation],
+    [flushAll, deleteAll, navigate, dispatch, sendDuplicatePresentation],
   )
 
   return children(duplicatePresentation, result)

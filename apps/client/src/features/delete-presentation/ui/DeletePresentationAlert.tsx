@@ -18,6 +18,7 @@ function Wrapper(deletePresentation: FeatureCallback<[string]>) {
   return function DeleteAlert({
     children,
     presentationId,
+    // `beforeHandler` is a function which gets called before delete button handler
     beforeHandler,
   }: {
     children: ReactNode

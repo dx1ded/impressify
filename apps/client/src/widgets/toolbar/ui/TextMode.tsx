@@ -44,7 +44,7 @@ export function TextMode({ isActive }: ModeProps) {
   const dispatch = useAppDispatch()
   const { call } = useDebouncedFunctions()
 
-  const applyChanges = (props: Partial<TextProps>) => {
+  const applyTextChanges = (props: Partial<TextProps>) => {
     dispatch(changeTextProps(props))
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
@@ -54,7 +54,7 @@ export function TextMode({ isActive }: ModeProps) {
   return (
     <div style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
       <ToolbarGroup>
-        <ColorPicker color={textProps.fillColor} onChange={(value) => applyChanges({ fillColor: value })}>
+        <ColorPicker color={textProps.fillColor} onChange={(value) => applyTextChanges({ fillColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={PaintBucketIcon} />
@@ -62,7 +62,7 @@ export function TextMode({ isActive }: ModeProps) {
             <TooltipContent>Fill color</TooltipContent>
           </Tooltip>
         </ColorPicker>
-        <ColorPicker color={textProps.borderColor} onChange={(value) => applyChanges({ borderColor: value })}>
+        <ColorPicker color={textProps.borderColor} onChange={(value) => applyTextChanges({ borderColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={PencilIcon} />
@@ -73,7 +73,7 @@ export function TextMode({ isActive }: ModeProps) {
       </ToolbarGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Select value={textProps.fontFamily} onValueChange={(value) => applyChanges({ fontFamily: value })}>
+        <Select value={textProps.fontFamily} onValueChange={(value) => applyTextChanges({ fontFamily: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <SelectTrigger className="h-6 gap-4 border-none bg-transparent font-medium">
@@ -101,7 +101,11 @@ export function TextMode({ isActive }: ModeProps) {
       </ToolbarGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Counter className="w-10" value={textProps.fontSize} onChange={(value) => applyChanges({ fontSize: value })} />
+        <Counter
+          className="w-10"
+          value={textProps.fontSize}
+          onChange={(value) => applyTextChanges({ fontSize: value })}
+        />
       </ToolbarGroup>
       <ToolbarSeparator />
       <ToggleGroup
@@ -113,7 +117,7 @@ export function TextMode({ isActive }: ModeProps) {
           textProps.underlined ? "underlined" : "",
         ]}
         onValueChange={(values) =>
-          applyChanges({
+          applyTextChanges({
             bold: values.includes("bold"),
             italic: values.includes("italic"),
             underlined: values.includes("underlined"),
@@ -143,7 +147,7 @@ export function TextMode({ isActive }: ModeProps) {
           </TooltipTrigger>
           <TooltipContent>Underlined (⌘+U)</TooltipContent>
         </Tooltip>
-        <ColorPicker color={textProps.textColor} onChange={(value) => applyChanges({ textColor: value })}>
+        <ColorPicker color={textProps.textColor} onChange={(value) => applyTextChanges({ textColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={TypeIcon} />
@@ -154,7 +158,7 @@ export function TextMode({ isActive }: ModeProps) {
       </ToggleGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Select value={textProps.alignment} onValueChange={(value) => applyChanges({ alignment: value })}>
+        <Select value={textProps.alignment} onValueChange={(value) => applyTextChanges({ alignment: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <NativeSelectTrigger asChild>
@@ -186,7 +190,7 @@ export function TextMode({ isActive }: ModeProps) {
             </SelectItem>
           </SelectContent>
         </Select>
-        <Select value={`${textProps.lineHeight}`} onValueChange={(value) => applyChanges({ lineHeight: +value })}>
+        <Select value={`${textProps.lineHeight}`} onValueChange={(value) => applyTextChanges({ lineHeight: +value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <NativeSelectTrigger asChild>

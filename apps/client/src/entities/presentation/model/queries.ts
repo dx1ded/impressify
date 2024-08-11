@@ -23,6 +23,18 @@ export const FIND_USER_PRESENTATIONS = gql(`#graphql
   }
 `)
 
+export const GET_PRESENTATION_INFO = gql(`#graphql
+  query GetPresentationInfo($id: String!) {
+    getPresentationInfo(id: $id) {
+      totalImageElements
+      totalShapeElements
+      totalSlides
+      totalTextElements
+      totalUsers
+    }
+  }
+`)
+
 export const GET_PRESENTATION = gql(`#graphql
   query GetPresentation($presentationId: String!) {
     getPresentation(id: $presentationId) {

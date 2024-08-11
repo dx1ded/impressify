@@ -1,52 +1,37 @@
 import { Redo, Undo } from "lucide-react"
 
-import { applyHistory, EDIT_ELEMENT_ID, SAVE_SLIDES_ID, setIsSaving, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import { HistoryRedo, HistoryUndo } from "~/features/history"
 import { cn } from "~/shared/lib"
-import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function History() {
-  const { undoStack, redoStack } = useAppSelector((state) => state.presentation.history)
-  const dispatch = useAppDispatch()
-  const { call, flushWithPattern } = useDebouncedFunctions()
-
   return (
     <ToolbarGroup>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className={cn(!undoStack.length && "pointer-events-none opacity-50")}>
-            <ToolbarButton
-              Icon={Undo}
-              onClick={() => {
-                flushWithPattern(EDIT_ELEMENT_ID)
-                dispatch(applyHistory("UNDO"))
-                call(TAKE_SCREENSHOT_ID)
-                call(SAVE_SLIDES_ID)
-                dispatch(setIsSaving(true))
-              }}
-            />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>Undo (⌘+Z)</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className={cn(!redoStack.length && "pointer-events-none opacity-50")}>
-            <ToolbarButton
-              Icon={Redo}
-              onClick={() => {
-                flushWithPattern(EDIT_ELEMENT_ID)
-                dispatch(applyHistory("REDO"))
-                call(TAKE_SCREENSHOT_ID)
-                call(SAVE_SLIDES_ID)
-                dispatch(setIsSaving(true))
-              }}
-            />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>Redo (⌘+Y)</TooltipContent>
-      </Tooltip>
+      <HistoryUndo>
+        {(undo, isActive) => (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={cn(!isActive && "pointer-events-none opacity-50")}>
+                <ToolbarButton Icon={Undo} onClick={() => undo()} />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Undo (⌘+Z)</TooltipContent>
+          </Tooltip>
+        )}
+      </HistoryUndo>
+      <HistoryRedo>
+        {(redo, isActive) => (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={cn(!isActive && "pointer-events-none opacity-50")}>
+                <ToolbarButton Icon={Redo} onClick={() => redo()} />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Redo (⌘+Y)</TooltipContent>
+          </Tooltip>
+        )}
+      </HistoryRedo>
     </ToolbarGroup>
   )
 }

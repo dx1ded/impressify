@@ -1,12 +1,11 @@
 import { DownloadIcon, Files, Info, PencilLine, SquarePlus, Trash2, UserPlus } from "lucide-react"
 import { shallowEqual } from "react-redux"
 
-import { DEFAULT_NAME } from "~/entities/presentation"
+import { DEFAULT_NAME, PresentationInfoDialog } from "~/entities/presentation"
 import { DuplicatePresentation } from "~/features/duplicate-presentation"
 import { CreatePresentation } from "~/features/create-presentation"
 import { DeletePresentationAlert } from "~/features/delete-presentation"
 import { DuplicateSlide } from "~/features/duplicate-slide"
-import { PresentationInfoDialog } from "~/features/get-presentation-info"
 import { RenamePresentationDialog } from "~/features/rename-presentation"
 import { SharePresentationDialog } from "~/features/share-presentation"
 import { useAppSelector, useDebouncedFunctions } from "~/shared/model"

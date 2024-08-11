@@ -18,7 +18,7 @@ export function ShapeMode({ isActive }: ModeProps) {
   const dispatch = useAppDispatch()
   const { call } = useDebouncedFunctions()
 
-  const applyChanges = (props: Partial<ShapeProps>) => {
+  const applyShapeChanges = (props: Partial<ShapeProps>) => {
     dispatch(changeShapeProps(props))
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
@@ -27,7 +27,7 @@ export function ShapeMode({ isActive }: ModeProps) {
 
   return (
     <ToolbarGroup style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
-      <ColorPicker color={shapeProps.fillColor} onChange={(value) => applyChanges({ fillColor: value })}>
+      <ColorPicker color={shapeProps.fillColor} onChange={(value) => applyShapeChanges({ fillColor: value })}>
         <Tooltip>
           <TooltipTrigger asChild>
             <ToolbarButton Icon={PaintBucketIcon} />
@@ -35,7 +35,7 @@ export function ShapeMode({ isActive }: ModeProps) {
           <TooltipContent>Fill color</TooltipContent>
         </Tooltip>
       </ColorPicker>
-      <ColorPicker color={shapeProps.strokeColor} onChange={(value) => applyChanges({ strokeColor: value })}>
+      <ColorPicker color={shapeProps.strokeColor} onChange={(value) => applyShapeChanges({ strokeColor: value })}>
         <Tooltip>
           <TooltipTrigger asChild>
             <ToolbarButton Icon={PencilIcon} />
