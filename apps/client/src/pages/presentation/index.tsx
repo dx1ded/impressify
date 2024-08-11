@@ -111,7 +111,8 @@ function Presentation() {
       dispatch(setIsSaving(false))
     },
     DEBOUNCED_UPDATE_SLIDES_TIME,
-    true,
+    // Making it update itself when `slides` is changed to have its latest copy
+    [slides],
   )
 
   return (

@@ -12,14 +12,16 @@ export const useDebouncedFunctions = () => {
   const { fns } = useContext(DebouncedContext)
 
   const register = useCallback(
-    <Func extends (...args: any[]) => void>(id: string, fn: Func, ms: number, redefine?: boolean) => {
+    <Func extends (...args: any[]) => void>(id: string, fn: Func, ms: number, deps?: any[]) => {
       const item = fns.current.find((item) => item.id === id)
       const newItem = {
         id,
         fn: debounce(fn, ms),
+        deps,
       }
       if (item) {
-        if (!redefine) return item.fn
+        const depsChanged = deps && item.deps && !deps.every((dep, index) => dep === item.deps![index])
+        if (!depsChanged) return item.fn
         if (item.fn.pending()) {
           newItem.fn(...(item.fn.lastArgs() as unknown as Parameters<Func>))
           item.fn.cancel()

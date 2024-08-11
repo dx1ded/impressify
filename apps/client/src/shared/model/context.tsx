@@ -5,6 +5,7 @@ import type { CustomDebouncedFunc } from "~/shared/lib"
 interface DebouncedItem<T extends (...args: any[]) => any> {
   id: string
   fn: CustomDebouncedFunc<T>
+  deps?: any[] // Add deps property to the DebouncedItem interface
 }
 
 interface DebouncedState {
