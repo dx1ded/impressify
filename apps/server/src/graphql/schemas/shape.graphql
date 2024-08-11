@@ -1,13 +1,14 @@
 type Shape implements Element {
-  id: Int!
-  x: Int!
-  y: Int!
-  width: Int!
-  height: Int!
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
   angle: Int!
-  scaleX: Int!
-  scaleY: Int!
+  scaleX: Float!
+  scaleY: Float!
   slide: Slide!
+  position: Int!
 
   type: String!
   fillColor: String!
@@ -15,4 +16,24 @@ type Shape implements Element {
   strokeWidth: Int!
   # if true - 200x200 (for example), if false - any numbers (for example, 12x521)
   proportional: Boolean!
+}
+
+input ShapeInput {
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
+  angle: Int!
+  scaleX: Float!
+  scaleY: Float!
+
+  type: String!
+  fillColor: String!
+  strokeColor: String!
+  strokeWidth: Int!
+  proportional: Boolean!
+
+  # Index in a common element array
+  index: Int!
 }

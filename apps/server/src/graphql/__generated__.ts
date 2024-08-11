@@ -20,14 +20,21 @@ export type Scalars = {
 
 export type Element = {
   angle: Scalars['Int']['output'];
-  height: Scalars['Int']['output'];
-  id: Scalars['Int']['output'];
-  scaleX: Scalars['Int']['output'];
-  scaleY: Scalars['Int']['output'];
+  height: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  position: Scalars['Int']['output'];
+  scaleX: Scalars['Float']['output'];
+  scaleY: Scalars['Float']['output'];
   slide: Slide;
-  width: Scalars['Int']['output'];
-  x: Scalars['Int']['output'];
-  y: Scalars['Int']['output'];
+  width: Scalars['Float']['output'];
+  x: Scalars['Float']['output'];
+  y: Scalars['Float']['output'];
+};
+
+export type ElementInput = {
+  image: Array<ImageInput>;
+  shape: Array<ShapeInput>;
+  text: Array<TextInput>;
 };
 
 export type History = {
@@ -48,36 +55,46 @@ export type HistoryRecord = {
 export type Image = Element & {
   __typename?: 'Image';
   angle: Scalars['Int']['output'];
-  height: Scalars['Int']['output'];
-  id: Scalars['Int']['output'];
+  height: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
   imageUrl: Scalars['String']['output'];
-  scaleX: Scalars['Int']['output'];
-  scaleY: Scalars['Int']['output'];
+  position: Scalars['Int']['output'];
+  scaleX: Scalars['Float']['output'];
+  scaleY: Scalars['Float']['output'];
   slide: Slide;
-  width: Scalars['Int']['output'];
-  x: Scalars['Int']['output'];
-  y: Scalars['Int']['output'];
+  width: Scalars['Float']['output'];
+  x: Scalars['Float']['output'];
+  y: Scalars['Float']['output'];
+};
+
+export type ImageInput = {
+  angle: Scalars['Int']['input'];
+  height: Scalars['Float']['input'];
+  id: Scalars['ID']['input'];
+  imageUrl: Scalars['String']['input'];
+  index: Scalars['Int']['input'];
+  scaleX: Scalars['Float']['input'];
+  scaleY: Scalars['Float']['input'];
+  width: Scalars['Float']['input'];
+  x: Scalars['Float']['input'];
+  y: Scalars['Float']['input'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   addRecord?: Maybe<HistoryRecord>;
-  copyPresentation?: Maybe<Presentation>;
   createPresentation?: Maybe<Presentation>;
   deletePresentation?: Maybe<Scalars['Boolean']['output']>;
-  getHelp?: Maybe<Scalars['Boolean']['output']>;
+  duplicatePresentation?: Maybe<Presentation>;
   invite?: Maybe<Scalars['Boolean']['output']>;
   renamePresentation?: Maybe<Presentation>;
+  saveSlides?: Maybe<Array<Maybe<Slide>>>;
+  sendHelpRequest?: Maybe<Scalars['Boolean']['output']>;
 };
 
 
 export type MutationAddRecordArgs = {
   presentationId: Scalars['String']['input'];
-};
-
-
-export type MutationCopyPresentationArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -92,8 +109,8 @@ export type MutationDeletePresentationArgs = {
 };
 
 
-export type MutationGetHelpArgs = {
-  text: Scalars['String']['input'];
+export type MutationDuplicatePresentationArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -106,6 +123,17 @@ export type MutationInviteArgs = {
 export type MutationRenamePresentationArgs = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
+};
+
+
+export type MutationSaveSlidesArgs = {
+  presentationId: Scalars['String']['input'];
+  slides: Array<SlideInput>;
+};
+
+
+export type MutationSendHelpRequestArgs = {
+  text: Scalars['String']['input'];
 };
 
 export type Presentation = {
@@ -165,29 +193,56 @@ export type Shape = Element & {
   __typename?: 'Shape';
   angle: Scalars['Int']['output'];
   fillColor: Scalars['String']['output'];
-  height: Scalars['Int']['output'];
-  id: Scalars['Int']['output'];
+  height: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  position: Scalars['Int']['output'];
   proportional: Scalars['Boolean']['output'];
-  scaleX: Scalars['Int']['output'];
-  scaleY: Scalars['Int']['output'];
+  scaleX: Scalars['Float']['output'];
+  scaleY: Scalars['Float']['output'];
   slide: Slide;
   strokeColor: Scalars['String']['output'];
   strokeWidth: Scalars['Int']['output'];
   type: Scalars['String']['output'];
-  width: Scalars['Int']['output'];
-  x: Scalars['Int']['output'];
-  y: Scalars['Int']['output'];
+  width: Scalars['Float']['output'];
+  x: Scalars['Float']['output'];
+  y: Scalars['Float']['output'];
+};
+
+export type ShapeInput = {
+  angle: Scalars['Int']['input'];
+  fillColor: Scalars['String']['input'];
+  height: Scalars['Float']['input'];
+  id: Scalars['ID']['input'];
+  index: Scalars['Int']['input'];
+  proportional: Scalars['Boolean']['input'];
+  scaleX: Scalars['Float']['input'];
+  scaleY: Scalars['Float']['input'];
+  strokeColor: Scalars['String']['input'];
+  strokeWidth: Scalars['Int']['input'];
+  type: Scalars['String']['input'];
+  width: Scalars['Float']['input'];
+  x: Scalars['Float']['input'];
+  y: Scalars['Float']['input'];
 };
 
 export type Slide = {
   __typename?: 'Slide';
-  bgColor: Scalars['String']['output'];
+  bg: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   elements: Array<Element>;
   id: Scalars['ID']['output'];
+  position: Scalars['Int']['output'];
   presentation: Presentation;
   thumbnailUrl: Scalars['String']['output'];
   transition: Scalars['String']['output'];
+};
+
+export type SlideInput = {
+  bg: Scalars['String']['input'];
+  elements: ElementInput;
+  id: Scalars['ID']['input'];
+  thumbnailUrl: Scalars['String']['input'];
+  transition: Scalars['String']['input'];
 };
 
 export type Text = Element & {
@@ -199,19 +254,43 @@ export type Text = Element & {
   fillColor: Scalars['String']['output'];
   fontFamily: Scalars['String']['output'];
   fontSize: Scalars['Int']['output'];
-  height: Scalars['Int']['output'];
-  id: Scalars['Int']['output'];
+  height: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
   italic: Scalars['Boolean']['output'];
-  lineHeight: Scalars['Int']['output'];
-  scaleX: Scalars['Int']['output'];
-  scaleY: Scalars['Int']['output'];
+  lineHeight: Scalars['Float']['output'];
+  position: Scalars['Int']['output'];
+  scaleX: Scalars['Float']['output'];
+  scaleY: Scalars['Float']['output'];
   slide: Slide;
   text: Scalars['String']['output'];
   textColor: Scalars['String']['output'];
   underlined: Scalars['Boolean']['output'];
-  width: Scalars['Int']['output'];
-  x: Scalars['Int']['output'];
-  y: Scalars['Int']['output'];
+  width: Scalars['Float']['output'];
+  x: Scalars['Float']['output'];
+  y: Scalars['Float']['output'];
+};
+
+export type TextInput = {
+  alignment: Scalars['String']['input'];
+  angle: Scalars['Int']['input'];
+  bold: Scalars['Boolean']['input'];
+  borderColor: Scalars['String']['input'];
+  fillColor: Scalars['String']['input'];
+  fontFamily: Scalars['String']['input'];
+  fontSize: Scalars['Int']['input'];
+  height: Scalars['Float']['input'];
+  id: Scalars['ID']['input'];
+  index: Scalars['Int']['input'];
+  italic: Scalars['Boolean']['input'];
+  lineHeight: Scalars['Float']['input'];
+  scaleX: Scalars['Float']['input'];
+  scaleY: Scalars['Float']['input'];
+  text: Scalars['String']['input'];
+  textColor: Scalars['String']['input'];
+  underlined: Scalars['Boolean']['input'];
+  width: Scalars['Float']['input'];
+  x: Scalars['Float']['input'];
+  y: Scalars['Float']['input'];
 };
 
 export type User = {
@@ -303,19 +382,25 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   Element: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Element']>;
+  ElementInput: ElementInput;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   History: ResolverTypeWrapper<History>;
   HistoryRecord: ResolverTypeWrapper<HistoryRecord>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Image: ResolverTypeWrapper<Image>;
+  ImageInput: ImageInput;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Presentation: ResolverTypeWrapper<Presentation>;
   PresentationInfo: ResolverTypeWrapper<PresentationInfo>;
   Query: ResolverTypeWrapper<{}>;
   Shape: ResolverTypeWrapper<Shape>;
+  ShapeInput: ShapeInput;
   Slide: ResolverTypeWrapper<Omit<Slide, 'elements'> & { elements: Array<ResolversTypes['Element']> }>;
+  SlideInput: SlideInput;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Text: ResolverTypeWrapper<Text>;
+  TextInput: TextInput;
   User: ResolverTypeWrapper<User>;
 }>;
 
@@ -324,19 +409,25 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   Date: Scalars['Date']['output'];
   Element: ResolversInterfaceTypes<ResolversParentTypes>['Element'];
+  ElementInput: ElementInput;
+  Float: Scalars['Float']['output'];
   History: History;
   HistoryRecord: HistoryRecord;
   ID: Scalars['ID']['output'];
   Image: Image;
+  ImageInput: ImageInput;
   Int: Scalars['Int']['output'];
   Mutation: {};
   Presentation: Presentation;
   PresentationInfo: PresentationInfo;
   Query: {};
   Shape: Shape;
+  ShapeInput: ShapeInput;
   Slide: Omit<Slide, 'elements'> & { elements: Array<ResolversParentTypes['Element']> };
+  SlideInput: SlideInput;
   String: Scalars['String']['output'];
   Text: Text;
+  TextInput: TextInput;
   User: User;
 }>;
 
@@ -347,14 +438,15 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type ElementResolvers<ContextType = any, ParentType extends ResolversParentTypes['Element'] = ResolversParentTypes['Element']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Image' | 'Shape' | 'Text', ParentType, ContextType>;
   angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  scaleX?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  scaleY?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  scaleY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
-  width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  x?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  y?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  width?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  x?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  y?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
 }>;
 
 export type HistoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['History'] = ResolversParentTypes['History']> = ResolversObject<{
@@ -374,26 +466,28 @@ export type HistoryRecordResolvers<ContextType = any, ParentType extends Resolve
 
 export type ImageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Image'] = ResolversParentTypes['Image']> = ResolversObject<{
   angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   imageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  scaleX?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  scaleY?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  scaleY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
-  width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  x?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  y?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  width?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  x?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  y?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addRecord?: Resolver<Maybe<ResolversTypes['HistoryRecord']>, ParentType, ContextType, RequireFields<MutationAddRecordArgs, 'presentationId'>>;
-  copyPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCopyPresentationArgs, 'id'>>;
   createPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCreatePresentationArgs, 'name' | 'template'>>;
   deletePresentation?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePresentationArgs, 'id'>>;
-  getHelp?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGetHelpArgs, 'text'>>;
+  duplicatePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationDuplicatePresentationArgs, 'id'>>;
   invite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationInviteArgs, 'email' | 'presentationId'>>;
   renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
+  saveSlides?: Resolver<Maybe<Array<Maybe<ResolversTypes['Slide']>>>, ParentType, ContextType, RequireFields<MutationSaveSlidesArgs, 'presentationId' | 'slides'>>;
+  sendHelpRequest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationSendHelpRequestArgs, 'text'>>;
 }>;
 
 export type PresentationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Presentation'] = ResolversParentTypes['Presentation']> = ResolversObject<{
@@ -425,26 +519,28 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 export type ShapeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shape'] = ResolversParentTypes['Shape']> = ResolversObject<{
   angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   fillColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   proportional?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  scaleX?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  scaleY?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  scaleY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
   strokeColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   strokeWidth?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  x?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  y?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  width?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  x?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  y?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SlideResolvers<ContextType = any, ParentType extends ResolversParentTypes['Slide'] = ResolversParentTypes['Slide']> = ResolversObject<{
-  bgColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  bg?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   elements?: Resolver<Array<ResolversTypes['Element']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   presentation?: Resolver<ResolversTypes['Presentation'], ParentType, ContextType>;
   thumbnailUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   transition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -459,19 +555,20 @@ export type TextResolvers<ContextType = any, ParentType extends ResolversParentT
   fillColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fontFamily?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fontSize?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  height?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   italic?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  lineHeight?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  scaleX?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  scaleY?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lineHeight?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  scaleX?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  scaleY?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   textColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   underlined?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  width?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  x?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  y?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  width?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  x?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  y?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -1,7 +1,7 @@
 import { gql } from "~/__generated__"
 
-export const GET_HELP = gql(`#graphql
-  mutation GetHelp($text: String!) {
-    getHelp(text: $text)
+export const SEND_HELP_REQUEST = gql(`#graphql
+  mutation SendHelpRequest($text: String!) {
+    sendHelpRequest(text: $text)
   }
 `)

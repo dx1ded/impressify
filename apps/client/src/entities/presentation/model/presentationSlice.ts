@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import { nanoid } from "nanoid"
 import _ from "lodash"
 
 import {
@@ -10,6 +11,8 @@ import {
   type TextEditProps,
   type ImageEditProps,
   type ShapeEditProps,
+  type SlideId,
+  type ElementId,
   getSlideConfig,
   getTextConfig,
   getImageConfig,
@@ -41,10 +44,11 @@ interface PresentationState {
     shapeProps: ShapeEditProps
   }
   currentSlide: number
-  selectedId: number
+  selectedId: ElementId
   isLoading: boolean
   isCreating: boolean
   isEditing: boolean
+  isSaving: boolean
 }
 
 const initialState: PresentationState = {
@@ -83,6 +87,7 @@ const initialState: PresentationState = {
       strokeWidth: DEFAULT_STROKE_WIDTH,
     },
   },
+  // currentSlide is an index
   currentSlide: 0,
   selectedId: NOT_SELECTED,
   isLoading: true,
@@ -93,6 +98,8 @@ const initialState: PresentationState = {
   isCreating: false,
   // This prop is only used for <Text>
   isEditing: false,
+  // Saving to the server
+  isSaving: false,
 }
 
 const presentationSlice = createSlice({
@@ -125,13 +132,16 @@ const presentationSlice = createSlice({
     setIsEditing: (state, { payload }: PayloadAction<boolean>) => {
       state.isEditing = payload
     },
+    setIsSaving: (state, { payload }: PayloadAction<boolean>) => {
+      state.isSaving = payload
+    },
     addSlide: (state) => {
       state.presentation.slides.push(getSlideConfig())
       presentationSlice.caseReducers.setCurrentSlide(state, {
         payload: state.presentation.slides.length - 1,
       } as PayloadAction<number>)
     },
-    moveSlide: (state, { payload }: PayloadAction<{ id: string; newIndex: number }>) => {
+    moveSlide: (state, { payload }: PayloadAction<{ id: SlideId; newIndex: number }>) => {
       const { id, newIndex } = payload
       const deleteIndex = state.presentation.slides.findIndex((slide) => slide.id === id)!
       const slideCopy = { ...state.presentation.slides[deleteIndex] }
@@ -139,20 +149,20 @@ const presentationSlice = createSlice({
       state.presentation.slides.splice(newIndex, 0, slideCopy)
       state.currentSlide = newIndex
     },
-    duplicateSlide: (state, { payload }: PayloadAction<string>) => {
+    duplicateSlide: (state, { payload }: PayloadAction<SlideId>) => {
       const index = state.presentation.slides.findIndex((slide) => slide.id === payload)!
       const slide = state.presentation.slides[index]
       state.presentation.slides.splice(index + 1, 0, {
         ...slide,
         // It is necessary to change slide id and its elements' ids to avoid collision
-        id: `${Math.random()}`,
-        elements: slide.elements.map((el) => ({ ...el, id: Math.random() })),
+        id: nanoid(8),
+        elements: slide.elements.map((el) => ({ ...el, id: nanoid(8) })),
       })
       presentationSlice.caseReducers.setCurrentSlide(state, {
         payload: index + 1,
       } as PayloadAction<number>)
     },
-    deleteSlide: (state, { payload }: PayloadAction<string>) => {
+    deleteSlide: (state, { payload }: PayloadAction<SlideId>) => {
       if (state.presentation.slides.length === 1) return
       const index = state.presentation.slides.findIndex((slide) => slide.id === payload)!
       let nextCurrentSlide = index
@@ -189,7 +199,7 @@ const presentationSlice = createSlice({
     },
     setBackground: (state, { payload }: PayloadAction<string>) => {
       state.presentation.slides = state.presentation.slides.map((slide, i) =>
-        i === state.currentSlide ? { ...slide, bgColor: payload } : slide,
+        i === state.currentSlide ? { ...slide, bg: payload } : slide,
       )
     },
     setTransition: (state, { payload }: PayloadAction<string>) => {
@@ -220,7 +230,7 @@ const presentationSlice = createSlice({
       if (state.history.undoStack.length > MAX_HISTORY_LENGTH) state.history.undoStack.pop()
       state.history.redoStack = []
     },
-    selectElement: (state, { payload }: PayloadAction<number>) => {
+    selectElement: (state, { payload }: PayloadAction<ElementId>) => {
       state.selectedId = payload
       if (payload === NOT_SELECTED) return
       // Changing toolbar values corresponding the element
@@ -273,7 +283,9 @@ const presentationSlice = createSlice({
       if (!copiedElement) return
       const newEl = {
         ...copiedElement,
-        id: Math.random(),
+        // Again, we should always update ids to avoid collision
+        id: nanoid(8),
+        // Some difference in coordinates so element is not above another element
         x: copiedElement.x + COPIED_ELEMENT_X_DIF,
         y: copiedElement.y + COPIED_ELEMENT_Y_DIF,
       } as ElementProps
@@ -291,7 +303,9 @@ const presentationSlice = createSlice({
       const element = slide.elements.find((el) => el.id === state.selectedId)!
       const duplicate = {
         ...element,
-        id: Math.random(),
+        // Again, we should always update ids to avoid collision
+        id: nanoid(8),
+        // Some difference in coordinates so element is not above another element
         x: element.x + COPIED_ELEMENT_X_DIF,
         y: element.y + COPIED_ELEMENT_Y_DIF,
       } as ElementProps
@@ -354,6 +368,7 @@ export const {
   setIsLoading,
   setIsCreating,
   setIsEditing,
+  setIsSaving,
   addSlide,
   moveSlide,
   duplicateSlide,

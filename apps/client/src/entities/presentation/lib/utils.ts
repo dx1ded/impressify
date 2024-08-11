@@ -1,4 +1,5 @@
 import dayjs from "dayjs"
+import { nanoid } from "nanoid"
 import {
   Image as KonvaImage,
   Rect as KonvaRect,
@@ -19,6 +20,7 @@ import {
   type ShapesConfig,
   type TextProps,
   type SlideProps,
+  type ElementId,
   DEFAULT_IMAGE_WIDTH,
   DEFAULT_SHAPE_HEIGHT,
   DEFAULT_SHAPE_WIDTH,
@@ -41,7 +43,7 @@ export const formatDate = (timestamp: number) => {
       : dayjsInstance.format("MMM D, YYYY")
 }
 
-export const generateEditElementId = (id: number) => `${EDIT_ELEMENT_ID}-${id}`
+export const generateEditElementId = (id: ElementId) => `${EDIT_ELEMENT_ID}-${id}`
 
 export const textProps = (props: ElementProps): EditableTextConfig => {
   if (props.__typename !== "Text") return {}
@@ -121,9 +123,9 @@ export const getAnchors = (element: ElementProps) => {
 }
 
 export const getSlideConfig = (): SlideProps => ({
-  id: `${Math.random()}`,
+  id: nanoid(8),
   elements: [],
-  bgColor: "rgb(255, 255, 255)",
+  bg: "rgb(255, 255, 255)",
   transition: "none",
   thumbnailUrl:
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/erDEdIAAAAASUVORK5CYII=",
@@ -133,7 +135,7 @@ export const getTextConfig = (props: AddTextProps): TextProps => ({
   // Leave ...props on top because `height` (which is used for Image) is going to be 0
   ...props,
   __typename: "Text",
-  id: Math.random(),
+  id: nanoid(8),
   width: DEFAULT_TEXT_WIDTH,
   height: DEFAULT_TEXT_HEIGHT,
   angle: 0,
@@ -147,7 +149,7 @@ export const getTextConfig = (props: AddTextProps): TextProps => ({
 export const getImageConfig = (props: AddImageProps): ImageProps => ({
   ...props,
   __typename: "Image",
-  id: Math.random(),
+  id: nanoid(8),
   width: DEFAULT_IMAGE_WIDTH,
   angle: 0,
   scaleX: 1,
@@ -160,7 +162,7 @@ export const getShapeConfig = (props: AddShapeProps): ShapeProps => ({
   // Leave ...props on top because `height` (which is used for Image) is going to be 0
   ...props,
   __typename: "Shape",
-  id: Math.random(),
+  id: nanoid(8),
   width: DEFAULT_SHAPE_WIDTH,
   height: props.type === "line" || props.type === "arrow" ? DEFAULT_STROKE_WIDTH : DEFAULT_SHAPE_HEIGHT,
   angle: 0,

@@ -1,8 +1,8 @@
-import _ from "lodash"
 import { useCallback, useContext, useMemo } from "react"
 import { useDispatch, type TypedUseSelectorHook, useSelector } from "react-redux"
 
 import type { AppDispatch, AppStore } from "~/app/model"
+import { debounce } from "~/shared/lib"
 import { DebouncedContext } from "~/shared/model"
 
 export const useAppDispatch: () => AppDispatch = useDispatch
@@ -12,10 +12,20 @@ export const useDebouncedFunctions = () => {
   const { fns } = useContext(DebouncedContext)
 
   const register = useCallback(
-    <Func extends (...args: never[]) => void>(id: string, fn: Func, ms: number) => {
+    <Func extends (...args: any[]) => void>(id: string, fn: Func, ms: number, redefine?: boolean) => {
       const item = fns.current.find((item) => item.id === id)
-      if (item) return item.fn
-      const newItem = { id, fn: _.debounce(fn, ms) }
+      const newItem = {
+        id,
+        fn: debounce(fn, ms),
+      }
+      if (item) {
+        if (!redefine) return item.fn
+        if (item.fn.pending()) {
+          newItem.fn(...(item.fn.lastArgs() as unknown as Parameters<Func>))
+          item.fn.cancel()
+        }
+        fns.current = fns.current.filter((item) => item.id !== id)
+      }
       fns.current.push(newItem)
       return newItem.fn
     },

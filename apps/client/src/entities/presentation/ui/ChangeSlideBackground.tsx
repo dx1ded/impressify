@@ -1,7 +1,13 @@
 import { PaintBucketIcon } from "lucide-react"
 import type { ChangeEvent, ReactNode } from "react"
 
-import { DEFAULT_BG_COLOR, setBackground, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import {
+  DEFAULT_BG_COLOR,
+  SAVE_SLIDES_ID,
+  setBackground,
+  setIsSaving,
+  TAKE_SCREENSHOT_ID,
+} from "~/entities/presentation"
 import { convertFileToDataUrl } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
@@ -31,6 +37,8 @@ export function ChangeSlideBackgroundDialog({ children }: { children: ReactNode 
   const changeBackground = (dataUrl: string) => {
     dispatch(setBackground(dataUrl))
     call(TAKE_SCREENSHOT_ID)
+    call(SAVE_SLIDES_ID)
+    dispatch(setIsSaving(true))
   }
 
   const fileChangeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +64,7 @@ export function ChangeSlideBackgroundDialog({ children }: { children: ReactNode 
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
             <Small className="text-grayish">Color</Small>
-            <ColorPicker color={slide.bgColor} onChange={(color) => changeBackground(color)}>
+            <ColorPicker color={slide.bg} onChange={(color) => changeBackground(color)}>
               <Button variant="outline" size="sm" className="rounded-b-none">
                 <PaintBucketIcon className="h-5 w-5" />
               </Button>

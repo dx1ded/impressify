@@ -1,8 +1,8 @@
 import { gql } from "~/__generated__"
 
-export const COPY_PRESENTATION = gql(`#graphql
-  mutation CopyPresentation($id: ID!) {
-    copyPresentation(id: $id) {
+export const DUPLICATE_PRESENTATION = gql(`#graphql
+  mutation DuplicatePresentation($id: ID!) {
+    duplicatePresentation(id: $id) {
       id
     }
   }

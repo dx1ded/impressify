@@ -1,5 +1,6 @@
 import type { MutationFunction, MutationResult, OperationVariables, QueryResult } from "@apollo/client"
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react"
+import type { DebouncedFunc } from "lodash"
 
 export type PolymorphicProps<T extends ElementType> = {
   as?: T
@@ -25,3 +26,8 @@ export type ChildrenAsCallbackWithApolloMutation<Mutation, Variables> = {
 export type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[]
   ? ElementType
   : never
+
+export interface CustomDebouncedFunc<T extends (...args: any[]) => any> extends DebouncedFunc<T> {
+  pending: () => boolean
+  lastArgs: () => Parameters<T> | undefined
+}

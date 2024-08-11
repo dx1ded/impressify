@@ -16,7 +16,6 @@ export default {
       if (!user) return null
 
       const sortBy = __.sortBy as "newest" | "oldest" | "a_z" | "z_a"
-
       const _ids = await presentationRepository.find({
         select: { id: true },
         where: { users: { id: user.id } },
@@ -97,7 +96,7 @@ export default {
       if (!user) return null
 
       const presentation = new Presentation(name, [await userRepository.findOneBy({ id: user.id })])
-      const slide = new Slide(presentation)
+      const slide = new Slide({ presentation })
       const history = new History(presentation)
 
       slide.elements = []
@@ -120,7 +119,7 @@ export default {
       await presentationRepository.delete({ id })
       return true
     },
-    async copyPresentation(__, { id }, { user }) {
+    async duplicatePresentation(__, { id }, { user }) {
       if (!user) return null
 
       const presentation = await presentationRepository.findOne({
@@ -133,13 +132,15 @@ export default {
       history.records = []
       newPresentation.history = history
       newPresentation.slides = presentation.slides.map((slide) => {
-        const newSlide = new Slide(newPresentation)
-        newSlide.bgColor = slide.bgColor
-        newSlide.transition = slide.transition
-        newSlide.thumbnailUrl = slide.thumbnailUrl
+        const newSlide = new Slide({
+          presentation: newPresentation,
+          bg: slide.bg,
+          transition: slide.transition,
+          thumbnailUrl: slide.thumbnailUrl,
+        })
         newSlide.elements = slide.elements.map((element) => {
           const commonProps = {
-            ..._.pick(element, ["id", "x", "y", "width", "height", "angle", "scaleX", "scaleY"]),
+            ..._.pick(element, ["id", "x", "y", "width", "height", "angle", "scaleX", "scaleY", "position"]),
             slide: newSlide,
           }
           if (element instanceof Text) {
@@ -178,16 +179,19 @@ export default {
   },
   Presentation: {
     async slides(parent, _, __, { variableValues }) {
-      const preview = variableValues.preview ? variableValues.preview : true
+      const preview = variableValues.preview || false
       if (preview) {
         // Return only the first slide if preview is true
         const firstSlide = await slideRepository.findOne({
           where: { presentation: { id: parent.id } },
-          order: { createdAt: "ASC" },
+          order: { position: "ASC" },
         })
         return firstSlide ? [firstSlide] : []
       }
-      return slideRepository.findBy({ presentation: { id: parent.id } })
+      return slideRepository.find({
+        where: { presentation: { id: parent.id } },
+        order: { position: "ASC" },
+      })
     },
     users(parent) {
       return userRepository.findBy({ presentations: { id: parent.id } })

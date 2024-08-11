@@ -1,6 +1,8 @@
 import { Column, ChildEntity } from "typeorm"
-import { Element } from "./Element"
+import { Element, type ElementConstructorProps } from "./Element"
 import { Shape as IShape } from "../graphql/__generated__"
+
+type ShapeConstructorProps = ElementConstructorProps & Shape
 
 @ChildEntity()
 export class Shape extends Element implements IShape {
@@ -21,6 +23,7 @@ export class Shape extends Element implements IShape {
 
   constructor(
     {
+      id,
       x,
       y,
       width,
@@ -28,14 +31,17 @@ export class Shape extends Element implements IShape {
       angle,
       scaleX,
       scaleY,
+      position,
+      type,
       fillColor,
       strokeColor,
       strokeWidth,
+      proportional,
       slide,
-    }: Omit<Element, "id"> & Omit<Shape, "type" | "proportional"> = {} as Omit<Element, "id"> &
-      Omit<Shape, "type" | "proportional">,
+    }: ShapeConstructorProps = {} as ShapeConstructorProps,
   ) {
     super({
+      id,
       x,
       y,
       width,
@@ -43,10 +49,13 @@ export class Shape extends Element implements IShape {
       angle,
       scaleX,
       scaleY,
+      position,
       slide,
     })
+    this.type = type
     this.fillColor = fillColor
     this.strokeColor = strokeColor
     this.strokeWidth = strokeWidth
+    this.proportional = proportional
   }
 }

@@ -12,6 +12,7 @@ interface GetPresentationInfoProps
 export function GetPresentationInfo({ presentationId, children }: GetPresentationInfoProps) {
   const result = useQuery<GetPresentationInfoQuery, GetPresentationInfoQueryVariables>(GET_PRESENTATION_INFO, {
     variables: { id: presentationId },
+    fetchPolicy: "network-only",
   })
 
   return children(result)

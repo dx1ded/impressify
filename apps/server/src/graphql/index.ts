@@ -1,5 +1,6 @@
 import { join } from "node:path"
 import type { ClerkClient, User } from "@clerk/backend"
+import type { Storage } from "firebase-admin/storage"
 
 import type { PubSub } from "graphql-subscriptions"
 import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge"
@@ -18,6 +19,7 @@ const resolvers = loadFilesSync(join(__dirname, "./resolvers/*"))
 
 export interface ApolloContext {
   clerk: ClerkClient
+  storage: Storage
   user: User | undefined
   pubsub: PubSub
 }

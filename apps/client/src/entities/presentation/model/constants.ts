@@ -39,9 +39,10 @@ export const COPIED_ELEMENT_X_DIF = 50
 export const COPIED_ELEMENT_Y_DIF = 50
 
 export const DEFAULT_NAME = "New presentation"
-export const NOT_SELECTED = -1
+export const NOT_SELECTED = "not-selected"
 export const MAX_HISTORY_LENGTH = 10
 
 export const TAKE_SCREENSHOT_ID = "take-screenshot"
 export const EDIT_ELEMENT_ID = "edit-element"
 export const CHANGE_NAME_ID = "change-name"
+export const SAVE_SLIDES_ID = "save-slides"

@@ -1,13 +1,14 @@
 type Text implements Element {
-  id: Int!
-  x: Int!
-  y: Int!
-  width: Int!
-  height: Int!
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
   angle: Int!
-  scaleX: Int!
-  scaleY: Int!
+  scaleX: Float!
+  scaleY: Float!
   slide: Slide!
+  position: Int!
 
   text: String!
   textColor: String!
@@ -19,5 +20,31 @@ type Text implements Element {
   italic: Boolean!
   underlined: Boolean!
   alignment: String!
-  lineHeight: Int!
+  lineHeight: Float!
+}
+
+input TextInput {
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
+  angle: Int!
+  scaleX: Float!
+  scaleY: Float!
+
+  text: String!
+  textColor: String!
+  fillColor: String!
+  borderColor: String!
+  fontFamily: String!
+  fontSize: Int!
+  bold: Boolean!
+  italic: Boolean!
+  underlined: Boolean!
+  alignment: String!
+  lineHeight: Float!
+
+  # Index in a common element array
+  index: Int!
 }

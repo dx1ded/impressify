@@ -1,6 +1,6 @@
 import { Redo, Undo } from "lucide-react"
 
-import { applyHistory, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import { applyHistory, EDIT_ELEMENT_ID, SAVE_SLIDES_ID, setIsSaving, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import { cn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
@@ -22,6 +22,8 @@ export function History() {
                 flushWithPattern(EDIT_ELEMENT_ID)
                 dispatch(applyHistory("UNDO"))
                 call(TAKE_SCREENSHOT_ID)
+                call(SAVE_SLIDES_ID)
+                dispatch(setIsSaving(true))
               }}
             />
           </div>
@@ -37,6 +39,8 @@ export function History() {
                 flushWithPattern(EDIT_ELEMENT_ID)
                 dispatch(applyHistory("REDO"))
                 call(TAKE_SCREENSHOT_ID)
+                call(SAVE_SLIDES_ID)
+                dispatch(setIsSaving(true))
               }}
             />
           </div>

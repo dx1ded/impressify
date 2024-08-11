@@ -2,37 +2,41 @@ import { type MutationResult, useMutation } from "@apollo/client"
 import { type ReactNode, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { COPY_PRESENTATION } from "~/features/duplicate-presentation/model"
-import type { CopyPresentationMutation, CopyPresentationMutationVariables } from "~/__generated__/graphql"
+import { DUPLICATE_PRESENTATION } from "~/features/duplicate-presentation/model"
+import type { DuplicatePresentationMutation, DuplicatePresentationMutationVariables } from "~/__generated__/graphql"
 import { clear } from "~/entities/presentation"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 
 interface DuplicatePresentationProps {
-  children(copyPresentation: (id: string) => void, result: MutationResult<CopyPresentationMutation>): ReactNode
+  children(
+    duplicatePresentation: (id: string) => void,
+    result: MutationResult<DuplicatePresentationMutation>,
+  ): ReactNode
 }
 
 export function DuplicatePresentation({ children }: DuplicatePresentationProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { flushAll } = useDebouncedFunctions()
-  const [sendCopyPresentation, result] = useMutation<CopyPresentationMutation, CopyPresentationMutationVariables>(
-    COPY_PRESENTATION,
-  )
+  const [sendDuplicatePresentation, result] = useMutation<
+    DuplicatePresentationMutation,
+    DuplicatePresentationMutationVariables
+  >(DUPLICATE_PRESENTATION)
 
-  const copyPresentation = useCallback(
+  const duplicatePresentation = useCallback(
     async (id: string) => {
       flushAll()
-      const result = await sendCopyPresentation({
+      const result = await sendDuplicatePresentation({
         variables: { id },
       })
 
-      const data = result.data?.copyPresentation
+      const data = result.data?.duplicatePresentation
       if (!data) return
       dispatch(clear())
       navigate(`/presentation/${data.id}`)
     },
-    [flushAll, navigate, dispatch, sendCopyPresentation],
+    [flushAll, navigate, dispatch, sendDuplicatePresentation],
   )
 
-  return children(copyPresentation, result)
+  return children(duplicatePresentation, result)
 }

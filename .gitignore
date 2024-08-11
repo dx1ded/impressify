@@ -46,3 +46,7 @@ Thumbs.db
 .env.example
 .env.local
 .env.staging
+
+# Credentials
+
+!/apps/server/src/impressify-26983-firebase-adminsdk-26c7d-c529d5e383.ts

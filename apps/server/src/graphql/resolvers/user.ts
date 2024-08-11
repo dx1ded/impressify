@@ -17,7 +17,7 @@ export default {
       await presentationRepository.save(presentation)
       return true
     },
-    async getHelp(_, { text }, { user }) {
+    async sendHelpRequest(_, { text }, { user }) {
       if (!user) return null
 
       // Send email code

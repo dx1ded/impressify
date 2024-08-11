@@ -1,13 +1,30 @@
 type Image implements Element {
-  id: Int!
-  x: Int!
-  y: Int!
-  width: Int!
-  height: Int!
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
   angle: Int!
-  scaleX: Int!
-  scaleY: Int!
+  scaleX: Float!
+  scaleY: Float!
   slide: Slide!
+  position: Int!
 
   imageUrl: String!
+}
+
+input ImageInput {
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
+  angle: Int!
+  scaleX: Float!
+  scaleY: Float!
+
+  imageUrl: String!
+
+  # Index in a common element array
+  index: Int!
 }

@@ -1,9 +1,10 @@
-import type { DebouncedFunc } from "lodash"
 import { type MutableRefObject, type ReactNode, createContext, useMemo, useRef } from "react"
 
-interface DebouncedItem<T extends (...args: never[]) => void> {
+import type { CustomDebouncedFunc } from "~/shared/lib"
+
+interface DebouncedItem<T extends (...args: any[]) => any> {
   id: string
-  fn: DebouncedFunc<T>
+  fn: CustomDebouncedFunc<T>
 }
 
 interface DebouncedState {

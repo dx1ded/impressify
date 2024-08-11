@@ -7,12 +7,13 @@ import { DuplicateSlide } from "~/features/duplicate-slide/ui"
 import { cn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
-interface SlideItemProps {
+interface SlideListItemProps {
   slide: SlideProps
   index: number
+  isDragging: boolean
 }
 
-export function SlideItem({ slide, index }: SlideItemProps) {
+export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) {
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
   const dispatch = useAppDispatch()
   const { flush, flushWithPattern, deleteWithPattern, deleteDebounced } = useDebouncedFunctions()
@@ -27,7 +28,7 @@ export function SlideItem({ slide, index }: SlideItemProps) {
           // mb-4 is used instead of container gap + for every element to avoid the issue related to gaps with react-beautiful-dnd
           className="group mb-4 flex h-28 w-full flex-shrink-0 gap-2">
           <div className="flex h-full flex-col items-center gap-2">
-            <small className="font-bold">{index + 1}</small>
+            {!isDragging && <small className="font-bold">{index + 1}</small>}
             {slide.transition !== "none" && <SparklesIcon className="h-[1.125rem] w-[1.125rem] text-yellow-500" />}
             <DuplicateSlide>
               {(duplicateSlide) => (

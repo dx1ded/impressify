@@ -1,6 +1,8 @@
 import { Column, ChildEntity } from "typeorm"
-import { Element } from "./Element"
+import { Element, type ElementConstructorProps } from "./Element"
 import { Image as IImage } from "../graphql/__generated__"
+
+type ImageConstructorProps = ElementConstructorProps & Image
 
 @ChildEntity()
 export class Image extends Element implements IImage {
@@ -8,13 +10,8 @@ export class Image extends Element implements IImage {
   imageUrl: string
 
   constructor(
-    { x, y, width, height, angle, scaleX, scaleY, imageUrl, slide }: Omit<Element, "id"> & Image = {} as Omit<
-      Element,
-      "id"
-    > &
-      Image,
-  ) {
-    super({
+    {
+      id,
       x,
       y,
       width,
@@ -22,6 +19,21 @@ export class Image extends Element implements IImage {
       angle,
       scaleX,
       scaleY,
+      position,
+      slide,
+      imageUrl,
+    }: ImageConstructorProps = {} as ImageConstructorProps,
+  ) {
+    super({
+      id,
+      x,
+      y,
+      width,
+      height,
+      angle,
+      scaleX,
+      scaleY,
+      position,
       slide,
     })
     this.imageUrl = imageUrl

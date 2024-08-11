@@ -1,6 +1,8 @@
 import { Column, ChildEntity } from "typeorm"
-import { Element } from "./Element"
+import { Element, type ElementConstructorProps } from "./Element"
 import { Text as IText } from "../graphql/__generated__"
+
+type TextConstructorProps = ElementConstructorProps & Text
 
 @ChildEntity()
 export class Text extends Element implements IText {
@@ -34,14 +36,16 @@ export class Text extends Element implements IText {
   @Column()
   underlined: boolean
 
+  // "left" | "center" | "right"
   @Column()
-  alignment: "left" | "center" | "right"
+  alignment: string
 
-  @Column()
+  @Column("float")
   lineHeight: number
 
   constructor(
     {
+      id,
       x,
       y,
       width,
@@ -49,6 +53,8 @@ export class Text extends Element implements IText {
       angle,
       scaleX,
       scaleY,
+      position,
+      text,
       textColor,
       fillColor,
       borderColor,
@@ -60,9 +66,10 @@ export class Text extends Element implements IText {
       alignment,
       lineHeight,
       slide,
-    }: Omit<Element, "id"> & Text = {} as Omit<Element, "id"> & Text,
+    }: TextConstructorProps = {} as TextConstructorProps,
   ) {
     super({
+      id,
       x,
       y,
       width,
@@ -70,8 +77,10 @@ export class Text extends Element implements IText {
       angle,
       scaleX,
       scaleY,
+      position,
       slide,
     })
+    this.text = text
     this.textColor = textColor
     this.fillColor = fillColor
     this.borderColor = borderColor

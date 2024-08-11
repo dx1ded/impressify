@@ -38,7 +38,7 @@ export function Header() {
       <div className="flex items-start gap-1.5">
         <Logo noText size={3.25} url="/home" />
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {isLoading ? (
               <Skeleton className="h-[1.875rem] w-32" />
             ) : (

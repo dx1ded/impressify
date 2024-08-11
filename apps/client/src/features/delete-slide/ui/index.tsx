@@ -1,6 +1,6 @@
 import { forwardRef } from "react"
 
-import { deleteSlide, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import { deleteSlide, EDIT_ELEMENT_ID, SAVE_SLIDES_ID, setIsSaving, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
@@ -11,7 +11,7 @@ export const DeleteSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn<[str
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const dispatch = useAppDispatch()
-  const { deleteDebounced, deleteWithPattern } = useDebouncedFunctions()
+  const { deleteDebounced, deleteWithPattern, call } = useDebouncedFunctions()
 
   const _deleteSlide = (id: string) => {
     const index = slides.findIndex((slide) => slide.id === id)!
@@ -20,6 +20,8 @@ export const DeleteSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn<[str
       deleteWithPattern(EDIT_ELEMENT_ID)
     }
     dispatch(deleteSlide(id))
+    call(SAVE_SLIDES_ID)
+    dispatch(setIsSaving(true))
   }
 
   return children(_deleteSlide)

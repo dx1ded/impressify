@@ -1,5 +1,7 @@
 import "dotenv/config"
 import { createServer, type Server } from "node:http"
+import { initializeApp, cert, type ServiceAccount } from "firebase-admin/app"
+import { getStorage } from "firebase-admin/storage"
 import Fastify from "fastify"
 import { WebSocketServer } from "ws"
 import { useServer } from "graphql-ws/lib/use/ws"
@@ -11,14 +13,18 @@ import fastifyApollo, { type ApolloFastifyContextFunction, fastifyApolloDrainPlu
 
 import { app } from "./app"
 import { schema, type ApolloContext } from "./graphql"
+import firebaseCredentials from "./impressify-26983-firebase-adminsdk-26c7d-c529d5e383"
 
 const host = process.env.HOST ?? "localhost"
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
+// 8 MiB limit
+const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
 
 ;(async function () {
   let httpServer: Server
   const fastify = Fastify({
     logger: false,
+    bodyLimit: FASTIFY_BODY_LIMIT,
     serverFactory: (handler) => {
       httpServer = createServer((req, res) => {
         handler(req, res)
@@ -34,6 +40,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000
   })
 
   const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET })
+  const firebase = initializeApp({ credential: cert(firebaseCredentials as ServiceAccount) })
   const apollo = new ApolloServer<ApolloContext>({
     schema,
     plugins: [
@@ -54,6 +61,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000
 
   const contextFn: ApolloFastifyContextFunction<ApolloContext> = async (request) => ({
     clerk,
+    storage: getStorage(firebase),
     user: request.headers.authorization ? await clerk.users.getUser(request.headers.authorization) : undefined,
     pubsub: new PubSub(),
   })

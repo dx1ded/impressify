@@ -5,7 +5,7 @@ import type { RectConfig } from "konva/lib/shapes/Rect"
 import type { StarConfig } from "konva/lib/shapes/Star"
 import type { Image, Line, Rect, Circle, Arrow, Star } from "react-konva"
 
-import type { FindUserPresentationsQuery, GetPresentationQuery } from "~/__generated__/graphql"
+import type { FindUserPresentationsQuery, GetPresentationQuery, Slide } from "~/__generated__/graphql"
 import type { ArrayElement } from "~/shared/lib"
 import type { EditableText } from "~/shared/ui/EditableText"
 
@@ -24,6 +24,8 @@ export type AddShapeProps = Coordinates & ShapeEditProps
 
 export type SlideProps = Presentation["slides"][number]
 export type ElementProps = Presentation["slides"][number]["elements"][number]
+export type SlideId = Slide["id"]
+export type ElementId = ElementProps["id"]
 
 export type TextProps = ElementProps & { __typename: "Text" }
 export type ImageProps = ElementProps & { __typename: "Image" }

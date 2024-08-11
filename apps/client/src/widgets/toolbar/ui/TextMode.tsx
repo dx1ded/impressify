@@ -13,7 +13,14 @@ import {
 import { SelectTrigger as NativeSelectTrigger } from "@radix-ui/react-select"
 import { Fragment } from "react"
 
-import { type TextProps, changeTextProps, DEFAULT_FONT_LIST, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import {
+  type TextProps,
+  changeTextProps,
+  DEFAULT_FONT_LIST,
+  TAKE_SCREENSHOT_ID,
+  SAVE_SLIDES_ID,
+  setIsSaving,
+} from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import {
@@ -40,6 +47,8 @@ export function TextMode({ isActive }: ModeProps) {
   const applyChanges = (props: Partial<TextProps>) => {
     dispatch(changeTextProps(props))
     call(TAKE_SCREENSHOT_ID)
+    call(SAVE_SLIDES_ID)
+    dispatch(setIsSaving(true))
   }
 
   return (

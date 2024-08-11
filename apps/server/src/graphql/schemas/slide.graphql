@@ -2,8 +2,24 @@ type Slide {
   id: ID!
   elements: [Element!]!
   presentation: Presentation!
-  bgColor: String!
+  bg: String!
   transition: String!
   thumbnailUrl: String!
   createdAt: Date!
+  # index in an array of slides
+  position: Int!
+}
+
+input SlideInput {
+  id: ID!
+  elements: ElementInput!
+  bg: String!
+  transition: String!
+  thumbnailUrl: String!
+}
+
+type Mutation {
+  # `slides` argument includes all slides (even those that haven't been updated)
+  # it's done to have a clean architecture despite biggest request body
+  saveSlides(presentationId: String!, slides: [SlideInput!]!): [Slide]
 }

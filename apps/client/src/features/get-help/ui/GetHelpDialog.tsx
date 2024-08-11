@@ -37,7 +37,7 @@ export function GetHelpDialog({ children }: { children: ReactNode }) {
             <>
               <div className="flex items-center gap-2">
                 <Input {...register("text")} />
-                {data?.getHelp && called ? (
+                {data?.sendHelpRequest && called ? (
                   <DialogClose className="h-full" asChild>
                     <Button size="sm" className="h-full px-7">
                       Close
@@ -56,7 +56,7 @@ export function GetHelpDialog({ children }: { children: ReactNode }) {
               {formState.errors.text && (
                 <small className="block font-medium text-red-400">{formState.errors.text.message}</small>
               )}
-              {data?.getHelp && called && (
+              {data?.sendHelpRequest && called && (
                 <small className="block font-medium text-green-400">Your request has been sent</small>
               )}
             </>

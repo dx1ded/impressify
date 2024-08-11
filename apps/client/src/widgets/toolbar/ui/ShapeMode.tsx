@@ -1,6 +1,12 @@
 import { PaintBucketIcon, PencilIcon } from "lucide-react"
 
-import { type ShapeProps, changeShapeProps, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import {
+  type ShapeProps,
+  changeShapeProps,
+  TAKE_SCREENSHOT_ID,
+  SAVE_SLIDES_ID,
+  setIsSaving,
+} from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
@@ -15,6 +21,8 @@ export function ShapeMode({ isActive }: ModeProps) {
   const applyChanges = (props: Partial<ShapeProps>) => {
     dispatch(changeShapeProps(props))
     call(TAKE_SCREENSHOT_ID)
+    call(SAVE_SLIDES_ID)
+    dispatch(setIsSaving(true))
   }
 
   return (

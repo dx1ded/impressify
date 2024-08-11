@@ -18,6 +18,8 @@ import {
   setIsCreating,
   setThumbnail,
   TAKE_SCREENSHOT_ID,
+  SAVE_SLIDES_ID,
+  setIsSaving,
 } from "~/entities/presentation"
 import { createImage, isColor } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
@@ -40,7 +42,7 @@ export function Slide() {
   )
   const dispatch = useAppDispatch()
   const stageRef = useRef<StageClass>(null)
-  const { register } = useDebouncedFunctions()
+  const { register, call } = useDebouncedFunctions()
 
   let takeScreenshot: (() => void) | undefined
 
@@ -55,6 +57,8 @@ export function Slide() {
         const url = stageRef.current.toDataURL()
         transformers.forEach((tr) => tr.visible(true))
         dispatch(setThumbnail(url))
+        call(SAVE_SLIDES_ID)
+        dispatch(setIsSaving(true))
       },
       SCREENSHOT_DEBOUCE_TIME,
     )
@@ -87,6 +91,8 @@ export function Slide() {
         }),
       )
       dispatch(setIsCreating(false))
+      call(SAVE_SLIDES_ID)
+      dispatch(setIsSaving(true))
       if (takeScreenshot) takeScreenshot()
     }
   }
@@ -115,9 +121,7 @@ export function Slide() {
                 width={SLIDE_WIDTH}
                 height={SLIDE_HEIGHT}
                 listening={false}
-                {...(isColor(slide.bgColor)
-                  ? { fill: slide.bgColor }
-                  : { fillPatternImage: createImage(slide.bgColor) })}
+                {...(isColor(slide.bg) ? { fill: slide.bg } : { fillPatternImage: createImage(slide.bg) })}
               />
               {slide.elements.map((element) => (
                 <ElementWrapper

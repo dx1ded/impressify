@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 
-import { setTransition } from "~/entities/presentation"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import { SAVE_SLIDES_ID, setIsSaving, setTransition } from "~/entities/presentation"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/ui-kit/select"
 import {
@@ -21,6 +21,7 @@ export function ChangeSlideTransitionSheet({ children }: { children: ReactNode }
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
   const dispatch = useAppDispatch()
+  const { call } = useDebouncedFunctions()
 
   const slide = slides[currentSlide]
   if (!slide) return
@@ -42,7 +43,13 @@ export function ChangeSlideTransitionSheet({ children }: { children: ReactNode }
         </SheetHeader>
         <div className="mb-3 mt-7">
           <Small className="mb-1.5 block">Type</Small>
-          <Select defaultValue={slide.transition} onValueChange={(value) => dispatch(setTransition(value))}>
+          <Select
+            defaultValue={slide.transition}
+            onValueChange={(value) => {
+              dispatch(setTransition(value))
+              call(SAVE_SLIDES_ID)
+              dispatch(setIsSaving(true))
+            }}>
             <SelectTrigger>
               <SelectValue placeholder="Transition" />
             </SelectTrigger>

@@ -8,9 +8,9 @@ import {
   type ElementComponent,
   type Mode,
   generateEditElementId,
+  textProps,
   imageProps,
   shapeProps,
-  textProps,
   getAnchors,
   selectElement,
   editElement,
@@ -20,6 +20,8 @@ import {
   MIN_ELEMENT_WIDTH,
   MIN_ELEMENT_HEIGHT,
   TAKE_SCREENSHOT_ID,
+  SAVE_SLIDES_ID,
+  setIsSaving,
 } from "~/entities/presentation"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 
@@ -60,6 +62,8 @@ export const ElementWrapper = memo(function ElementWrapper({
       // Using id to avoid transformations being applied for `selectedId` (which would be used if not id provided)
       dispatch(editElement({ ...newProps, id: props.id }))
       call(TAKE_SCREENSHOT_ID)
+      call(SAVE_SLIDES_ID)
+      dispatch(setIsSaving(true))
     },
     DEBOUNCE_EDIT_TIME,
   )

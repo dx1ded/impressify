@@ -1,11 +1,20 @@
 interface Element {
-  id: Int!
-  x: Int!
-  y: Int!
-  width: Int!
-  height: Int!
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
   angle: Int!
-  scaleX: Int!
-  scaleY: Int!
+  scaleX: Float!
+  scaleY: Float!
   slide: Slide!
+  # index in an array of elements
+  position: Int!
+}
+
+# This is a limitation of GraphQL. You can't do polymorphic inputs, that's why I had to specify separate fields for text, image, and shape - not altogether
+input ElementInput {
+  text: [TextInput!]!
+  image: [ImageInput!]!
+  shape: [ShapeInput!]!
 }
