@@ -46,5 +46,5 @@ input TextInput {
   lineHeight: Float!
 
   # Index in a common element array
-  index: Int!
+  position: Int!
 }

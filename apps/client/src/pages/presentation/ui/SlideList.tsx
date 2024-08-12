@@ -8,6 +8,8 @@ import {
   TAKE_SCREENSHOT_ID,
   SAVE_SLIDES_ID,
   setIsSaving,
+  useSynchronizeState,
+  transformSlidesIntoInput,
 } from "~/entities/presentation"
 import { SlideListItem } from "~/pages/presentation/ui/SlideListItem"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
@@ -17,6 +19,7 @@ export function SlideList() {
   const dispatch = useAppDispatch()
   const [isDragging, setIsDragging] = useState(false)
   const { flush, flushWithPattern, deleteWithPattern, deleteDebounced, call } = useDebouncedFunctions()
+  const { synchronize } = useSynchronizeState()
 
   const dragStartHandler = (data: DragStart) => {
     setIsDragging(true)
@@ -25,16 +28,17 @@ export function SlideList() {
     dispatch(setCurrentSlide(data.source.index))
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
+    synchronize({ isSaving: true })
   }
 
   const dragEndHandler = (data: DropResult) => {
-    if (!data.destination) return
-    dispatch(moveSlide({ id: data.draggableId, newIndex: data.destination.index }))
-    if (data.source.index !== data.destination.index) {
+    if (data.destination && data.source.index !== data.destination.index) {
+      dispatch(moveSlide({ id: data.draggableId, newIndex: data.destination.index }))
       deleteWithPattern(EDIT_ELEMENT_ID)
       deleteDebounced(TAKE_SCREENSHOT_ID)
       call(SAVE_SLIDES_ID)
       dispatch(setIsSaving(true))
+      synchronize({ slides: transformSlidesIntoInput(slides), isSaving: true })
     }
     setIsDragging(false)
   }

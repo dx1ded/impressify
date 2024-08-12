@@ -82,6 +82,12 @@ export const GET_PRESENTATION = gql(`#graphql
           }
         }
       }
+      users {
+        id
+        email
+        name
+        profilePicUrl
+      }
     }
   }
 `)
@@ -90,44 +96,70 @@ export const SAVE_SLIDES = gql(`#graphql
   mutation SaveSlides($presentationId: String!, $slides: [SlideInput!]!) {
     saveSlides(presentationId: $presentationId, slides: $slides) {
       id
-      bg
-      transition
-      thumbnailUrl
-      elements {
+    }
+  }
+`)
+
+export const SYNCHRONIZE_PRESENTATION_STATE = gql(`#graphql
+  mutation SynchronizePresentationState($changes: PresentationStateInput!) {
+    synchronizePresentationState(changes: $changes) {
+      name
+    }
+  }
+`)
+
+export const PRESENTATION_UPDATED = gql(`#graphql
+  subscription PresentationUpdated {
+    presentationUpdated {
+      isSaving
+      name
+      slides {
         id
-        x
-        y
-        width
-        height
-        angle
-        scaleX
-        scaleY
+        bg
+        transition
+        thumbnailUrl
+        elements {
+          id
+          x
+          y
+          width
+          height
+          angle
+          scaleX
+          scaleY
 
-        ... on Text {
-          text
-          textColor
-          fillColor
-          borderColor
-          fontFamily
-          fontSize
-          bold
-          italic
-          underlined
-          alignment
-          lineHeight
-        }
+          ... on Text {
+            text
+            textColor
+            fillColor
+            borderColor
+            fontFamily
+            fontSize
+            bold
+            italic
+            underlined
+            alignment
+            lineHeight
+          }
 
-        ... on Image {
-          imageUrl
-        }
+          ... on Image {
+            imageUrl
+          }
 
-        ... on Shape {
-          type
-          fillColor
-          strokeColor
-          strokeWidth
-          proportional
+          ... on Shape {
+            type
+            fillColor
+            strokeColor
+            strokeWidth
+            proportional
+          }
         }
+      }
+      users {
+        id
+        email
+        name
+        profilePicUrl
       }
     }
   }

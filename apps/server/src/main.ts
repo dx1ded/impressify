@@ -5,7 +5,6 @@ import { getStorage } from "firebase-admin/storage"
 import Fastify from "fastify"
 import { WebSocketServer } from "ws"
 import { useServer } from "graphql-ws/lib/use/ws"
-import { PubSub } from "graphql-subscriptions"
 import cors from "@fastify/cors"
 import { ApolloServer } from "@apollo/server"
 import { createClerkClient } from "@clerk/backend"
@@ -13,6 +12,7 @@ import fastifyApollo, { type ApolloFastifyContextFunction, fastifyApolloDrainPlu
 
 import { app } from "./app"
 import { schema, type ApolloContext } from "./graphql"
+import pubsub from "./pubsub"
 import firebaseCredentials from "./impressify-26983-firebase-adminsdk-26c7d-c529d5e383"
 
 const host = process.env.HOST ?? "localhost"
@@ -36,7 +36,7 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
 
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: "/graphql",
+    path: "/graphql/ws",
   })
 
   const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET })
@@ -63,7 +63,7 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
     clerk,
     storage: getStorage(firebase),
     user: request.headers.authorization ? await clerk.users.getUser(request.headers.authorization) : undefined,
-    pubsub: new PubSub(),
+    pubsub,
   })
 
   await apollo.start()

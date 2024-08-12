@@ -10,6 +10,15 @@ type Slide {
   position: Int!
 }
 
+# This is defined for PresentationState (the one that gets passed between connections through the subscription)
+type SlideStateItem {
+  id: ID!
+  elements: [Element!]!
+  bg: String!
+  transition: String!
+  thumbnailUrl: String!
+}
+
 input SlideInput {
   id: ID!
   elements: ElementInput!

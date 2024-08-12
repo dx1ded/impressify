@@ -1,13 +1,12 @@
 import { ArrowDownAZ, ArrowUpZA, CalendarMinus, CalendarPlus } from "lucide-react"
-import { useDispatch } from "react-redux"
 
 import { setSort } from "~/entities/presentation"
 import type { SortTypes } from "~/features/sort-presentations/lib"
-import { useAppSelector } from "~/shared/model"
+import { useAppDispatch, useAppSelector } from "~/shared/model"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "~/shared/ui-kit/select"
 
 export function SortType() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const sort = useAppSelector((state) => state.recentPresentations.sort)
 
   const Icon =

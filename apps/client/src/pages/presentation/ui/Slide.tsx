@@ -20,6 +20,8 @@ import {
   TAKE_SCREENSHOT_ID,
   SAVE_SLIDES_ID,
   setIsSaving,
+  useSynchronizeState,
+  transformSlidesIntoInput,
 } from "~/entities/presentation"
 import { createImage, isColor } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
@@ -43,6 +45,7 @@ export function Slide() {
   const dispatch = useAppDispatch()
   const stageRef = useRef<StageClass>(null)
   const { register, call } = useDebouncedFunctions()
+  const { synchronize } = useSynchronizeState()
 
   let takeScreenshot: (() => void) | undefined
 
@@ -59,6 +62,7 @@ export function Slide() {
         dispatch(setThumbnail(url))
         call(SAVE_SLIDES_ID)
         dispatch(setIsSaving(true))
+        synchronize({ slides: transformSlidesIntoInput(slides), isSaving: true })
       },
       SCREENSHOT_DEBOUCE_TIME,
     )
@@ -90,8 +94,8 @@ export function Slide() {
           height: imageHeight,
         }),
       )
-      dispatch(setIsCreating(false))
       call(SAVE_SLIDES_ID)
+      dispatch(setIsCreating(false))
       dispatch(setIsSaving(true))
       if (takeScreenshot) takeScreenshot()
     }
@@ -106,9 +110,7 @@ export function Slide() {
         width={SLIDE_WIDTH}
         height={SLIDE_HEIGHT}
         className="border"
-        style={{
-          cursor: isCreating ? "crosshair" : "default",
-        }}
+        style={{ cursor: isCreating ? "crosshair" : "default" }}
         onClick={handleStageClick}>
         <Layer>
           {isLoading ? (

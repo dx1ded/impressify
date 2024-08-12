@@ -35,5 +35,5 @@ input ShapeInput {
   proportional: Boolean!
 
   # Index in a common element array
-  index: Int!
+  position: Int!
 }

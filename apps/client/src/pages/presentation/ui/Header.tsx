@@ -1,7 +1,7 @@
 import { UserButton } from "@clerk/clerk-react"
 import { shallowEqual } from "react-redux"
 
-import { CHANGE_NAME_ID, MAX_NAME_LENGTH, setName } from "~/entities/presentation"
+import { CHANGE_NAME_ID, MAX_NAME_LENGTH, setName, useSynchronizeState } from "~/entities/presentation"
 import { SharePresentationDialog } from "~/features/share-presentation"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
 import { Skeleton } from "~/shared/ui-kit/skeleton"
@@ -24,11 +24,13 @@ export function Header() {
   )
   const dispatch = useAppDispatch()
   const { register } = useDebouncedFunctions()
+  const { synchronize } = useSynchronizeState()
 
   const debouncedChangeName = register(
     CHANGE_NAME_ID,
     (value: string) => {
       dispatch(setName(value))
+      synchronize({ name: value })
     },
     DEBOUNCED_CHANGE_NAME_TIME,
   )

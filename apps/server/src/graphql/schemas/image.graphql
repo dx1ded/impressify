@@ -26,5 +26,5 @@ input ImageInput {
   imageUrl: String!
 
   # Index in a common element array
-  index: Int!
+  position: Int!
 }

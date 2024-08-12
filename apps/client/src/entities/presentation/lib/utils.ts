@@ -10,6 +10,7 @@ import {
 } from "react-konva"
 import type { ImageConfig } from "konva/lib/shapes/Image"
 
+import type { ImageInput, ShapeInput, SlideInput, TextInput } from "~/__generated__/graphql"
 import {
   type AddImageProps,
   type AddShapeProps,
@@ -172,3 +173,40 @@ export const getShapeConfig = (props: AddShapeProps): ShapeProps => ({
   x: ["circle", "star"].includes(props.type) ? props.x : props.x - DEFAULT_SHAPE_WIDTH / 2,
   y: ["circle", "star", "line", "arrow"].includes(props.type) ? props.y : props.y - DEFAULT_SHAPE_HEIGHT / 2,
 })
+
+export const transformSlidesIntoInput = (slides: SlideProps[]): SlideInput[] =>
+  slides.map(({ __typename, ...slide }) => ({
+    // `__typename` is omitted by the deconstruction
+    ...slide,
+    // For elements, we filter items by text, image, and shape. In addition, for each field we remove `__typename` because
+    // ... it's not present in the TextInput | ImageInput | ShapeInput definitions
+    elements: {
+      text: slide.elements
+        .filter((element) => element.__typename === "Text")
+        .map(
+          ({ __typename, ...element }) =>
+            ({
+              ...element,
+              position: slide.elements.findIndex((_element) => _element.id === element.id),
+            }) as TextInput,
+        ),
+      image: slide.elements
+        .filter((element) => element.__typename === "Image")
+        .map(
+          ({ __typename, ...element }) =>
+            ({
+              ...element,
+              position: slide.elements.findIndex((_element) => _element.id === element.id),
+            }) as ImageInput,
+        ),
+      shape: slide.elements
+        .filter((element) => element.__typename === "Shape")
+        .map(
+          ({ __typename, ...element }) =>
+            ({
+              ...element,
+              position: slide.elements.findIndex((_element) => _element.id === element.id),
+            }) as ShapeInput,
+        ),
+    },
+  }))

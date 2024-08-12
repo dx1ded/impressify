@@ -1,8 +1,10 @@
 import _ from "lodash"
 import { ILike, In } from "typeorm"
+import { withFilter } from "graphql-subscriptions"
 import type { ApolloContext } from ".."
-import type { Resolvers } from "../__generated__"
+import type { PresentationState, Resolvers, Subscription, SlideStateItem } from "../__generated__"
 import { presentationRepository, slideRepository, userRepository, historyRepository } from "../../database"
+import pubsub, { EVENT } from "../../pubsub"
 import { Presentation } from "../../entities/Presentation"
 import { History } from "../../entities/History"
 import { Slide } from "../../entities/Slide"
@@ -64,7 +66,6 @@ export default {
         relations: ["users", "slides", "slides.elements"],
         where: { id },
       })
-
       if (!presentation) return null
 
       const totalSlides = presentation.slides.length
@@ -110,14 +111,11 @@ export default {
       if (!user) return null
 
       const presentation = await presentationRepository.findOneBy({ id })
+      if (!presentation) return null
       presentation.name = name
-      return presentationRepository.save(presentation)
-    },
-    async deletePresentation(_, { id }, { user }) {
-      if (!user) return null
-
-      await presentationRepository.delete({ id })
-      return true
+      const savedPresentation = await presentationRepository.save(presentation)
+      await pubsub.publish(EVENT.PRESENTATION_UPDATED, { presentation: { name } })
+      return savedPresentation
     },
     async duplicatePresentation(__, { id }, { user }) {
       if (!user) return null
@@ -126,7 +124,7 @@ export default {
         relations: ["slides", "slides.elements"],
         where: { id },
       })
-
+      if (!presentation) return null
       const newPresentation = new Presentation(presentation.name, [await userRepository.findOneBy({ id: user.id })])
       const history = new History(newPresentation)
       history.records = []
@@ -175,6 +173,53 @@ export default {
         return newSlide
       })
       return presentationRepository.save(newPresentation)
+    },
+    async deletePresentation(_, { id }, { user }) {
+      if (!user) return null
+      await presentationRepository.delete({ id })
+      return true
+    },
+    async synchronizePresentationState(_, { changes }, { user }) {
+      if (!user) return null
+
+      const presentation = await presentationRepository.findOne({
+        relations: ["users"],
+        where: { id: changes.id },
+      })
+      if (!presentation || !presentation.users.some((_user) => _user.id === user.id)) return null
+      const state: PresentationState = {
+        name: changes.name,
+        slides: changes.slides?.map((slide) => {
+          const updatedSlide: SlideStateItem = { ...slide, elements: [] }
+          ;[...slide.elements.text, ...slide.elements.image, ...slide.elements.shape].forEach((element) => {
+            slide.elements[element.position] = element
+          })
+          return updatedSlide
+        }),
+        users: changes.users
+          ? [
+              ...presentation.users,
+              ...(await userRepository.findBy({ id: In(changes.users.map((_user) => _user.id)) })),
+            ]
+          : presentation.users,
+        isSaving: changes.isSaving,
+        _userUpdatedStateId: changes._userUpdatedStateId,
+      }
+      await pubsub.publish(EVENT.PRESENTATION_UPDATED, { presentationUpdated: state })
+      return state
+    },
+  },
+  Subscription: {
+    presentationUpdated: {
+      subscribe: (_, __, { user }) => ({
+        [Symbol.asyncIterator]: withFilter(
+          () => pubsub.asyncIterator(EVENT.PRESENTATION_UPDATED),
+          (payload: Pick<Subscription, "presentationUpdated">) =>
+            payload.presentationUpdated.users.some(
+              (_user) => _user.id !== payload.presentationUpdated._userUpdatedStateId && _user.id === user.id,
+            ),
+        ),
+      }),
     },
   },
   Presentation: {

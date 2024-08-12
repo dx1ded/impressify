@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client"
+import { useMutation, useQuery, useSubscription } from "@apollo/client"
 import { useParams } from "react-router-dom"
 
 import type {
@@ -11,14 +11,22 @@ import type {
   GetPresentationQueryVariables,
   SaveSlidesMutation,
   SaveSlidesMutationVariables,
+  PresentationUpdatedSubscription,
 } from "~/__generated__/graphql"
 import {
+  type SlideProps,
+  SynchronizeStateProvider,
   GET_PRESENTATION,
+  PRESENTATION_UPDATED,
   SAVE_SLIDES,
   SAVE_SLIDES_ID,
   setIsLoading,
   setIsSaving,
+  setName,
   setPresentation,
+  setSlides,
+  setUsers,
+  transformSlidesIntoInput,
 } from "~/entities/presentation"
 import { ADD_RECORD } from "~/entities/record"
 import { Slide } from "~/pages/presentation/ui/Slide"
@@ -32,7 +40,9 @@ import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 export default function PresentationPage() {
   return (
     <DebouncedProvider>
-      <Presentation />
+      <SynchronizeStateProvider>
+        <Presentation />
+      </SynchronizeStateProvider>
     </DebouncedProvider>
   )
 }
@@ -65,47 +75,27 @@ function Presentation() {
     },
   })
 
+  // Subscription to update presentation state
+  useSubscription<PresentationUpdatedSubscription>(PRESENTATION_UPDATED, {
+    skip: !id,
+    async onData(result) {
+      const state = result.data.data?.presentationUpdated
+      if (!state) return
+      if (state.name) dispatch(setName(state.name))
+      // I did casting because there's a type issue because of the `__typename`
+      if (state.slides) dispatch(setSlides(state.slides as SlideProps[]))
+      if (state.users) dispatch(setUsers(state.users))
+      if (state.isSaving) dispatch(setIsSaving(state.isSaving))
+    },
+  })
+
   register(
     SAVE_SLIDES_ID,
     async () => {
       await saveSlides({
         variables: {
           presentationId: id!,
-          slides: slides.map(({ __typename, ...slide }) => ({
-            // `__typename` is omitted by the deconstruction
-            ...slide,
-            // For elements, we filter items by text, image, and shape. In addition, for each field we remove `__typename` because
-            // ... it's not present in the TextInput | ImageInput | ShapeInput definitions
-            elements: {
-              text: slide.elements
-                .filter((element) => element.__typename === "Text")
-                .map(
-                  ({ __typename, ...element }) =>
-                    ({
-                      ...element,
-                      index: slide.elements.findIndex((_element) => _element.id === element.id),
-                    }) as TextInput,
-                ),
-              image: slide.elements
-                .filter((element) => element.__typename === "Image")
-                .map(
-                  ({ __typename, ...element }) =>
-                    ({
-                      ...element,
-                      index: slide.elements.findIndex((_element) => _element.id === element.id),
-                    }) as ImageInput,
-                ),
-              shape: slide.elements
-                .filter((element) => element.__typename === "Shape")
-                .map(
-                  ({ __typename, ...element }) =>
-                    ({
-                      ...element,
-                      index: slide.elements.findIndex((_element) => _element.id === element.id),
-                    }) as ShapeInput,
-                ),
-            },
-          })),
+          slides: transformSlidesIntoInput(slides),
         },
       })
       dispatch(setIsSaving(false))

@@ -4,6 +4,8 @@ import _ from "lodash"
 
 import {
   type Presentation,
+  type SlideProps,
+  type UserProps,
   type ElementProps,
   type HistoryRecord,
   type Mode,
@@ -56,6 +58,7 @@ const initialState: PresentationState = {
     id: "",
     name: "",
     slides: [],
+    users: [],
   },
   copiedElement: null,
   history: {
@@ -111,6 +114,12 @@ const presentationSlice = createSlice({
     },
     setName: (state, { payload }: PayloadAction<string>) => {
       state.presentation.name = payload
+    },
+    setSlides: (state, { payload }: PayloadAction<SlideProps[]>) => {
+      state.presentation.slides = payload
+    },
+    setUsers: (state, { payload }: PayloadAction<UserProps[]>) => {
+      state.presentation.users = payload
     },
     setCurrentSlide: (state, { payload }: PayloadAction<number>) => {
       state.currentSlide = payload
@@ -363,6 +372,8 @@ const presentationSlice = createSlice({
 export const {
   setPresentation,
   setName,
+  setSlides,
+  setUsers,
   setCurrentSlide,
   setMode,
   setIsLoading,
