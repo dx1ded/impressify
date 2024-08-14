@@ -8,7 +8,7 @@ import { useServer } from "graphql-ws/lib/use/ws"
 import cors from "@fastify/cors"
 import { ApolloServer } from "@apollo/server"
 import { createClerkClient } from "@clerk/backend"
-import fastifyApollo, { type ApolloFastifyContextFunction, fastifyApolloDrainPlugin } from "@as-integrations/fastify"
+import fastifyApollo, { fastifyApolloDrainPlugin } from "@as-integrations/fastify"
 
 import { app } from "./app"
 import { schema, type ApolloContext } from "./graphql"
@@ -36,11 +36,24 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
 
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: "/graphql/ws",
+    path: "/graphql",
   })
 
   const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET })
   const firebase = initializeApp({ credential: cert(firebaseCredentials as ServiceAccount) })
+
+  const getContext = async (authorization?: string) => ({
+    clerk,
+    storage: getStorage(firebase),
+    user: authorization ? await clerk.users.getUser(authorization) : undefined,
+    pubsub,
+  })
+
+  const serverCleanup = useServer(
+    { schema, context: async (ctx) => getContext(ctx.connectionParams?.authorization as string | undefined) },
+    wsServer,
+  )
+
   const apollo = new ApolloServer<ApolloContext>({
     schema,
     plugins: [
@@ -51,7 +64,7 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
         async serverWillStart() {
           return {
             async drainServer() {
-              await useServer({ schema }, wsServer).dispose()
+              await serverCleanup.dispose()
             },
           }
         },
@@ -59,17 +72,10 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
     ],
   })
 
-  const contextFn: ApolloFastifyContextFunction<ApolloContext> = async (request) => ({
-    clerk,
-    storage: getStorage(firebase),
-    user: request.headers.authorization ? await clerk.users.getUser(request.headers.authorization) : undefined,
-    pubsub,
-  })
-
   await apollo.start()
 
   fastify.register(cors)
-  fastify.register(fastifyApollo(apollo), { context: contextFn })
+  fastify.register(fastifyApollo(apollo), { context: (request) => getContext(request.headers.authorization) })
   fastify.register(app)
   fastify.listen({ port, host }, (err) => {
     if (err) {

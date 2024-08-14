@@ -3,6 +3,7 @@ import {
   generateEditElementId,
   SAVE_SLIDES_ID,
   setIsSaving,
+  SYNCHRONIZE_STATE_ID,
   TAKE_SCREENSHOT_ID,
 } from "~/entities/presentation"
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
@@ -21,6 +22,7 @@ export function DuplicateElement({ children }: ChildrenAsCallbackWithFn) {
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
+    call(SYNCHRONIZE_STATE_ID)
   }
 
   return children(_duplicateElement)

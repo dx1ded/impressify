@@ -17,11 +17,12 @@ import {
   changeShapeProps,
   setMode,
   setIsEditing,
+  setIsSaving,
   MIN_ELEMENT_WIDTH,
   MIN_ELEMENT_HEIGHT,
   TAKE_SCREENSHOT_ID,
   SAVE_SLIDES_ID,
-  setIsSaving,
+  SYNCHRONIZE_STATE_ID,
 } from "~/entities/presentation"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 
@@ -64,6 +65,7 @@ export const ElementWrapper = memo(function ElementWrapper({
       call(TAKE_SCREENSHOT_ID)
       call(SAVE_SLIDES_ID)
       dispatch(setIsSaving(true))
+      call(SYNCHRONIZE_STATE_ID)
     },
     DEBOUNCE_EDIT_TIME,
   )

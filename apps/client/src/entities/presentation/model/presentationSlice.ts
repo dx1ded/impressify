@@ -1,6 +1,6 @@
+import _ from "lodash"
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import { nanoid } from "nanoid"
-import _ from "lodash"
 
 import {
   type Presentation,

@@ -4,7 +4,7 @@ import type { Resolvers } from "../__generated__"
 import { elementRepository, presentationRepository } from "../../database"
 import { isDataUrl } from "../../utils"
 import { uploadImageToFirebaseStorage } from "../../helpers"
-import pubsub, { EVENT } from "../../pubsub"
+import { EVENT } from "../../pubsub"
 import { Slide } from "../../entities/Slide"
 import { Text } from "../../entities/Text"
 import { Image } from "../../entities/Image"
@@ -12,7 +12,7 @@ import { Shape } from "../../entities/Shape"
 
 export default {
   Mutation: {
-    async saveSlides(__, { presentationId, slides }, { user, storage }) {
+    async saveSlides(__, { presentationId, slides }, { user, storage, pubsub }) {
       if (!user || !slides.length) return null
       /*
         By the way, we're working with presentationRepository (not slideRepository) because slides cannot exist if they're not
@@ -81,16 +81,23 @@ export default {
         }),
       )
       await presentationRepository.save(presentation)
-      await pubsub.publish(EVENT.PRESENTATION_UPDATED, { presentation: { slides: presentation.slides } })
+      await pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+        presentationUpdated: { slides: presentation.slides, isSaving: false, _userUpdatedStateId: user.id },
+      })
       return presentation.slides
     },
   },
   Slide: {
-    async elements(parent) {
-      const _elements = await elementRepository.find({
-        where: { slide: { id: parent.id } },
-        order: { position: "ASC" },
-      })
+    async elements(parent, _, __, info) {
+      // This is done for subscriptions. It would pass an object (which is not slide) with ready elements, so no need to find them in database
+      // ... we only want to transform them to GraphQL-format with `__typename` prop
+      const _elements =
+        info.operation.operation === "subscription"
+          ? parent.elements
+          : await elementRepository.find({
+              where: { slide: { id: parent.id } },
+              order: { position: "ASC" },
+            })
       return _elements.map((element) => {
         if (element instanceof Text) {
           return { __typename: "Text", ...element }

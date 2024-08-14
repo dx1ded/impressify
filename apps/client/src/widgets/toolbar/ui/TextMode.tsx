@@ -20,6 +20,7 @@ import {
   TAKE_SCREENSHOT_ID,
   SAVE_SLIDES_ID,
   setIsSaving,
+  SYNCHRONIZE_STATE_ID,
 } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
@@ -49,6 +50,7 @@ export function TextMode({ isActive }: ModeProps) {
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
+    call(SYNCHRONIZE_STATE_ID)
   }
 
   return (

@@ -17,9 +17,7 @@ const config: CodegenConfig = {
       plugins: ["typescript"],
       presetConfig: {
         gqlTagName: "gql",
-        fragmentMasking: {
-          unmaskFunctionName: "getFragment"
-        }
+        fragmentMasking: false
       }
     }
   }

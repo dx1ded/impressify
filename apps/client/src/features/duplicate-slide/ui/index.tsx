@@ -5,6 +5,7 @@ import {
   EDIT_ELEMENT_ID,
   SAVE_SLIDES_ID,
   setIsSaving,
+  SYNCHRONIZE_STATE_ID,
   TAKE_SCREENSHOT_ID,
 } from "~/entities/presentation"
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
@@ -25,6 +26,7 @@ export const DuplicateSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn<[
     dispatch(duplicateSlide(id))
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
+    call(SYNCHRONIZE_STATE_ID)
   }
 
   return children(_duplicateSlide)

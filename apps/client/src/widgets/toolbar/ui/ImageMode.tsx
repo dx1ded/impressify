@@ -1,7 +1,13 @@
 import { TooltipTrigger } from "@radix-ui/react-tooltip"
 import type { ChangeEvent } from "react"
 
-import { changeImageProps, SAVE_SLIDES_ID, setIsSaving, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import {
+  changeImageProps,
+  SAVE_SLIDES_ID,
+  setIsSaving,
+  SYNCHRONIZE_STATE_ID,
+  TAKE_SCREENSHOT_ID,
+} from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { convertFileToDataUrl } from "~/shared/lib"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
@@ -20,6 +26,7 @@ export function ImageMode({ isActive }: ModeProps) {
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
+    call(SYNCHRONIZE_STATE_ID)
   }
 
   return (

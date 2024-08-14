@@ -23,7 +23,7 @@ export type AddImageProps = Coordinates & ImageEditProps
 export type AddShapeProps = Coordinates & ShapeEditProps
 
 export type SlideProps = Presentation["slides"][number]
-export type ElementProps = Presentation["slides"][number]["elements"][number]
+export type ElementProps = SlideProps["elements"][number]
 export type UserProps = Presentation["users"][number]
 export type SlideId = SlideProps["id"]
 export type ElementId = ElementProps["id"]

@@ -2,9 +2,9 @@ import _ from "lodash"
 import { ILike, In } from "typeorm"
 import { withFilter } from "graphql-subscriptions"
 import type { ApolloContext } from ".."
-import type { PresentationState, Resolvers, Subscription, SlideStateItem } from "../__generated__"
+import type { PresentationState, Resolvers, Subscription } from "../__generated__"
 import { presentationRepository, slideRepository, userRepository, historyRepository } from "../../database"
-import pubsub, { EVENT } from "../../pubsub"
+import { EVENT } from "../../pubsub"
 import { Presentation } from "../../entities/Presentation"
 import { History } from "../../entities/History"
 import { Slide } from "../../entities/Slide"
@@ -113,9 +113,7 @@ export default {
       const presentation = await presentationRepository.findOneBy({ id })
       if (!presentation) return null
       presentation.name = name
-      const savedPresentation = await presentationRepository.save(presentation)
-      await pubsub.publish(EVENT.PRESENTATION_UPDATED, { presentation: { name } })
-      return savedPresentation
+      return presentationRepository.save(presentation)
     },
     async duplicatePresentation(__, { id }, { user }) {
       if (!user) return null
@@ -179,45 +177,60 @@ export default {
       await presentationRepository.delete({ id })
       return true
     },
-    async synchronizePresentationState(_, { changes }, { user }) {
+    async synchronizePresentationState(_, { state }, { user, pubsub }) {
       if (!user) return null
 
       const presentation = await presentationRepository.findOne({
-        relations: ["users"],
-        where: { id: changes.id },
+        relations: ["users", "slides"],
+        where: { id: state.id },
       })
       if (!presentation || !presentation.users.some((_user) => _user.id === user.id)) return null
-      const state: PresentationState = {
-        name: changes.name,
-        slides: changes.slides?.map((slide) => {
-          const updatedSlide: SlideStateItem = { ...slide, elements: [] }
-          ;[...slide.elements.text, ...slide.elements.image, ...slide.elements.shape].forEach((element) => {
-            slide.elements[element.position] = element
+      const newState: PresentationState = {
+        ...state,
+        slides: state.slides.map((slide, slideIndex) => {
+          const previousSlideCopy = presentation.slides.find((_slide) => _slide.id === slide.id)
+          const updatedSlide: Slide = {
+            ...slide,
+            elements: [],
+            presentation,
+            position: slideIndex,
+            createdAt: previousSlideCopy ? previousSlideCopy.createdAt : new Date(),
+          }
+          // We use new Text / Image / Shape because it will be used in transforming data with `__typename` in `slides.ts -> resolver -> elements`
+          slide.elements.text.forEach((element) => {
+            updatedSlide.elements[element.position] = new Text({ ...element, slide: updatedSlide })
+          })
+          slide.elements.image.forEach((element) => {
+            updatedSlide.elements[element.position] = new Image({ ...element, slide: updatedSlide })
+          })
+          slide.elements.shape.forEach((element) => {
+            updatedSlide.elements[element.position] = new Shape({ ...element, slide: updatedSlide })
           })
           return updatedSlide
         }),
-        users: changes.users
-          ? [
-              ...presentation.users,
-              ...(await userRepository.findBy({ id: In(changes.users.map((_user) => _user.id)) })),
-            ]
-          : presentation.users,
-        isSaving: changes.isSaving,
-        _userUpdatedStateId: changes._userUpdatedStateId,
+        users: await Promise.all(
+          state.users.map(
+            (_user) =>
+              presentation.users.find((__user) => __user.id === _user.id) || userRepository.findOneBy({ id: _user.id }),
+          ),
+        ),
+        _userUpdatedStateId: user.id,
       }
-      await pubsub.publish(EVENT.PRESENTATION_UPDATED, { presentationUpdated: state })
-      return state
+      await pubsub.publish(EVENT.PRESENTATION_UPDATED, { presentationUpdated: newState })
+      return newState
     },
   },
   Subscription: {
     presentationUpdated: {
-      subscribe: (_, __, { user }) => ({
+      subscribe: (_, __, { user, pubsub }) => ({
         [Symbol.asyncIterator]: withFilter(
           () => pubsub.asyncIterator(EVENT.PRESENTATION_UPDATED),
-          (payload: Pick<Subscription, "presentationUpdated">) =>
-            payload.presentationUpdated.users.some(
-              (_user) => _user.id !== payload.presentationUpdated._userUpdatedStateId && _user.id === user.id,
-            ),
+          (payload: Pick<Subscription, "presentationUpdated">) => {
+            return (
+              payload.presentationUpdated._userUpdatedStateId !== user?.id &&
+              payload.presentationUpdated.users?.some((_user) => _user.id === user?.id)
+            )
+          },
         ),
       }),
     },

@@ -1,6 +1,13 @@
 import { forwardRef } from "react"
 
-import { deleteSlide, EDIT_ELEMENT_ID, SAVE_SLIDES_ID, setIsSaving, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import {
+  deleteSlide,
+  EDIT_ELEMENT_ID,
+  SAVE_SLIDES_ID,
+  setIsSaving,
+  SYNCHRONIZE_STATE_ID,
+  TAKE_SCREENSHOT_ID,
+} from "~/entities/presentation"
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
@@ -22,6 +29,7 @@ export const DeleteSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn<[str
     dispatch(deleteSlide(id))
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
+    call(SYNCHRONIZE_STATE_ID)
   }
 
   return children(_deleteSlide)

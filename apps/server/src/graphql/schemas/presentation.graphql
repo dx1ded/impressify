@@ -15,24 +15,22 @@ type PresentationInfo {
 }
 
 type PresentationState {
-  name: String
-  slides: [SlideStateItem!]
+  name: String!
+  slides: [Slide!]!
   # It's necessary to have `users` always present (even though they might've been not updated) because
   # ... the subscription filter needs it to send a message only to users who are in the presentation being updated
   users: [User!]!
-  isSaving: Boolean
-  # Here it's just being repassed from the input in order to gain access in the subscription filter
+  isSaving: Boolean!
+  # This field is needed for the subscription filter in order to not update state of the one's who sent the request
   _userUpdatedStateId: ID!
 }
 
 input PresentationStateInput {
   id: ID!
-  name: String
-  slides: [SlideInput!]
-  users: [UserInput!]
-  isSaving: Boolean
-  # This field is needed for the subscription filter in order to not update state of the one's who sent the request
-  _userUpdatedStateId: ID!
+  name: String!
+  slides: [SlideInput!]!
+  users: [UserInput!]!
+  isSaving: Boolean!
 }
 
 type Query {
@@ -50,7 +48,7 @@ type Mutation {
   duplicatePresentation(id: ID!): Presentation
   # this mutation won't do anything in the database or something like this.
   # this will only prepare data and call `pubsub.publish` to synchronize local states of every connection
-  synchronizePresentationState(changes: PresentationStateInput!): PresentationState
+  synchronizePresentationState(state: PresentationStateInput!): PresentationState
 }
 
 type Subscription {

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { SAVE_SLIDES_ID, setIsSaving, setTransition } from "~/entities/presentation"
+import { SAVE_SLIDES_ID, setIsSaving, setTransition, SYNCHRONIZE_STATE_ID } from "~/entities/presentation"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/ui-kit/select"
@@ -26,6 +26,13 @@ export function ChangeSlideTransitionSheet({ children }: { children: ReactNode }
   const slide = slides[currentSlide]
   if (!slide) return
 
+  const changeHandler = (value: string) => {
+    dispatch(setTransition(value))
+    call(SAVE_SLIDES_ID)
+    dispatch(setIsSaving(true))
+    call(SYNCHRONIZE_STATE_ID)
+  }
+
   return (
     <Sheet>
       <Tooltip>
@@ -43,13 +50,7 @@ export function ChangeSlideTransitionSheet({ children }: { children: ReactNode }
         </SheetHeader>
         <div className="mb-3 mt-7">
           <Small className="mb-1.5 block">Type</Small>
-          <Select
-            defaultValue={slide.transition}
-            onValueChange={(value) => {
-              dispatch(setTransition(value))
-              call(SAVE_SLIDES_ID)
-              dispatch(setIsSaving(true))
-            }}>
+          <Select defaultValue={slide.transition} onValueChange={changeHandler}>
             <SelectTrigger>
               <SelectValue placeholder="Transition" />
             </SelectTrigger>

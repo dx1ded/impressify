@@ -36,6 +36,9 @@ const authLink = setContext((_, { headers }) => {
 const wsLink = new GraphQLWsLink(
   createClient({
     url: import.meta.env.VITE_GRAPHQL_WS_URL,
+    connectionParams: () => ({
+      authorization: store.getState().user?.userId || "",
+    }),
   }),
 )
 

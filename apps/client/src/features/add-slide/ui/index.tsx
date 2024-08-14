@@ -1,6 +1,13 @@
 import { forwardRef } from "react"
 
-import { addSlide, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID, SAVE_SLIDES_ID, setIsSaving } from "~/entities/presentation"
+import {
+  addSlide,
+  setIsSaving,
+  EDIT_ELEMENT_ID,
+  SAVE_SLIDES_ID,
+  SYNCHRONIZE_STATE_ID,
+  TAKE_SCREENSHOT_ID,
+} from "~/entities/presentation"
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 
@@ -14,6 +21,7 @@ export const AddSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(functi
     dispatch(addSlide())
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
+    call(SYNCHRONIZE_STATE_ID)
   }
 
   return children(_addSlide)
