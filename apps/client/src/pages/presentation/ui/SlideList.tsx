@@ -16,7 +16,6 @@ import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/
 
 export function SlideList() {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const connectedUsers = useAppSelector((state) => state.presentation.connectedUsers)
   const userId = useAppSelector((state) => state.user.userId)
   const dispatch = useAppDispatch()
   const [isDragging, setIsDragging] = useState(false)
@@ -51,13 +50,7 @@ export function SlideList() {
             {...provided.droppableProps}
             className="flex-shrink-0 basis-52 overflow-y-auto border-r pr-4">
             {slides.map((slide, i) => (
-              <SlideListItem
-                key={slide.id}
-                slide={slide}
-                users={connectedUsers.filter((_user) => _user.currentSlide === i)}
-                index={i}
-                isDragging={isDragging}
-              />
+              <SlideListItem key={slide.id} slide={slide} index={i} isDragging={isDragging} />
             ))}
             {provided.placeholder}
           </div>

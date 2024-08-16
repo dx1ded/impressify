@@ -18,13 +18,12 @@ import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/
 
 interface SlideListItemProps {
   slide: SlideProps
-  // `users` is the field that defines users who's working are connected to the subscription and whose `currentSlide` is this one
-  users: ConnectedUser[]
   index: number
   isDragging: boolean
 }
 
-export function SlideListItem({ slide, users, index, isDragging }: SlideListItemProps) {
+export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) {
+  const connectedUsers = useAppSelector((state) => state.presentation.connectedUsers)
   const { currentSlide, userId } = useAppSelector(
     (state) => ({
       currentSlide: state.presentation.currentSlide,
@@ -86,7 +85,7 @@ export function SlideListItem({ slide, users, index, isDragging }: SlideListItem
             <ConnectionList
               size="sm"
               className="absolute bottom-1.5 right-2 translate-y-[95%] transition-transform group-hover:translate-y-0"
-              users={users}
+              users={connectedUsers.filter((_user) => _user.currentSlide === index)}
             />
           </button>
         </div>
