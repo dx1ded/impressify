@@ -43,12 +43,6 @@ export const GET_PRESENTATION = gql(`#graphql
       slides {
         ...SlideFields
       }
-      users {
-        id
-        email
-        name
-        profilePicUrl
-      }
     }
   }
 `)
@@ -70,18 +64,20 @@ export const SYNCHRONIZE_PRESENTATION_STATE = gql(`#graphql
 `)
 
 export const PRESENTATION_UPDATED = gql(`#graphql
-  subscription PresentationUpdated {
-    presentationUpdated {
+  subscription PresentationUpdated($presentationId: String!) {
+    presentationUpdated(presentationId: $presentationId) {
       isSaving
       name
       slides {
         ...SlideFields
       }
-      users {
+      connectedUsers {
         id
-        email
         name
         profilePicUrl
+        currentSlide
+        cursorX
+        cursorY
       }
     }
   }

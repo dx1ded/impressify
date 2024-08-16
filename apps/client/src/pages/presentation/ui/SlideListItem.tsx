@@ -1,20 +1,37 @@
 import { Draggable } from "@hello-pangea/dnd"
 import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
+import { shallowEqual } from "react-redux"
 
-import { type SlideProps, EDIT_ELEMENT_ID, setCurrentSlide, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import type { ConnectedUser } from "~/__generated__/graphql"
+import {
+  type SlideProps,
+  EDIT_ELEMENT_ID,
+  setCurrentSlide,
+  TAKE_SCREENSHOT_ID,
+  changeConnectedUser,
+} from "~/entities/presentation"
 import { DeleteSlide } from "~/features/delete-slide"
 import { DuplicateSlide } from "~/features/duplicate-slide/ui"
+import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
 import { cn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
 interface SlideListItemProps {
   slide: SlideProps
+  // `users` is the field that defines users who's working are connected to the subscription and whose `currentSlide` is this one
+  users: ConnectedUser[]
   index: number
   isDragging: boolean
 }
 
-export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) {
-  const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
+export function SlideListItem({ slide, users, index, isDragging }: SlideListItemProps) {
+  const { currentSlide, userId } = useAppSelector(
+    (state) => ({
+      currentSlide: state.presentation.currentSlide,
+      userId: state.user.userId,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
   const { flush, flushWithPattern, deleteWithPattern, deleteDebounced } = useDebouncedFunctions()
 
@@ -53,21 +70,23 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
           </div>
           <button
             type="button"
-            className="block flex-1"
+            className={cn(
+              "group relative block flex-1 overflow-hidden rounded-md border-2 border-white shadow",
+              index === currentSlide && "border-blue-500",
+            )}
             onClick={() => {
               flushWithPattern(EDIT_ELEMENT_ID)
               flush(TAKE_SCREENSHOT_ID)
               deleteWithPattern(EDIT_ELEMENT_ID)
               deleteDebounced(TAKE_SCREENSHOT_ID)
               dispatch(setCurrentSlide(index))
+              dispatch(changeConnectedUser({ id: userId!, currentSlide: index }))
             }}>
-            <img
-              src={slide.thumbnailUrl}
-              alt="Slide thumbnail"
-              className={cn(
-                "h-full w-full max-w-[10.375rem] rounded-md border-2 border-white shadow",
-                index === currentSlide && "border-blue-500",
-              )}
+            <img src={slide.thumbnailUrl} alt="Slide thumbnail" className="h-full w-full max-w-[10.375rem]" />
+            <ConnectionList
+              size="sm"
+              className="absolute bottom-1.5 right-2 translate-y-[95%] transition-transform group-hover:translate-y-0"
+              users={users}
             />
           </button>
         </div>

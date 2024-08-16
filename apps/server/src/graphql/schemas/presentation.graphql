@@ -15,21 +15,18 @@ type PresentationInfo {
 }
 
 type PresentationState {
-  name: String!
-  slides: [Slide!]!
-  # It's necessary to have `users` always present (even though they might've been not updated) because
-  # ... the subscription filter needs it to send a message only to users who are in the presentation being updated
-  users: [User!]!
-  isSaving: Boolean!
-  # This field is needed for the subscription filter in order to not update state of the one's who sent the request
-  _userUpdatedStateId: ID!
+  name: String
+  slides: [Slide!]
+  connectedUsers: [ConnectedUser!]
+  isSaving: Boolean
+  _userUpdatedStateId: ID
 }
 
 input PresentationStateInput {
   id: ID!
   name: String!
+  connectedUser: ConnectedUserInput!
   slides: [SlideInput!]!
-  users: [UserInput!]!
   isSaving: Boolean!
 }
 
@@ -52,5 +49,5 @@ type Mutation {
 }
 
 type Subscription {
-  presentationUpdated: PresentationState!
+  presentationUpdated(presentationId: String!): PresentationState!
 }

@@ -1,6 +1,9 @@
+import _ from "lodash"
 import { useMutation, useQuery, useSubscription } from "@apollo/client"
+import type { MouseEvent } from "react"
 import { shallowEqual } from "react-redux"
 import { useParams } from "react-router-dom"
+import { useDebouncedCallback } from "use-debounce"
 
 import type {
   AddRecordMutation,
@@ -10,6 +13,7 @@ import type {
   SaveSlidesMutation,
   SaveSlidesMutationVariables,
   PresentationUpdatedSubscription,
+  PresentationUpdatedSubscriptionVariables,
   SynchronizePresentationStateMutation,
   SynchronizePresentationStateMutationVariables,
 } from "~/__generated__/graphql"
@@ -27,12 +31,14 @@ import {
   setName,
   setPresentation,
   setSlides,
-  setUsers,
+  setConnectedUsers,
+  changeConnectedUser,
 } from "~/entities/presentation"
 import { ADD_RECORD } from "~/entities/record"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
 import { Header } from "~/pages/presentation/ui/Header"
+import { Cursor } from "~/shared/ui/Cursor"
 import { Toolbar } from "~/widgets/toolbar"
 import { DebouncedProvider, useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Toaster } from "~/shared/ui-kit/sonner"
@@ -48,15 +54,18 @@ export default function PresentationPage() {
 
 const DEBOUNCED_SAVE_SLIDES_TIME = 8000
 const DEBOUNCED_SYNCHRONIZE_STATE_TIME = 500
+const DEBOUNCED_SAVE_CURSOR = 500
 
 function Presentation() {
   const { id } = useParams<{ id: string }>()
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const users = useAppSelector((state) => state.presentation.presentation.users)
-  const { name, isSaving } = useAppSelector(
+  const connectedUsers = useAppSelector((state) => state.presentation.connectedUsers)
+  const { name, isSaving, currentSlide, userId } = useAppSelector(
     (state) => ({
       name: state.presentation.presentation.name,
+      currentSlide: state.presentation.currentSlide,
       isSaving: state.presentation.isSaving,
+      userId: state.user.userId,
     }),
     shallowEqual,
   )
@@ -98,22 +107,26 @@ function Presentation() {
   register(
     SYNCHRONIZE_STATE_ID,
     async () => {
-      if (users.length < 2) return
+      if (connectedUsers.length < 2) return
       await synchronizeStateBetweenConnections({
         variables: {
           state: {
             id: id!,
             name,
             slides: transformSlidesIntoInput(slides),
-            // Mapping to remove `__typename` (it's not defined in PresentationStateInput)
-            users: users.map(({ __typename, ..._user }) => _user),
+            // Omitting `name`, `profilePicUrl` and `__typename` fields because it's not defined in the input
+            connectedUser: _.omit(connectedUsers.find((_user) => _user.id === userId)!, [
+              "name",
+              "profilePicUrl",
+              "__typename",
+            ]),
             isSaving,
           },
         },
       })
     },
     DEBOUNCED_SYNCHRONIZE_STATE_TIME,
-    [slides, name, users, isSaving],
+    [slides, name, connectedUsers, userId, isSaving],
   )
 
   // Fetch presentation
@@ -131,23 +144,43 @@ function Presentation() {
   })
 
   // Subscription to update presentation state
-  useSubscription<PresentationUpdatedSubscription>(PRESENTATION_UPDATED, {
+  useSubscription<PresentationUpdatedSubscription, PresentationUpdatedSubscriptionVariables>(PRESENTATION_UPDATED, {
     skip: !id,
+    variables: { presentationId: id! },
     async onData(result) {
       const state = result.data.data?.presentationUpdated
       if (!state) return
-      dispatch(setName(state.name))
-      dispatch(setSlides(state.slides))
-      dispatch(setIsSaving(state.isSaving))
-      dispatch(setUsers(state.users))
+      if (state.name) dispatch(setName(state.name))
+      if (state.slides) dispatch(setSlides(state.slides))
+      if (state.isSaving) dispatch(setIsSaving(state.isSaving))
+      if (state.connectedUsers) dispatch(setConnectedUsers(state.connectedUsers))
       // Cancel save slides to avoid collision
       cancel(SAVE_SLIDES_ID)
     },
   })
 
+  const mouseMoveHandlerDebounced = useDebouncedCallback((e: MouseEvent<HTMLDivElement>) => {
+    dispatch(changeConnectedUser({ id: userId!, cursorX: e.clientX, cursorY: e.clientY }))
+    call(SYNCHRONIZE_STATE_ID)
+  }, DEBOUNCED_SAVE_CURSOR)
+
   return (
     <TooltipProvider>
-      <div className="flex h-screen flex-col bg-[#f8fafd] px-4">
+      <div className="flex h-screen flex-col bg-[#f8fafd] px-4" onMouseMove={mouseMoveHandlerDebounced}>
+        {connectedUsers.map(
+          (connectedUser) =>
+            connectedUser.id !== userId &&
+            connectedUser.currentSlide === currentSlide &&
+            connectedUser.cursorX &&
+            connectedUser.cursorY && (
+              <Cursor
+                key={connectedUser.id}
+                name={connectedUser.name}
+                x={connectedUser.cursorX}
+                y={connectedUser.cursorY}
+              />
+            ),
+        )}
         <div>
           <Header />
           <Toolbar />

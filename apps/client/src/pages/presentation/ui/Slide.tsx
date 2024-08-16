@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { memo, useRef } from "react"
 import { Layer, Rect, Stage } from "react-konva"
 import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
@@ -27,7 +27,7 @@ import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/
 
 const SCREENSHOT_DEBOUCE_TIME = 5000
 
-export function Slide() {
+export const Slide = memo(function Slide() {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const { currentSlide, selectedId, isLoading, isCreating, isEditing, mode, imageHeight } = useAppSelector(
     (state) => ({
@@ -141,4 +141,4 @@ export function Slide() {
       </Stage>
     </div>
   )
-}
+})

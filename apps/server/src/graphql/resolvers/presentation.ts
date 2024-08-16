@@ -177,7 +177,7 @@ export default {
       await presentationRepository.delete({ id })
       return true
     },
-    async synchronizePresentationState(_, { state }, { user, pubsub }) {
+    async synchronizePresentationState(_, { state }, { user, pubsub, connections }) {
       if (!user) return null
 
       const presentation = await presentationRepository.findOne({
@@ -185,6 +185,7 @@ export default {
         where: { id: state.id },
       })
       if (!presentation || !presentation.users.some((_user) => _user.id === user.id)) return null
+      connections.updateUserConnection(presentation.id, state.connectedUser)
       const newState: PresentationState = {
         ...state,
         slides: state.slides.map((slide, slideIndex) => {
@@ -208,12 +209,7 @@ export default {
           })
           return updatedSlide
         }),
-        users: await Promise.all(
-          state.users.map(
-            (_user) =>
-              presentation.users.find((__user) => __user.id === _user.id) || userRepository.findOneBy({ id: _user.id }),
-          ),
-        ),
+        connectedUsers: connections.getUserConnections(presentation.id),
         _userUpdatedStateId: user.id,
       }
       await pubsub.publish(EVENT.PRESENTATION_UPDATED, { presentationUpdated: newState })
@@ -222,13 +218,19 @@ export default {
   },
   Subscription: {
     presentationUpdated: {
-      subscribe: (_, __, { user, pubsub }) => ({
+      subscribe: (_, args, { user, pubsub }) => ({
         [Symbol.asyncIterator]: withFilter(
           () => pubsub.asyncIterator(EVENT.PRESENTATION_UPDATED),
-          (payload: Pick<Subscription, "presentationUpdated">) => {
+          async (payload: Pick<Subscription, "presentationUpdated">) => {
+            const presentation = await presentationRepository.findOne({
+              relations: ["users"],
+              where: { id: args.presentationId },
+            })
+            if (!presentation) return false
+            const { _userUpdatedStateId } = payload.presentationUpdated
             return (
-              payload.presentationUpdated._userUpdatedStateId !== user?.id &&
-              payload.presentationUpdated.users?.some((_user) => _user.id === user?.id)
+              (_userUpdatedStateId ? _userUpdatedStateId !== user?.id : true) &&
+              presentation.users.some((_user) => _user.id === user?.id)
             )
           },
         ),

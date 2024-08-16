@@ -1,4 +1,5 @@
 import { type Storage, getDownloadURL } from "firebase-admin/storage"
+import type { ConnectedUser, ConnectedUserInput } from "./graphql/__generated__"
 
 export async function uploadImageToFirebaseStorage(storage: Storage, dataUrl: string, filePath: string) {
   const bucket = storage.bucket(process.env.FIREBASE_BUCKET_NAME)
@@ -20,4 +21,39 @@ export async function uploadImageToFirebaseStorage(storage: Storage, dataUrl: st
   })
 
   return getDownloadURL(file)
+}
+
+export function useUserConnections() {
+  const connectedUsers: Record<string, ConnectedUser[]> = {}
+
+  function addUserConnection(presentationId: string, user: ConnectedUser) {
+    if (!connectedUsers[presentationId]) {
+      connectedUsers[presentationId] = []
+    }
+    connectedUsers[presentationId].push(user)
+  }
+
+  function updateUserConnection(presentationId: string, userInput: ConnectedUserInput) {
+    if (!connectedUsers[presentationId].find((user) => user.id === userInput.id)) return
+    connectedUsers[presentationId] = connectedUsers[presentationId].map((user) =>
+      user.id === userInput.id ? { ...user, ...userInput } : user,
+    )
+  }
+
+  function removeUserConnection(presentationId: string, userId: string) {
+    if (connectedUsers[presentationId]) {
+      connectedUsers[presentationId] = connectedUsers[presentationId].filter((u) => u.id !== userId)
+    }
+  }
+
+  function getUserConnections(presentationId: string) {
+    return connectedUsers[presentationId] || []
+  }
+
+  return {
+    addUserConnection,
+    updateUserConnection,
+    removeUserConnection,
+    getUserConnections,
+  }
 }

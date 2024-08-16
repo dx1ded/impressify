@@ -18,6 +18,23 @@ export type Scalars = {
   Date: { input: any; output: any; }
 };
 
+export type ConnectedUser = {
+  __typename?: 'ConnectedUser';
+  currentSlide: Scalars['Int']['output'];
+  cursorX?: Maybe<Scalars['Float']['output']>;
+  cursorY?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  profilePicUrl: Scalars['String']['output'];
+};
+
+export type ConnectedUserInput = {
+  currentSlide: Scalars['Int']['input'];
+  cursorX?: InputMaybe<Scalars['Float']['input']>;
+  cursorY?: InputMaybe<Scalars['Float']['input']>;
+  id: Scalars['ID']['input'];
+};
+
 export type Element = {
   angle: Scalars['Int']['output'];
   height: Scalars['Float']['output'];
@@ -162,19 +179,19 @@ export type PresentationInfo = {
 
 export type PresentationState = {
   __typename?: 'PresentationState';
-  _userUpdatedStateId: Scalars['ID']['output'];
-  isSaving: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  slides: Array<Slide>;
-  users: Array<User>;
+  _userUpdatedStateId?: Maybe<Scalars['ID']['output']>;
+  connectedUsers?: Maybe<Array<ConnectedUser>>;
+  isSaving?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  slides?: Maybe<Array<Slide>>;
 };
 
 export type PresentationStateInput = {
+  connectedUser: ConnectedUserInput;
   id: Scalars['ID']['input'];
   isSaving: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
   slides: Array<SlideInput>;
-  users: Array<UserInput>;
 };
 
 export type Query = {
@@ -273,6 +290,11 @@ export type Subscription = {
   presentationUpdated: PresentationState;
 };
 
+
+export type SubscriptionPresentationUpdatedArgs = {
+  presentationId: Scalars['String']['input'];
+};
+
 export type Text = Element & {
   __typename?: 'Text';
   alignment: Scalars['String']['output'];
@@ -329,13 +351,6 @@ export type User = {
   presentations: Array<Presentation>;
   profilePicUrl: Scalars['String']['output'];
   records: Array<HistoryRecord>;
-};
-
-export type UserInput = {
-  email: Scalars['String']['input'];
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
-  profilePicUrl: Scalars['String']['input'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -415,6 +430,8 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  ConnectedUser: ResolverTypeWrapper<ConnectedUser>;
+  ConnectedUserInput: ConnectedUserInput;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   Element: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Element']>;
   ElementInput: ElementInput;
@@ -440,12 +457,13 @@ export type ResolversTypes = ResolversObject<{
   Text: ResolverTypeWrapper<Text>;
   TextInput: TextInput;
   User: ResolverTypeWrapper<User>;
-  UserInput: UserInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
+  ConnectedUser: ConnectedUser;
+  ConnectedUserInput: ConnectedUserInput;
   Date: Scalars['Date']['output'];
   Element: ResolversInterfaceTypes<ResolversParentTypes>['Element'];
   ElementInput: ElementInput;
@@ -471,7 +489,16 @@ export type ResolversParentTypes = ResolversObject<{
   Text: Text;
   TextInput: TextInput;
   User: User;
-  UserInput: UserInput;
+}>;
+
+export type ConnectedUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConnectedUser'] = ResolversParentTypes['ConnectedUser']> = ResolversObject<{
+  currentSlide?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  cursorX?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  cursorY?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  profilePicUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -553,11 +580,11 @@ export type PresentationInfoResolvers<ContextType = any, ParentType extends Reso
 }>;
 
 export type PresentationStateResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationState'] = ResolversParentTypes['PresentationState']> = ResolversObject<{
-  _userUpdatedStateId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  isSaving?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  slides?: Resolver<Array<ResolversTypes['Slide']>, ParentType, ContextType>;
-  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  _userUpdatedStateId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  connectedUsers?: Resolver<Maybe<Array<ResolversTypes['ConnectedUser']>>, ParentType, ContextType>;
+  isSaving?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slides?: Resolver<Maybe<Array<ResolversTypes['Slide']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -601,7 +628,7 @@ export type SlideResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  presentationUpdated?: SubscriptionResolver<ResolversTypes['PresentationState'], "presentationUpdated", ParentType, ContextType>;
+  presentationUpdated?: SubscriptionResolver<ResolversTypes['PresentationState'], "presentationUpdated", ParentType, ContextType, RequireFields<SubscriptionPresentationUpdatedArgs, 'presentationId'>>;
 }>;
 
 export type TextResolvers<ContextType = any, ParentType extends ResolversParentTypes['Text'] = ResolversParentTypes['Text']> = ResolversObject<{
@@ -640,6 +667,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  ConnectedUser?: ConnectedUserResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Element?: ElementResolvers<ContextType>;
   History?: HistoryResolvers<ContextType>;

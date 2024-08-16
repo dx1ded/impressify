@@ -7,11 +7,20 @@ type User {
   records: [HistoryRecord!]!
 }
 
-input UserInput {
+type ConnectedUser {
   id: ID!
   name: String!
-  email: String!
   profilePicUrl: String!
+  currentSlide: Int!
+  cursorX: Float
+  cursorY: Float
+}
+
+input ConnectedUserInput {
+  id: ID!
+  currentSlide: Int!
+  cursorX: Float
+  cursorY: Float
 }
 
 type Query {

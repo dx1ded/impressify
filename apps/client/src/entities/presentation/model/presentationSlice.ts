@@ -5,7 +5,6 @@ import { nanoid } from "nanoid"
 import {
   type Presentation,
   type SlideProps,
-  type UserProps,
   type ElementProps,
   type HistoryRecord,
   type Mode,
@@ -30,10 +29,13 @@ import {
   MAX_HISTORY_LENGTH,
   COPIED_ELEMENT_X_DIF,
   COPIED_ELEMENT_Y_DIF,
+  type UserId,
 } from "~/entities/presentation"
+import { ConnectedUser } from "~/__generated__/graphql"
 
 interface PresentationState {
   presentation: Presentation
+  connectedUsers: ConnectedUser[]
   copiedElement: Omit<ElementProps, "id"> | null
   history: {
     undoStack: HistoryRecord[]
@@ -58,8 +60,9 @@ const initialState: PresentationState = {
     id: "",
     name: "",
     slides: [],
-    users: [],
   },
+  // connected to the subscription users
+  connectedUsers: [],
   copiedElement: null,
   history: {
     undoStack: [],
@@ -118,8 +121,13 @@ const presentationSlice = createSlice({
     setSlides: (state, { payload }: PayloadAction<SlideProps[]>) => {
       state.presentation.slides = payload
     },
-    setUsers: (state, { payload }: PayloadAction<UserProps[]>) => {
-      state.presentation.users = payload
+    setConnectedUsers: (state, { payload }: PayloadAction<ConnectedUser[]>) => {
+      state.connectedUsers = payload
+    },
+    changeConnectedUser: (state, { payload }: PayloadAction<Partial<ConnectedUser>>) => {
+      state.connectedUsers = state.connectedUsers.map((_user) =>
+        _user.id === payload.id ? { ..._user, ...payload } : _user,
+      )
     },
     setCurrentSlide: (state, { payload }: PayloadAction<number>) => {
       state.currentSlide = payload
@@ -171,12 +179,16 @@ const presentationSlice = createSlice({
         payload: index + 1,
       } as PayloadAction<number>)
     },
-    deleteSlide: (state, { payload }: PayloadAction<SlideId>) => {
+    // `userId` is needed for `changeConnectedUser`
+    deleteSlide: (state, { payload }: PayloadAction<{ slideId: SlideId; userId: UserId }>) => {
       if (state.presentation.slides.length === 1) return
-      const index = state.presentation.slides.findIndex((slide) => slide.id === payload)!
+      const index = state.presentation.slides.findIndex((slide) => slide.id === payload.slideId)!
       let nextCurrentSlide = index
       if (index === state.presentation.slides.length - 1) {
         nextCurrentSlide = index - 1
+        presentationSlice.caseReducers.changeConnectedUser(state, {
+          payload: { id: payload.userId, currentSlide: index - 1 },
+        } as PayloadAction<Partial<ConnectedUser>>)
       }
       presentationSlice.caseReducers.setCurrentSlide(state, {
         payload: nextCurrentSlide,
@@ -373,7 +385,8 @@ export const {
   setPresentation,
   setName,
   setSlides,
-  setUsers,
+  setConnectedUsers,
+  changeConnectedUser,
   setCurrentSlide,
   setMode,
   setIsLoading,

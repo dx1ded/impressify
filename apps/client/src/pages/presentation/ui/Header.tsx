@@ -3,6 +3,7 @@ import { shallowEqual } from "react-redux"
 
 import { CHANGE_NAME_ID, MAX_NAME_LENGTH, setName } from "~/entities/presentation"
 import { SharePresentationDialog } from "~/features/share-presentation"
+import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
 import { Menubar } from "~/widgets/menubar"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
@@ -14,6 +15,7 @@ import { ResizableInput } from "~/shared/ui/ResizableInput"
 const DEBOUNCED_CHANGE_NAME_TIME = 2000
 
 export function Header() {
+  const connectedUsers = useAppSelector((state) => state.presentation.connectedUsers)
   const { name, isLoading, presentationId } = useAppSelector(
     (state) => ({
       name: state.presentation.presentation.name,
@@ -55,16 +57,19 @@ export function Header() {
           <Menubar />
         </div>
       </div>
-      <div className="flex items-center gap-2.5">
-        <Button variant="outline" className="rounded-3xl px-6 font-semibold">
-          Slideshow
-        </Button>
-        <SharePresentationDialog presentationId={presentationId}>
-          <Button variant="blue" className="rounded-3xl px-6 font-semibold">
-            Share
+      <div className="flex items-center">
+        <ConnectionList className="mr-3 border-r border-gray-200 py-0.5 pr-3" users={connectedUsers} />
+        <div className="flex items-center gap-2.5">
+          <Button variant="outline" className="rounded-3xl px-6 font-semibold">
+            Slideshow
           </Button>
-        </SharePresentationDialog>
-        <UserButton appearance={{ elements: { userButtonAvatarBox: { width: "2rem", height: "2rem" } } }} />
+          <SharePresentationDialog presentationId={presentationId}>
+            <Button variant="blue" className="rounded-3xl px-6 font-semibold">
+              Share
+            </Button>
+          </SharePresentationDialog>
+          <UserButton appearance={{ elements: { userButtonAvatarBox: { width: "2rem", height: "2rem" } } }} />
+        </div>
       </div>
     </header>
   )

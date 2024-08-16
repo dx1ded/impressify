@@ -58,6 +58,17 @@
       "options": {
         "command": "graphql-codegen"
       }
+    },
+    "serve-app": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx nx run server:serve-graphql-types",
+          "npx nx run server:serve",
+          "npx nx run client:serve"
+        ],
+        "parallel": true
+      }
     }
   }
 }
