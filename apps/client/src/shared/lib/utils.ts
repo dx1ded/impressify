@@ -12,6 +12,10 @@ export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+export function isNotNullable<T>(value: T): value is NonNullable<T> {
+  return value !== null && value !== undefined
+}
+
 export function ptToPx(pt: number) {
   return pt * 1.333
 }

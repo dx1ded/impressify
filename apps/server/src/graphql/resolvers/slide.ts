@@ -55,7 +55,8 @@ export default {
             // We try to find if element already exists to just update it and not create a new one using the constructor
             const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
             if (elementAlreadyExists) {
-              newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
+              newSlide.elements[position] = new Text({ ...elementAlreadyExists, position: elementIndex, ...element })
+              // newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
             } else {
               newSlide.elements[position] = new Text({ ...element, position: elementIndex, slide: newSlide })
             }
@@ -63,7 +64,8 @@ export default {
           slide.elements.image.forEach(({ position, ...element }, elementIndex) => {
             const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
             if (elementAlreadyExists) {
-              newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
+              newSlide.elements[position] = new Image({ ...elementAlreadyExists, position: elementIndex, ...element })
+              // newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
             } else {
               newSlide.elements[position] = new Image({ ...element, position: elementIndex, slide: newSlide })
             }
@@ -71,7 +73,8 @@ export default {
           slide.elements.shape.forEach(({ position, ...element }, elementIndex) => {
             const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
             if (elementAlreadyExists) {
-              newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
+              newSlide.elements[position] = new Shape({ ...elementAlreadyExists, position: elementIndex, ...element })
+              // newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
             } else {
               newSlide.elements[position] = new Shape({ ...element, position: elementIndex, slide: newSlide })
             }
@@ -91,14 +94,15 @@ export default {
     async elements(parent, _, __, info) {
       // This is done for subscriptions. It would pass an object (which is not slide) with ready elements, so no need to find them in database
       // ... we only want to transform them to GraphQL-format with `__typename` prop
-      const _elements =
+      const elements =
         info.operation.operation === "subscription"
           ? parent.elements
           : await elementRepository.find({
               where: { slide: { id: parent.id } },
               order: { position: "ASC" },
             })
-      return _elements.map((element) => {
+
+      return elements.map((element) => {
         if (element instanceof Text) {
           return { __typename: "Text", ...element }
         }

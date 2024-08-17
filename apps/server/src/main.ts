@@ -59,7 +59,7 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
       schema,
       context: async (ctx, _, args) => {
         const context = await getContext(ctx.connectionParams?.authorization as string | undefined)
-        const presentationId = args.variableValues?.presentationId as string
+        const presentationId = args.variableValues?.presentationId as string | undefined
         if (context.user && presentationId) {
           connections.addUserConnection(presentationId, {
             ...(await userRepository.findOneBy({ id: context.user.id })),

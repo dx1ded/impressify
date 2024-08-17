@@ -20,7 +20,7 @@ export type Scalars = {
 
 export type ConnectedUser = {
   __typename?: 'ConnectedUser';
-  currentSlide: Scalars['Int']['output'];
+  currentSlideId: Scalars['String']['output'];
   cursorX?: Maybe<Scalars['Float']['output']>;
   cursorY?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
@@ -29,14 +29,14 @@ export type ConnectedUser = {
 };
 
 export type ConnectedUserInput = {
-  currentSlide: Scalars['Int']['input'];
+  currentSlideId: Scalars['String']['input'];
   cursorX?: InputMaybe<Scalars['Float']['input']>;
   cursorY?: InputMaybe<Scalars['Float']['input']>;
   id: Scalars['ID']['input'];
 };
 
 export type Element = {
-  angle: Scalars['Int']['output'];
+  angle: Scalars['Float']['output'];
   height: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   position: Scalars['Int']['output'];
@@ -71,7 +71,7 @@ export type HistoryRecord = {
 
 export type Image = Element & {
   __typename?: 'Image';
-  angle: Scalars['Int']['output'];
+  angle: Scalars['Float']['output'];
   height: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   imageUrl: Scalars['String']['output'];
@@ -85,7 +85,7 @@ export type Image = Element & {
 };
 
 export type ImageInput = {
-  angle: Scalars['Int']['input'];
+  angle: Scalars['Float']['input'];
   height: Scalars['Float']['input'];
   id: Scalars['ID']['input'];
   imageUrl: Scalars['String']['input'];
@@ -231,7 +231,7 @@ export type QueryUserArgs = {
 
 export type Shape = Element & {
   __typename?: 'Shape';
-  angle: Scalars['Int']['output'];
+  angle: Scalars['Float']['output'];
   fillColor: Scalars['String']['output'];
   height: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
@@ -249,7 +249,7 @@ export type Shape = Element & {
 };
 
 export type ShapeInput = {
-  angle: Scalars['Int']['input'];
+  angle: Scalars['Float']['input'];
   fillColor: Scalars['String']['input'];
   height: Scalars['Float']['input'];
   id: Scalars['ID']['input'];
@@ -298,7 +298,7 @@ export type SubscriptionPresentationUpdatedArgs = {
 export type Text = Element & {
   __typename?: 'Text';
   alignment: Scalars['String']['output'];
-  angle: Scalars['Int']['output'];
+  angle: Scalars['Float']['output'];
   bold: Scalars['Boolean']['output'];
   borderColor: Scalars['String']['output'];
   fillColor: Scalars['String']['output'];
@@ -322,7 +322,7 @@ export type Text = Element & {
 
 export type TextInput = {
   alignment: Scalars['String']['input'];
-  angle: Scalars['Int']['input'];
+  angle: Scalars['Float']['input'];
   bold: Scalars['Boolean']['input'];
   borderColor: Scalars['String']['input'];
   fillColor: Scalars['String']['input'];
@@ -492,7 +492,7 @@ export type ResolversParentTypes = ResolversObject<{
 }>;
 
 export type ConnectedUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConnectedUser'] = ResolversParentTypes['ConnectedUser']> = ResolversObject<{
-  currentSlide?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  currentSlideId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   cursorX?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   cursorY?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -507,7 +507,7 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type ElementResolvers<ContextType = any, ParentType extends ResolversParentTypes['Element'] = ResolversParentTypes['Element']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Image' | 'Shape' | 'Text', ParentType, ContextType>;
-  angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  angle?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -535,7 +535,7 @@ export type HistoryRecordResolvers<ContextType = any, ParentType extends Resolve
 }>;
 
 export type ImageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Image'] = ResolversParentTypes['Image']> = ResolversObject<{
-  angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  angle?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   imageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -597,7 +597,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type ShapeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shape'] = ResolversParentTypes['Shape']> = ResolversObject<{
-  angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  angle?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   fillColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -633,7 +633,7 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
 
 export type TextResolvers<ContextType = any, ParentType extends ResolversParentTypes['Text'] = ResolversParentTypes['Text']> = ResolversObject<{
   alignment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  angle?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  angle?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   bold?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   borderColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fillColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

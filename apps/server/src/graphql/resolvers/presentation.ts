@@ -185,7 +185,24 @@ export default {
         where: { id: state.id },
       })
       if (!presentation || !presentation.users.some((_user) => _user.id === user.id)) return null
-      connections.updateUserConnection(presentation.id, state.connectedUser)
+      // Updating connections (state.connectedUser props + other users' currentSlide (in case it got deleted or moved)
+      connections.updateMultipleUserConnections(presentation.id, (_user) => {
+        const newUserProps = _user.id === state.connectedUser.id ? { ..._user, ...state.connectedUser } : _user
+        const movedSlideIndex = state.slides.findIndex(
+          (_slide) =>
+            _slide.id === presentation.slides.find((__slide) => __slide.position === newUserProps.currentSlide)!.id,
+        )
+        return {
+          ...newUserProps,
+          currentSlide:
+            movedSlideIndex !== -1
+              ? movedSlideIndex
+              : _user.currentSlide >= state.slides.length
+                ? state.slides.length - 1
+                : _user.currentSlide,
+        }
+      })
+      // Defining new state
       const newState: PresentationState = {
         ...state,
         slides: state.slides.map((slide, slideIndex) => {

@@ -2,7 +2,6 @@ import { Draggable } from "@hello-pangea/dnd"
 import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
 import { shallowEqual } from "react-redux"
 
-import type { ConnectedUser } from "~/__generated__/graphql"
 import {
   type SlideProps,
   EDIT_ELEMENT_ID,

@@ -33,11 +33,13 @@ import {
   setSlides,
   setConnectedUsers,
   changeConnectedUser,
+  setCurrentSlide,
 } from "~/entities/presentation"
 import { ADD_RECORD } from "~/entities/record"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
 import { Header } from "~/pages/presentation/ui/Header"
+import { isNotNullable } from "~/shared/lib"
 import { Cursor } from "~/shared/ui/Cursor"
 import { Toolbar } from "~/widgets/toolbar"
 import { DebouncedProvider, useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
@@ -97,8 +99,7 @@ function Presentation() {
       // By the way, I used casting because there's a type issue since elements in the array might be nullable
       dispatch(setSlides(result.data.saveSlides as SlideProps[]))
       dispatch(setIsSaving(false))
-      // And then we synchronize the state with other connections
-      call(SYNCHRONIZE_STATE_ID)
+      // No need to synchronize state because it's done in the server
     },
     DEBOUNCED_SAVE_SLIDES_TIME,
     [slides],
@@ -150,9 +151,13 @@ function Presentation() {
     async onData(result) {
       const state = result.data.data?.presentationUpdated
       if (!state) return
-      if (state.name) dispatch(setName(state.name))
-      if (state.slides) dispatch(setSlides(state.slides))
-      if (state.isSaving) dispatch(setIsSaving(state.isSaving))
+      if (isNotNullable(state.name)) dispatch(setName(state.name))
+      if (state.slides) {
+        const _user = state.connectedUsers?.find((_user) => _user.id === userId)
+        if (_user) dispatch(setCurrentSlide(_user.currentSlide))
+        dispatch(setSlides(state.slides))
+      }
+      if (isNotNullable(state.isSaving)) dispatch(setIsSaving(state.isSaving))
       if (state.connectedUsers) dispatch(setConnectedUsers(state.connectedUsers))
       // Cancel save slides to avoid collision
       cancel(SAVE_SLIDES_ID)

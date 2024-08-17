@@ -23,7 +23,7 @@ export class Element implements IElement {
   @Column("float")
   height: number
 
-  @Column()
+  @Column("float")
   angle: number
 
   @Column("float")

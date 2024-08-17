@@ -75,7 +75,7 @@ export const PRESENTATION_UPDATED = gql(`#graphql
         id
         name
         profilePicUrl
-        currentSlide
+        currentSlideId
         cursorX
         cursorY
       }

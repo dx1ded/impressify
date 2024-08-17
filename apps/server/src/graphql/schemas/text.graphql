@@ -4,7 +4,7 @@ type Text implements Element {
   y: Float!
   width: Float!
   height: Float!
-  angle: Int!
+  angle: Float!
   scaleX: Float!
   scaleY: Float!
   slide: Slide!
@@ -29,7 +29,7 @@ input TextInput {
   y: Float!
   width: Float!
   height: Float!
-  angle: Int!
+  angle: Float!
   scaleX: Float!
   scaleY: Float!
 

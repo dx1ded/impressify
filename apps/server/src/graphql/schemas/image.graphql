@@ -4,7 +4,7 @@ type Image implements Element {
   y: Float!
   width: Float!
   height: Float!
-  angle: Int!
+  angle: Float!
   scaleX: Float!
   scaleY: Float!
   slide: Slide!
@@ -19,7 +19,7 @@ input ImageInput {
   y: Float!
   width: Float!
   height: Float!
-  angle: Int!
+  angle: Float!
   scaleX: Float!
   scaleY: Float!
 

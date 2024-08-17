@@ -4,7 +4,7 @@ type Shape implements Element {
   y: Float!
   width: Float!
   height: Float!
-  angle: Int!
+  angle: Float!
   scaleX: Float!
   scaleY: Float!
   slide: Slide!
@@ -24,7 +24,7 @@ input ShapeInput {
   y: Float!
   width: Float!
   height: Float!
-  angle: Int!
+  angle: Float!
   scaleX: Float!
   scaleY: Float!
 

@@ -24,35 +24,41 @@ export async function uploadImageToFirebaseStorage(storage: Storage, dataUrl: st
 }
 
 export function useUserConnections() {
-  const connectedUsers: Record<string, ConnectedUser[]> = {}
+  const userConnections: Record<string, ConnectedUser[]> = {}
 
   function addUserConnection(presentationId: string, user: ConnectedUser) {
-    if (!connectedUsers[presentationId]) {
-      connectedUsers[presentationId] = []
+    if (!userConnections[presentationId]) {
+      userConnections[presentationId] = []
     }
-    connectedUsers[presentationId].push(user)
+    userConnections[presentationId].push(user)
   }
 
   function updateUserConnection(presentationId: string, userInput: ConnectedUserInput) {
-    if (!connectedUsers[presentationId].find((user) => user.id === userInput.id)) return
-    connectedUsers[presentationId] = connectedUsers[presentationId].map((user) =>
+    if (!userConnections[presentationId].find((user) => user.id === userInput.id)) return
+    userConnections[presentationId] = userConnections[presentationId].map((user) =>
       user.id === userInput.id ? { ...user, ...userInput } : user,
     )
   }
 
+  function updateMultipleUserConnections(presentationId: string, cb: (user: ConnectedUser) => ConnectedUser) {
+    if (!userConnections[presentationId]) return
+    userConnections[presentationId] = userConnections[presentationId].map(cb)
+  }
+
   function removeUserConnection(presentationId: string, userId: string) {
-    if (connectedUsers[presentationId]) {
-      connectedUsers[presentationId] = connectedUsers[presentationId].filter((u) => u.id !== userId)
+    if (userConnections[presentationId]) {
+      userConnections[presentationId] = userConnections[presentationId].filter((user) => user.id !== userId)
     }
   }
 
   function getUserConnections(presentationId: string) {
-    return connectedUsers[presentationId] || []
+    return userConnections[presentationId] || []
   }
 
   return {
     addUserConnection,
     updateUserConnection,
+    updateMultipleUserConnections,
     removeUserConnection,
     getUserConnections,
   }

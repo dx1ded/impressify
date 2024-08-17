@@ -11,14 +11,14 @@ type ConnectedUser {
   id: ID!
   name: String!
   profilePicUrl: String!
-  currentSlide: Int!
+  currentSlideId: String!
   cursorX: Float
   cursorY: Float
 }
 
 input ConnectedUserInput {
   id: ID!
-  currentSlide: Int!
+  currentSlideId: String!
   cursorX: Float
   cursorY: Float
 }

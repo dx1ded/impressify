@@ -4,7 +4,7 @@ interface Element {
   y: Float!
   width: Float!
   height: Float!
-  angle: Int!
+  angle: Float!
   scaleX: Float!
   scaleY: Float!
   slide: Slide!
