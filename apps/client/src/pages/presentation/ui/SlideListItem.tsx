@@ -2,12 +2,13 @@ import { Draggable } from "@hello-pangea/dnd"
 import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
 import { shallowEqual } from "react-redux"
 
+import { Transition } from "~/__generated__/graphql"
 import {
-  type SlideProps,
+  changeConnectedUser,
   EDIT_ELEMENT_ID,
   setCurrentSlide,
+  type SlideProps,
   TAKE_SCREENSHOT_ID,
-  changeConnectedUser,
 } from "~/entities/presentation"
 import { DeleteSlide } from "~/features/delete-slide"
 import { DuplicateSlide } from "~/features/duplicate-slide/ui"
@@ -44,7 +45,9 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
           className="group mb-4 flex h-28 w-full flex-shrink-0 gap-2">
           <div className="flex h-full flex-col items-center gap-2">
             {!isDragging && <small className="font-bold">{index + 1}</small>}
-            {slide.transition !== "none" && <SparklesIcon className="h-[1.125rem] w-[1.125rem] text-yellow-500" />}
+            {slide.transition !== Transition.None && (
+              <SparklesIcon className="h-[1.125rem] w-[1.125rem] text-yellow-500" />
+            )}
             <DuplicateSlide>
               {(duplicateSlide) => (
                 <button
@@ -78,13 +81,13 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
               deleteWithPattern(EDIT_ELEMENT_ID)
               deleteDebounced(TAKE_SCREENSHOT_ID)
               dispatch(setCurrentSlide(index))
-              dispatch(changeConnectedUser({ id: userId!, currentSlide: index }))
+              dispatch(changeConnectedUser({ id: userId!, currentSlideId: slide.id }))
             }}>
             <img src={slide.thumbnailUrl} alt="Slide thumbnail" className="h-full w-full max-w-[10.375rem]" />
             <ConnectionList
               size="sm"
               className="absolute bottom-1.5 right-2 translate-y-[95%] transition-transform group-hover:translate-y-0"
-              users={connectedUsers.filter((_user) => _user.currentSlide === index)}
+              users={connectedUsers.filter((_user) => _user.currentSlideId === slide.id)}
             />
           </button>
         </div>

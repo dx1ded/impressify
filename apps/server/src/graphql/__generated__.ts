@@ -18,6 +18,12 @@ export type Scalars = {
   Date: { input: any; output: any; }
 };
 
+export enum Alignment {
+  Center = 'CENTER',
+  Left = 'LEFT',
+  Right = 'RIGHT'
+}
+
 export type ConnectedUser = {
   __typename?: 'ConnectedUser';
   currentSlideId: Scalars['String']['output'];
@@ -177,12 +183,19 @@ export type PresentationInfo = {
   totalUsers: Scalars['Int']['output'];
 };
 
+export enum PresentationOperation {
+  Delete = 'DELETE',
+  Update = 'UPDATE'
+}
+
 export type PresentationState = {
   __typename?: 'PresentationState';
+  _presentationId: Scalars['ID']['output'];
   _userUpdatedStateId?: Maybe<Scalars['ID']['output']>;
   connectedUsers?: Maybe<Array<ConnectedUser>>;
   isSaving?: Maybe<Scalars['Boolean']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  operation: PresentationOperation;
   slides?: Maybe<Array<Slide>>;
 };
 
@@ -242,7 +255,7 @@ export type Shape = Element & {
   slide: Slide;
   strokeColor: Scalars['String']['output'];
   strokeWidth: Scalars['Int']['output'];
-  type: Scalars['String']['output'];
+  type: ShapeType;
   width: Scalars['Float']['output'];
   x: Scalars['Float']['output'];
   y: Scalars['Float']['output'];
@@ -259,11 +272,20 @@ export type ShapeInput = {
   scaleY: Scalars['Float']['input'];
   strokeColor: Scalars['String']['input'];
   strokeWidth: Scalars['Int']['input'];
-  type: Scalars['String']['input'];
+  type: ShapeType;
   width: Scalars['Float']['input'];
   x: Scalars['Float']['input'];
   y: Scalars['Float']['input'];
 };
+
+export enum ShapeType {
+  Arrow = 'ARROW',
+  Circle = 'CIRCLE',
+  Line = 'LINE',
+  Rectangle = 'RECTANGLE',
+  Square = 'SQUARE',
+  Star = 'STAR'
+}
 
 export type Slide = {
   __typename?: 'Slide';
@@ -274,7 +296,7 @@ export type Slide = {
   position: Scalars['Int']['output'];
   presentation: Presentation;
   thumbnailUrl: Scalars['String']['output'];
-  transition: Scalars['String']['output'];
+  transition: Transition;
 };
 
 export type SlideInput = {
@@ -282,7 +304,7 @@ export type SlideInput = {
   elements: ElementInput;
   id: Scalars['ID']['input'];
   thumbnailUrl: Scalars['String']['input'];
-  transition: Scalars['String']['input'];
+  transition: Transition;
 };
 
 export type Subscription = {
@@ -297,7 +319,7 @@ export type SubscriptionPresentationUpdatedArgs = {
 
 export type Text = Element & {
   __typename?: 'Text';
-  alignment: Scalars['String']['output'];
+  alignment: Alignment;
   angle: Scalars['Float']['output'];
   bold: Scalars['Boolean']['output'];
   borderColor: Scalars['String']['output'];
@@ -321,7 +343,7 @@ export type Text = Element & {
 };
 
 export type TextInput = {
-  alignment: Scalars['String']['input'];
+  alignment: Alignment;
   angle: Scalars['Float']['input'];
   bold: Scalars['Boolean']['input'];
   borderColor: Scalars['String']['input'];
@@ -342,6 +364,14 @@ export type TextInput = {
   x: Scalars['Float']['input'];
   y: Scalars['Float']['input'];
 };
+
+export enum Transition {
+  Fade = 'FADE',
+  Flip = 'FLIP',
+  None = 'NONE',
+  SlidesFromRight = 'SLIDES_FROM_RIGHT',
+  SlideFromLeft = 'SLIDE_FROM_LEFT'
+}
 
 export type User = {
   __typename?: 'User';
@@ -429,6 +459,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  Alignment: Alignment;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   ConnectedUser: ResolverTypeWrapper<ConnectedUser>;
   ConnectedUserInput: ConnectedUserInput;
@@ -445,17 +476,20 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   Presentation: ResolverTypeWrapper<Presentation>;
   PresentationInfo: ResolverTypeWrapper<PresentationInfo>;
+  PresentationOperation: PresentationOperation;
   PresentationState: ResolverTypeWrapper<PresentationState>;
   PresentationStateInput: PresentationStateInput;
   Query: ResolverTypeWrapper<{}>;
   Shape: ResolverTypeWrapper<Shape>;
   ShapeInput: ShapeInput;
+  ShapeType: ShapeType;
   Slide: ResolverTypeWrapper<Omit<Slide, 'elements'> & { elements: Array<ResolversTypes['Element']> }>;
   SlideInput: SlideInput;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
   Text: ResolverTypeWrapper<Text>;
   TextInput: TextInput;
+  Transition: Transition;
   User: ResolverTypeWrapper<User>;
 }>;
 
@@ -580,10 +614,12 @@ export type PresentationInfoResolvers<ContextType = any, ParentType extends Reso
 }>;
 
 export type PresentationStateResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationState'] = ResolversParentTypes['PresentationState']> = ResolversObject<{
+  _presentationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   _userUpdatedStateId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   connectedUsers?: Resolver<Maybe<Array<ResolversTypes['ConnectedUser']>>, ParentType, ContextType>;
   isSaving?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  operation?: Resolver<ResolversTypes['PresentationOperation'], ParentType, ContextType>;
   slides?: Resolver<Maybe<Array<ResolversTypes['Slide']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -608,7 +644,7 @@ export type ShapeResolvers<ContextType = any, ParentType extends ResolversParent
   slide?: Resolver<ResolversTypes['Slide'], ParentType, ContextType>;
   strokeColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   strokeWidth?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['ShapeType'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   x?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   y?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -623,7 +659,7 @@ export type SlideResolvers<ContextType = any, ParentType extends ResolversParent
   position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   presentation?: Resolver<ResolversTypes['Presentation'], ParentType, ContextType>;
   thumbnailUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  transition?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transition?: Resolver<ResolversTypes['Transition'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -632,7 +668,7 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type TextResolvers<ContextType = any, ParentType extends ResolversParentTypes['Text'] = ResolversParentTypes['Text']> = ResolversObject<{
-  alignment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  alignment?: Resolver<ResolversTypes['Alignment'], ParentType, ContextType>;
   angle?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   bold?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   borderColor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

@@ -1,28 +1,29 @@
+import type { KonvaEventObject } from "konva/lib/Node"
+import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
 import { memo, useEffect, useRef } from "react"
 import { Transformer } from "react-konva"
-import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
-import type { KonvaEventObject } from "konva/lib/Node"
 
+import { ShapeType } from "~/__generated__/graphql"
 import {
-  type ElementProps,
   type ElementComponent,
+  type ElementProps,
   type Mode,
-  generateEditElementId,
-  textProps,
-  imageProps,
-  shapeProps,
-  getAnchors,
-  selectElement,
-  editElement,
   changeShapeProps,
-  setMode,
+  editElement,
+  selectElement,
   setIsEditing,
   setIsSaving,
-  MIN_ELEMENT_WIDTH,
+  setMode,
+  generateEditElementId,
+  getAnchors,
+  textProps,
+  shapeProps,
+  imageProps,
   MIN_ELEMENT_HEIGHT,
-  TAKE_SCREENSHOT_ID,
+  MIN_ELEMENT_WIDTH,
   SAVE_SLIDES_ID,
   SYNCHRONIZE_STATE_ID,
+  TAKE_SCREENSHOT_ID,
 } from "~/entities/presentation"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 
@@ -146,7 +147,7 @@ export const ElementWrapper = memo(function ElementWrapper({
             enabledAnchors={getAnchors(props)}
             boundBoxFunc={(oldBox, newBox) =>
               Math.abs(newBox.width) < MIN_ELEMENT_WIDTH ||
-              (props.__typename === "Shape" && (props.type === "line" || props.type === "arrow")
+              (props.__typename === "Shape" && (props.type === ShapeType.Line || props.type === ShapeType.Arrow)
                 ? false
                 : Math.abs(newBox.height) < MIN_ELEMENT_HEIGHT)
                 ? oldBox

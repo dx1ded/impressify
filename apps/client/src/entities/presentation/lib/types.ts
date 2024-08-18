@@ -18,7 +18,6 @@ export type FindPresentationItem = ArrayElement<NonNullable<FindUserPresentation
 export type Presentation = NonNullable<GetPresentationQuery["getPresentation"]>
 
 export type Mode = "cursor" | "text" | "image" | "shape"
-export type Shapes = "line" | "square" | "rectangle" | "circle" | "arrow" | "star"
 export type ShapesConfig = RectConfig & LineConfig & CircleConfig & ArrowConfig & StarConfig
 
 export type Coordinates = { x: number; y: number }

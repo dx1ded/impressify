@@ -2,20 +2,21 @@ import _ from "lodash"
 import { useMutation, useQuery, useSubscription } from "@apollo/client"
 import type { MouseEvent } from "react"
 import { shallowEqual } from "react-redux"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useDebouncedCallback } from "use-debounce"
 
-import type {
-  AddRecordMutation,
-  AddRecordMutationVariables,
-  GetPresentationQuery,
-  GetPresentationQueryVariables,
-  SaveSlidesMutation,
-  SaveSlidesMutationVariables,
-  PresentationUpdatedSubscription,
-  PresentationUpdatedSubscriptionVariables,
-  SynchronizePresentationStateMutation,
-  SynchronizePresentationStateMutationVariables,
+import {
+  type AddRecordMutation,
+  type AddRecordMutationVariables,
+  type GetPresentationQuery,
+  type GetPresentationQueryVariables,
+  type SaveSlidesMutation,
+  type SaveSlidesMutationVariables,
+  type PresentationUpdatedSubscription,
+  type PresentationUpdatedSubscriptionVariables,
+  type SynchronizePresentationStateMutation,
+  type SynchronizePresentationStateMutationVariables,
+  PresentationOperation,
 } from "~/__generated__/graphql"
 import {
   type SlideProps,
@@ -72,6 +73,7 @@ function Presentation() {
     shallowEqual,
   )
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const { register, call, cancel } = useDebouncedFunctions()
 
   const [saveSlides] = useMutation<SaveSlidesMutation, SaveSlidesMutationVariables>(SAVE_SLIDES)
@@ -151,14 +153,16 @@ function Presentation() {
     async onData(result) {
       const state = result.data.data?.presentationUpdated
       if (!state) return
+      if (state.operation === PresentationOperation.Delete) return navigate("/home")
       if (isNotNullable(state.name)) dispatch(setName(state.name))
-      if (state.slides) {
-        const _user = state.connectedUsers?.find((_user) => _user.id === userId)
-        if (_user) dispatch(setCurrentSlide(_user.currentSlide))
-        dispatch(setSlides(state.slides))
-      }
       if (isNotNullable(state.isSaving)) dispatch(setIsSaving(state.isSaving))
-      if (state.connectedUsers) dispatch(setConnectedUsers(state.connectedUsers))
+      if (state.connectedUsers) {
+        const _user = state.connectedUsers.find((_user) => _user.id === userId)
+        if (_user)
+          dispatch(setCurrentSlide((state.slides || slides).findIndex((_slide) => _slide.id === _user.currentSlideId)))
+        dispatch(setConnectedUsers(state.connectedUsers))
+      }
+      if (state.slides) dispatch(setSlides(state.slides))
       // Cancel save slides to avoid collision
       cancel(SAVE_SLIDES_ID)
     },
@@ -175,7 +179,7 @@ function Presentation() {
         {connectedUsers.map(
           (connectedUser) =>
             connectedUser.id !== userId &&
-            connectedUser.currentSlide === currentSlide &&
+            connectedUser.currentSlideId === slides[currentSlide].id &&
             connectedUser.cursorX &&
             connectedUser.cursorY && (
               <Cursor

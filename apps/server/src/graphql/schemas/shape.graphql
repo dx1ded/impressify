@@ -10,12 +10,21 @@ type Shape implements Element {
   slide: Slide!
   position: Int!
 
-  type: String!
+  type: ShapeType!
   fillColor: String!
   strokeColor: String!
   strokeWidth: Int!
   # if true - 200x200 (for example), if false - any numbers (for example, 12x521)
   proportional: Boolean!
+}
+
+enum ShapeType {
+  RECTANGLE
+  SQUARE
+  LINE
+  CIRCLE
+  ARROW
+  STAR
 }
 
 input ShapeInput {
@@ -28,7 +37,7 @@ input ShapeInput {
   scaleX: Float!
   scaleY: Float!
 
-  type: String!
+  type: ShapeType!
   fillColor: String!
   strokeColor: String!
   strokeWidth: Int!

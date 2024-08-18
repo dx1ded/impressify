@@ -14,6 +14,7 @@ import {
   type ShapeEditProps,
   type SlideId,
   type ElementId,
+  type UserId,
   getSlideConfig,
   getTextConfig,
   getImageConfig,
@@ -29,9 +30,8 @@ import {
   MAX_HISTORY_LENGTH,
   COPIED_ELEMENT_X_DIF,
   COPIED_ELEMENT_Y_DIF,
-  type UserId,
 } from "~/entities/presentation"
-import { ConnectedUser } from "~/__generated__/graphql"
+import { Alignment, ConnectedUser, ShapeType, Transition } from "~/__generated__/graphql"
 
 interface PresentationState {
   presentation: Presentation
@@ -79,7 +79,7 @@ const initialState: PresentationState = {
       bold: false,
       italic: false,
       underlined: false,
-      alignment: "left",
+      alignment: Alignment.Left,
       lineHeight: 1,
     },
     imageProps: {
@@ -87,7 +87,7 @@ const initialState: PresentationState = {
       height: 0,
     },
     shapeProps: {
-      type: "line",
+      type: ShapeType.Line,
       fillColor: DEFAULT_FILL_COLOR,
       strokeColor: DEFAULT_STROKE_COLOR,
       strokeWidth: DEFAULT_STROKE_WIDTH,
@@ -187,7 +187,7 @@ const presentationSlice = createSlice({
       if (index === state.presentation.slides.length - 1) {
         nextCurrentSlide = index - 1
         presentationSlice.caseReducers.changeConnectedUser(state, {
-          payload: { id: payload.userId, currentSlide: index - 1 },
+          payload: { id: payload.userId, currentSlideId: state.presentation.slides[nextCurrentSlide].id },
         } as PayloadAction<Partial<ConnectedUser>>)
       }
       presentationSlice.caseReducers.setCurrentSlide(state, {
@@ -223,7 +223,7 @@ const presentationSlice = createSlice({
         i === state.currentSlide ? { ...slide, bg: payload } : slide,
       )
     },
-    setTransition: (state, { payload }: PayloadAction<string>) => {
+    setTransition: (state, { payload }: PayloadAction<Transition>) => {
       state.presentation.slides = state.presentation.slides.map((slide, i) =>
         i === state.currentSlide ? { ...slide, transition: payload } : slide,
       )

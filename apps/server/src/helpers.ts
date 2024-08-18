@@ -1,4 +1,5 @@
 import { type Storage, getDownloadURL } from "firebase-admin/storage"
+import type { ConnectionState } from "./types"
 import type { ConnectedUser, ConnectedUserInput } from "./graphql/__generated__"
 
 export async function uploadImageToFirebaseStorage(storage: Storage, dataUrl: string, filePath: string) {
@@ -23,43 +24,59 @@ export async function uploadImageToFirebaseStorage(storage: Storage, dataUrl: st
   return getDownloadURL(file)
 }
 
-export function useUserConnections() {
-  const userConnections: Record<string, ConnectedUser[]> = {}
+export function useConnections() {
+  const connections: Record<string, { state: ConnectionState; users: ConnectedUser[] }> = {}
 
-  function addUserConnection(presentationId: string, user: ConnectedUser) {
-    if (!userConnections[presentationId]) {
-      userConnections[presentationId] = []
-    }
-    userConnections[presentationId].push(user)
+  function getUsers(presentationId: string) {
+    return connections[presentationId]?.users || []
   }
 
-  function updateUserConnection(presentationId: string, userInput: ConnectedUserInput) {
-    if (!userConnections[presentationId].find((user) => user.id === userInput.id)) return
-    userConnections[presentationId] = userConnections[presentationId].map((user) =>
+  function getSynchronizedState(presentationId: string) {
+    return connections[presentationId]?.state || ({} as ConnectionState)
+  }
+
+  function addUser(presentationId: string, user: ConnectedUser) {
+    if (!connections[presentationId]) {
+      connections[presentationId] = { state: { name: null, slides: [], isSaving: false }, users: [] }
+    }
+    connections[presentationId].users.push(user)
+  }
+
+  function updateUser(presentationId: string, userInput: ConnectedUserInput) {
+    if (!connections[presentationId].users.find((user) => user.id === userInput.id)) return
+    connections[presentationId].users = connections[presentationId].users.map((user) =>
       user.id === userInput.id ? { ...user, ...userInput } : user,
     )
   }
 
-  function updateMultipleUserConnections(presentationId: string, cb: (user: ConnectedUser) => ConnectedUser) {
-    if (!userConnections[presentationId]) return
-    userConnections[presentationId] = userConnections[presentationId].map(cb)
+  function updateMultipleUsers(presentationId: string, cb: (user: ConnectedUser) => ConnectedUser) {
+    if (!connections[presentationId]) return
+    connections[presentationId].users = connections[presentationId].users.map(cb)
   }
 
-  function removeUserConnection(presentationId: string, userId: string) {
-    if (userConnections[presentationId]) {
-      userConnections[presentationId] = userConnections[presentationId].filter((user) => user.id !== userId)
+  function updateSynchronizedState(presentationId: string, newState: Partial<ConnectionState>) {
+    if (!connections[presentationId]) return
+    connections[presentationId].state = { ...connections[presentationId].state, ...newState }
+  }
+
+  function removeUser(presentationId: string, userId: string) {
+    if (connections[presentationId]) {
+      connections[presentationId].users = connections[presentationId].users.filter((user) => user.id !== userId)
     }
   }
 
-  function getUserConnections(presentationId: string) {
-    return userConnections[presentationId] || []
+  function removeConnection(presentationId: string) {
+    delete connections[presentationId]
   }
 
   return {
-    addUserConnection,
-    updateUserConnection,
-    updateMultipleUserConnections,
-    removeUserConnection,
-    getUserConnections,
+    getUsers,
+    getSynchronizedState,
+    addUser,
+    updateUser,
+    updateMultipleUsers,
+    updateSynchronizedState,
+    removeUser,
+    removeConnection,
   }
 }

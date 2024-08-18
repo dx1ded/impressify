@@ -66,8 +66,9 @@ export const SYNCHRONIZE_PRESENTATION_STATE = gql(`#graphql
 export const PRESENTATION_UPDATED = gql(`#graphql
   subscription PresentationUpdated($presentationId: String!) {
     presentationUpdated(presentationId: $presentationId) {
-      isSaving
+      operation
       name
+      isSaving
       slides {
         ...SlideFields
       }

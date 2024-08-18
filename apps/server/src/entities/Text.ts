@@ -1,6 +1,6 @@
 import { Column, ChildEntity } from "typeorm"
 import { Element, type ElementConstructorProps } from "./Element"
-import { Text as IText } from "../graphql/__generated__"
+import { Alignment, Text as IText } from "../graphql/__generated__"
 
 type TextConstructorProps = ElementConstructorProps & Text
 
@@ -36,9 +36,8 @@ export class Text extends Element implements IText {
   @Column()
   underlined: boolean
 
-  // "left" | "center" | "right"
-  @Column()
-  alignment: string
+  @Column({ type: "enum", enum: Alignment })
+  alignment: Alignment
 
   @Column("float")
   lineHeight: number

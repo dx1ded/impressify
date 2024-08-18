@@ -3,27 +3,26 @@ type Slide {
   elements: [Element!]!
   presentation: Presentation!
   bg: String!
-  transition: String!
+  transition: Transition!
   thumbnailUrl: String!
   createdAt: Date!
   # index in an array of slides
   position: Int!
 }
-#
-## This is defined for PresentationState (the one that gets passed between connections through the subscription)
-#type SlideStateItem {
-#  id: ID!
-#  elements: [Element!]!
-#  bg: String!
-#  transition: String!
-#  thumbnailUrl: String!
-#}
+
+enum Transition {
+  NONE
+  FADE
+  SLIDE_FROM_LEFT
+  SLIDES_FROM_RIGHT
+  FLIP
+}
 
 input SlideInput {
   id: ID!
   elements: ElementInput!
   bg: String!
-  transition: String!
+  transition: Transition!
   thumbnailUrl: String!
 }
 

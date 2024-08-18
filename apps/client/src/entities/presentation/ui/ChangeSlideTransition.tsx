@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 
+import { Transition } from "~/__generated__/graphql"
 import { SAVE_SLIDES_ID, setIsSaving, setTransition, SYNCHRONIZE_STATE_ID } from "~/entities/presentation"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
@@ -26,7 +27,7 @@ export function ChangeSlideTransitionSheet({ children }: { children: ReactNode }
   const slide = slides[currentSlide]
   if (!slide) return
 
-  const changeHandler = (value: string) => {
+  const changeHandler = (value: Transition) => {
     dispatch(setTransition(value))
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
@@ -55,11 +56,11 @@ export function ChangeSlideTransitionSheet({ children }: { children: ReactNode }
               <SelectValue placeholder="Transition" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">None</SelectItem>
-              <SelectItem value="fade">Fade</SelectItem>
-              <SelectItem value="slide_from_right">Slide from right</SelectItem>
-              <SelectItem value="slide_from_left">Slide from left</SelectItem>
-              <SelectItem value="flip">Flip</SelectItem>
+              <SelectItem value={Transition.None}>None</SelectItem>
+              <SelectItem value={Transition.Fade}>Fade</SelectItem>
+              <SelectItem value={Transition.SlideFromLeft}>Slide from left</SelectItem>
+              <SelectItem value={Transition.SlidesFromRight}>Slide from right</SelectItem>
+              <SelectItem value={Transition.Flip}>Flip</SelectItem>
             </SelectContent>
           </Select>
         </div>

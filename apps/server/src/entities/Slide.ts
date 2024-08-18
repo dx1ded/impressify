@@ -1,11 +1,11 @@
 import { nanoid } from "nanoid"
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryColumn, type Relation } from "typeorm"
-import { Presentation } from "./Presentation"
 import { Element } from "./Element"
-import { Text } from "./Text"
 import { Image } from "./Image"
+import { Presentation } from "./Presentation"
 import { Shape } from "./Shape"
-import { Slide as ISlide } from "../graphql/__generated__"
+import { Text } from "./Text"
+import { Slide as ISlide, Transition } from "../graphql/__generated__"
 
 type SlideConstructorType = { presentation: Relation<Presentation> } & Partial<
   Omit<Slide, "presentation" | "createdAt" | "elements">
@@ -28,8 +28,8 @@ export class Slide implements ISlide {
   @Column()
   bg: string
 
-  @Column()
-  transition: string
+  @Column({ type: "enum", enum: Transition, default: Transition.None })
+  transition: Transition
 
   @Column()
   thumbnailUrl: string
@@ -46,7 +46,7 @@ export class Slide implements ISlide {
     this.id = id || nanoid(8)
     this.presentation = presentation
     this.bg = bg || "rgb(255, 255, 255)"
-    this.transition = transition || "none"
+    this.transition = transition || Transition.None
     // Plain white background
     this.thumbnailUrl =
       thumbnailUrl ||

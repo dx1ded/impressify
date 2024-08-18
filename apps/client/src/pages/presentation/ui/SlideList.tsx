@@ -33,7 +33,7 @@ export function SlideList() {
       deleteWithPattern(EDIT_ELEMENT_ID)
       deleteDebounced(TAKE_SCREENSHOT_ID)
       dispatch(moveSlide({ id: data.draggableId, newIndex: data.destination.index }))
-      dispatch(changeConnectedUser({ id: userId!, currentSlide: data.destination.index }))
+      dispatch(changeConnectedUser({ id: userId!, currentSlideId: data.draggableId }))
       call(SAVE_SLIDES_ID)
       dispatch(setIsSaving(true))
       call(SYNCHRONIZE_STATE_ID)

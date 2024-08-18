@@ -1,18 +1,18 @@
 import _ from "lodash"
 import type { ApolloContext } from ".."
-import type { Resolvers } from "../__generated__"
 import { elementRepository, presentationRepository } from "../../database"
-import { isDataUrl } from "../../utils"
-import { uploadImageToFirebaseStorage } from "../../helpers"
-import { EVENT } from "../../pubsub"
-import { Slide } from "../../entities/Slide"
-import { Text } from "../../entities/Text"
 import { Image } from "../../entities/Image"
 import { Shape } from "../../entities/Shape"
+import { Slide } from "../../entities/Slide"
+import { Text } from "../../entities/Text"
+import { uploadImageToFirebaseStorage } from "../../helpers"
+import { EVENT } from "../../pubsub"
+import { isDataUrl } from "../../utils"
+import { PresentationOperation, type PresentationState, type Resolvers } from "../__generated__"
 
 export default {
   Mutation: {
-    async saveSlides(__, { presentationId, slides }, { user, storage, pubsub }) {
+    async saveSlides(__, { presentationId, slides }, { user, storage, pubsub, connections }) {
       if (!user || !slides.length) return null
       /*
         By the way, we're working with presentationRepository (not slideRepository) because slides cannot exist if they're not
@@ -51,12 +51,16 @@ export default {
           }
           // Then we iterate `slide.elements` to transform its structure (again, because of GraphQL limitations)
           // In addition, for Image we upload `imageUrl` (if that's a dataUrl) to Firebase Storage
+          // Also, we use `Object.assign` to change instance with mutation instead of creating a new object (because we need its metadata when generating `__typename` for elements)
           slide.elements.text.forEach(({ position, ...element }, elementIndex) => {
             // We try to find if element already exists to just update it and not create a new one using the constructor
             const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
             if (elementAlreadyExists) {
-              newSlide.elements[position] = new Text({ ...elementAlreadyExists, position: elementIndex, ...element })
-              // newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
+              Object.assign(newSlide.elements[position], {
+                ...elementAlreadyExists,
+                position: elementIndex,
+                ...element,
+              })
             } else {
               newSlide.elements[position] = new Text({ ...element, position: elementIndex, slide: newSlide })
             }
@@ -64,8 +68,11 @@ export default {
           slide.elements.image.forEach(({ position, ...element }, elementIndex) => {
             const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
             if (elementAlreadyExists) {
-              newSlide.elements[position] = new Image({ ...elementAlreadyExists, position: elementIndex, ...element })
-              // newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
+              Object.assign(newSlide.elements[position], {
+                ...elementAlreadyExists,
+                position: elementIndex,
+                ...element,
+              })
             } else {
               newSlide.elements[position] = new Image({ ...element, position: elementIndex, slide: newSlide })
             }
@@ -73,8 +80,11 @@ export default {
           slide.elements.shape.forEach(({ position, ...element }, elementIndex) => {
             const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
             if (elementAlreadyExists) {
-              newSlide.elements[position] = new Shape({ ...elementAlreadyExists, position: elementIndex, ...element })
-              // newSlide.elements[position] = { ...elementAlreadyExists, position: elementIndex, ...element }
+              Object.assign(newSlide.elements[position], {
+                ...elementAlreadyExists,
+                position: elementIndex,
+                ...element,
+              })
             } else {
               newSlide.elements[position] = new Shape({ ...element, position: elementIndex, slide: newSlide })
             }
@@ -83,9 +93,18 @@ export default {
           return newSlide
         }),
       )
+
+      // Updating connection as well so new users that join have the latest copy of it
+      connections.updateSynchronizedState(presentationId, { slides: presentation.slides, isSaving: false })
       await presentationRepository.save(presentation)
       await pubsub.publish(EVENT.PRESENTATION_UPDATED, {
-        presentationUpdated: { slides: presentation.slides, isSaving: false, _userUpdatedStateId: user.id },
+        presentationUpdated: {
+          operation: PresentationOperation.Update,
+          slides: presentation.slides,
+          isSaving: false,
+          _userUpdatedStateId: user.id,
+          _presentationId: presentationId,
+        } as PresentationState,
       })
       return presentation.slides
     },

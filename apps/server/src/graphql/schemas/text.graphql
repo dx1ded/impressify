@@ -19,8 +19,14 @@ type Text implements Element {
   bold: Boolean!
   italic: Boolean!
   underlined: Boolean!
-  alignment: String!
+  alignment: Alignment!
   lineHeight: Float!
+}
+
+enum Alignment {
+  LEFT
+  CENTER
+  RIGHT
 }
 
 input TextInput {
@@ -42,7 +48,7 @@ input TextInput {
   bold: Boolean!
   italic: Boolean!
   underlined: Boolean!
-  alignment: String!
+  alignment: Alignment!
   lineHeight: Float!
 
   # Index in a common element array

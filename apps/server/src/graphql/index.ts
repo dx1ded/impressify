@@ -9,7 +9,7 @@ import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader"
 import { loadSchemaSync } from "@graphql-tools/load"
 import { loadFilesSync } from "@graphql-tools/load-files"
 import { dateScalar } from "./scalars/Date"
-import { useUserConnections } from "../helpers"
+import { useConnections } from "../helpers"
 
 // Absolute path because @nx doesn't export graphql files
 const typeDefs = loadSchemaSync("apps/server/src/graphql/**/*.graphql", {
@@ -23,7 +23,7 @@ export interface ApolloContext {
   storage: Storage
   user: User | undefined
   pubsub: PubSub
-  connections: ReturnType<typeof useUserConnections>
+  connections: ReturnType<typeof useConnections>
 }
 
 export const schema = makeExecutableSchema<ApolloContext>({

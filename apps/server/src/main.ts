@@ -1,21 +1,22 @@
 import "dotenv/config"
 import { createServer, type Server } from "node:http"
-import { initializeApp, cert, type ServiceAccount } from "firebase-admin/app"
-import { getStorage } from "firebase-admin/storage"
-import Fastify from "fastify"
-import { WebSocketServer } from "ws"
-import { useServer } from "graphql-ws/lib/use/ws"
-import cors from "@fastify/cors"
 import { ApolloServer } from "@apollo/server"
-import { createClerkClient, type User } from "@clerk/backend"
 import fastifyApollo, { fastifyApolloDrainPlugin } from "@as-integrations/fastify"
+import { createClerkClient, type User } from "@clerk/backend"
+import cors from "@fastify/cors"
+import Fastify from "fastify"
+import { cert, initializeApp, type ServiceAccount } from "firebase-admin/app"
+import { getStorage } from "firebase-admin/storage"
+import { useServer } from "graphql-ws/lib/use/ws"
+import { WebSocketServer } from "ws"
 
 import { app } from "./app"
-import { schema, type ApolloContext } from "./graphql"
-import { useUserConnections } from "./helpers"
-import { userRepository } from "./database"
-import pubsub, { EVENT } from "./pubsub"
+import { slideRepository, userRepository } from "./database"
+import { type ApolloContext, schema } from "./graphql"
+import { PresentationOperation, type PresentationState } from "./graphql/__generated__"
+import { useConnections } from "./helpers"
 import firebaseCredentials from "./impressify-26983-firebase-adminsdk-26c7d-c529d5e383"
+import pubsub, { EVENT } from "./pubsub"
 
 const host = process.env.HOST ?? "localhost"
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
@@ -36,8 +37,6 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
     },
   })
 
-  const connections = useUserConnections()
-
   const wsServer = new WebSocketServer({
     server: httpServer,
     path: "/graphql",
@@ -45,6 +44,8 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
 
   const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET })
   const firebase = initializeApp({ credential: cert(firebaseCredentials as ServiceAccount) })
+
+  const connections = useConnections()
 
   const getContext = async (authorization?: string): Promise<ApolloContext> => ({
     clerk,
@@ -61,17 +62,33 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
         const context = await getContext(ctx.connectionParams?.authorization as string | undefined)
         const presentationId = args.variableValues?.presentationId as string | undefined
         if (context.user && presentationId) {
-          connections.addUserConnection(presentationId, {
-            ...(await userRepository.findOneBy({ id: context.user.id })),
-            currentSlide: 0,
+          const state = connections.getSynchronizedState(presentationId)
+          connections.addUser(presentationId, {
+            ...(await userRepository.findOne({
+              select: ["id", "name", "profilePicUrl"],
+              where: { id: context.user.id },
+            })),
+            // If `synchronizedSlides` exist we get the first slide id from there (because it's safer than guessing from slideRepository)
+            currentSlideId: (state.slides
+              ? state.slides[0]
+              : await slideRepository.findOne({
+                  select: ["id"],
+                  where: { presentation: { id: presentationId }, position: 0 },
+                })
+            ).id,
           })
           // Delaying it so context gets first and then `pubsub.publish` gets called
           setTimeout(
             () =>
               pubsub.publish(EVENT.PRESENTATION_UPDATED, {
                 presentationUpdated: {
-                  connectedUsers: connections.getUserConnections(presentationId),
-                },
+                  operation: PresentationOperation.Update,
+                  connectedUsers: connections.getUsers(presentationId),
+                  ...(state.name ? { name: state.name } : {}),
+                  ...(state.slides.length ? state.slides : {}),
+                  isSaving: state.isSaving,
+                  _presentationId: presentationId,
+                } as PresentationState,
               }),
             0,
           )
@@ -85,11 +102,14 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
         const user = ctx.extra?.user as User | undefined
         const presentationId = ctx.extra?.presentationId as string | undefined
         if (user && presentationId) {
-          connections.removeUserConnection(presentationId, user.id)
+          connections.removeUser(presentationId, user.id)
+          if (!connections.getUsers(presentationId).length) return connections.removeConnection(presentationId)
           pubsub.publish(EVENT.PRESENTATION_UPDATED, {
             presentationUpdated: {
-              connectedUsers: connections.getUserConnections(presentationId),
-            },
+              operation: PresentationOperation.Update,
+              connectedUsers: connections.getUsers(presentationId),
+              _presentationId: presentationId,
+            } as PresentationState,
           })
         }
       },
