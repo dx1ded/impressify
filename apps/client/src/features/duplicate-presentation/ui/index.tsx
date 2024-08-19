@@ -2,8 +2,8 @@ import { type MutationResult, useMutation } from "@apollo/client"
 import { type ReactNode, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { DUPLICATE_PRESENTATION } from "~/features/duplicate-presentation/model"
 import type { DuplicatePresentationMutation, DuplicatePresentationMutationVariables } from "~/__generated__/graphql"
+import { DUPLICATE_PRESENTATION } from "~/features/duplicate-presentation/api"
 import { clear } from "~/entities/presentation"
 import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
 

@@ -6,8 +6,8 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useDebouncedCallback } from "use-debounce"
 
 import {
-  type AddRecordMutation,
-  type AddRecordMutationVariables,
+  type AddHistoryRecordMutation,
+  type AddHistoryRecordMutationVariables,
   type GetPresentationQuery,
   type GetPresentationQueryVariables,
   type SaveSlidesMutation,
@@ -18,6 +18,7 @@ import {
   type SynchronizePresentationStateMutationVariables,
   PresentationOperation,
 } from "~/__generated__/graphql"
+import { ADD_HISTORY_RECORD } from "~/entities/history-record"
 import {
   type SlideProps,
   transformSlidesIntoInput,
@@ -36,7 +37,6 @@ import {
   changeConnectedUser,
   setCurrentSlide,
 } from "~/entities/presentation"
-import { ADD_RECORD } from "~/entities/record"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
 import { Header } from "~/pages/presentation/ui/Header"
@@ -82,9 +82,12 @@ function Presentation() {
     SynchronizePresentationStateMutationVariables
   >(SYNCHRONIZE_PRESENTATION_STATE)
   // Add new history record (or modify it if present)
-  const [addRecord] = useMutation<AddRecordMutation, AddRecordMutationVariables>(ADD_RECORD, {
-    variables: { presentationId: id! },
-  })
+  const [addHistoryRecord] = useMutation<AddHistoryRecordMutation, AddHistoryRecordMutationVariables>(
+    ADD_HISTORY_RECORD,
+    {
+      variables: { presentationId: id! },
+    },
+  )
 
   register(
     SAVE_SLIDES_ID,
@@ -142,7 +145,7 @@ function Presentation() {
       if (!data) return
       dispatch(setPresentation(data))
       dispatch(setIsLoading(false))
-      await addRecord()
+      await addHistoryRecord()
     },
   })
 

@@ -2,9 +2,9 @@ import { MenubarSeparator } from "@radix-ui/react-menubar"
 import { ClipboardPaste, CopyIcon, RedoIcon, Trash2, UndoIcon } from "lucide-react"
 
 import { CopyElement, PasteElement } from "~/features/copy-paste-element"
+import { HistoryRedo, HistoryUndo } from "~/features/undo-redo-history"
 import { DeleteElement } from "~/features/delete-element"
 import { DuplicateElement } from "~/features/duplicate-element"
-import { HistoryRedo, HistoryUndo } from "~/features/history"
 import { MenubarContent, MenubarItem, MenubarMenu, MenubarShortcut, MenubarTrigger } from "~/shared/ui-kit/menubar"
 
 export function Edit() {

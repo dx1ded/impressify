@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client"
 
 import type { SendHelpRequestMutation, SendHelpRequestMutationVariables } from "~/__generated__/graphql"
-import { SEND_HELP_REQUEST } from "~/features/get-help/model"
+import { SEND_HELP_REQUEST } from "~/features/get-help/api"
 import type { ChildrenAsCallbackWithApolloMutation } from "~/shared/lib"
 
 export function GetHelp({

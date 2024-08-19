@@ -1,6 +1,6 @@
 import { Redo, Undo } from "lucide-react"
+import { HistoryRedo, HistoryUndo } from "features/undo-redo-history"
 
-import { HistoryRedo, HistoryUndo } from "~/features/history"
 import { cn } from "~/shared/lib"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"

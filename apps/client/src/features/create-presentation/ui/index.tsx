@@ -3,8 +3,8 @@ import { type ReactNode, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
 import type { CreatePresentationMutation, CreatePresentationMutationVariables } from "~/__generated__/graphql"
+import { CREATE_PRESENTATION } from "~/features/create-presentation/api"
 import { clear, DEFAULT_NAME } from "~/entities/presentation"
-import { CREATE_PRESENTATION } from "~/features/create-presentation/model"
 import { useAppDispatch } from "~/shared/model"
 
 interface CreatePresentationProps {

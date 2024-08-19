@@ -3,8 +3,8 @@ import { type ReactNode, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
 import type { DeletePresentationMutation, DeletePresentationMutationVariables } from "~/__generated__/graphql"
+import { DELETE_PRESENTATION } from "~/features/delete-presentation/api"
 import { setRecentPresentations } from "~/entities/presentation"
-import { DELETE_PRESENTATION } from "~/features/delete-presentation/model"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 interface DeletePresentationProps {
