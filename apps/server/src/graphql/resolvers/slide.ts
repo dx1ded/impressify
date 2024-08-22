@@ -29,11 +29,10 @@ export default {
         slides.map(async (slide, slideIndex) => {
           const previousSlideCopy: Slide | undefined = presentation.slides.find((_slide) => _slide.id === slide.id)
           const newSlide = previousSlideCopy
-            ? // Omit `elements` because we define it as an empty array later
+            ? // Omit `elements` because it's not the structure type as in the schema, so we just iterate it later
               { ...previousSlideCopy, presentation, position: slideIndex, ..._.omit(slide, ["elements"]) }
             : new Slide({ presentation, position: slideIndex, ...slide })
-          // We don't update elements here because ElementsInput has different view ({ text: [...], image: [...], shape: [...] })
-          // We just make it as an empty array because we iterate `slide.elements` and change it later
+
           newSlide.elements = []
 
           // We upload dataUrl pics to Firebase Storage and then replace these urls with the generated url
@@ -51,43 +50,43 @@ export default {
           }
           // Then we iterate `slide.elements` to transform its structure (again, because of GraphQL limitations)
           // In addition, for Image we upload `imageUrl` (if that's a dataUrl) to Firebase Storage
-          // Also, we use `Object.assign` to change instance with mutation instead of creating a new object (because we need its metadata when generating `__typename` for elements)
-          slide.elements.text.forEach(({ position, ...element }, elementIndex) => {
-            // We try to find if element already exists to just update it and not create a new one using the constructor
+          // Also, we use create a new instance even for elements that already exist because we need its metadata and it's just easier
+          slide.elements.text.forEach(({ position, ...element }) => {
             const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
-            if (elementAlreadyExists) {
-              Object.assign(newSlide.elements[position], {
-                ...elementAlreadyExists,
-                position: elementIndex,
-                ...element,
-              })
-            } else {
-              newSlide.elements[position] = new Text({ ...element, position: elementIndex, slide: newSlide })
-            }
+            newSlide.elements[position] = new Text({
+              ...(elementAlreadyExists || {}),
+              ...element,
+              position,
+              slide: newSlide,
+            })
           })
-          slide.elements.image.forEach(({ position, ...element }, elementIndex) => {
-            const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
-            if (elementAlreadyExists) {
-              Object.assign(newSlide.elements[position], {
-                ...elementAlreadyExists,
-                position: elementIndex,
+          // Had to use `.map` over here because `.forEach` can't have async functions as an callback
+          await Promise.all(
+            slide.elements.image.map(async ({ position, ...element }) => {
+              const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
+              newSlide.elements[position] = new Image({
+                ...(elementAlreadyExists || {}),
                 ...element,
+                position,
+                imageUrl: isDataUrl(element.imageUrl)
+                  ? await uploadImageToFirebaseStorage(
+                      storage,
+                      element.imageUrl,
+                      `${newSlide.id}/elements/${element.id}`,
+                    )
+                  : element.imageUrl,
+                slide: newSlide,
               })
-            } else {
-              newSlide.elements[position] = new Image({ ...element, position: elementIndex, slide: newSlide })
-            }
-          })
-          slide.elements.shape.forEach(({ position, ...element }, elementIndex) => {
+            }),
+          )
+          slide.elements.shape.forEach(({ position, ...element }) => {
             const elementAlreadyExists = previousSlideCopy?.elements.find((_element) => _element.id === element.id)
-            if (elementAlreadyExists) {
-              Object.assign(newSlide.elements[position], {
-                ...elementAlreadyExists,
-                position: elementIndex,
-                ...element,
-              })
-            } else {
-              newSlide.elements[position] = new Shape({ ...element, position: elementIndex, slide: newSlide })
-            }
+            newSlide.elements[position] = new Shape({
+              ...(elementAlreadyExists || {}),
+              ...element,
+              position,
+              slide: newSlide,
+            })
           })
 
           return newSlide

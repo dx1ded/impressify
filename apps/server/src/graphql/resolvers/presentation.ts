@@ -254,7 +254,7 @@ export default {
         [Symbol.asyncIterator]: withFilter(
           () => pubsub.asyncIterator(EVENT.PRESENTATION_UPDATED),
           async (payload: Pick<Subscription, "presentationUpdated">) => {
-            if (args.presentationId !== payload.presentationUpdated._presentationId) return false
+            // if (args.presentationId !== payload.presentationUpdated._presentationId) return false
             const presentation = await presentationRepository.findOne({
               relations: ["users"],
               where: { id: args.presentationId },

@@ -1,10 +1,10 @@
 import { forwardRef } from "react"
 
 import {
-  changeImageProps,
+  setImageProps,
+  selectElementThunk,
   DEFAULT_IMAGE_WIDTH,
   NOT_SELECTED,
-  selectElement,
   setIsCreating,
   setMode,
 } from "~/entities/presentation"
@@ -28,8 +28,8 @@ export const InsertImage = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(fun
       if (!target.files?.length) return
       const dataUrl = await convertFileToDataUrl(target.files[0])
       const height = await getNormalizedImageHeight(dataUrl, DEFAULT_IMAGE_WIDTH)
-      dispatch(selectElement(NOT_SELECTED))
-      dispatch(changeImageProps({ imageUrl: dataUrl, height }))
+      dispatch(selectElementThunk(NOT_SELECTED))
+      dispatch(setImageProps({ imageUrl: dataUrl, height }))
     }
     _.oncancel = () => {
       dispatch(setMode("cursor"))

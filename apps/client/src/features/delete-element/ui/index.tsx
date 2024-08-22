@@ -1,6 +1,6 @@
 import {
   generateEditElementId,
-  deleteElement,
+  deleteElementThunk,
   TAKE_SCREENSHOT_ID,
   SAVE_SLIDES_ID,
   setIsSaving,
@@ -18,7 +18,7 @@ export function DeleteElement({ children }: ChildrenAsCallbackWithFn) {
 
   const _deleteElement = () => {
     deleteDebounced(EDIT_SELECTED_ELEMENT_ID)
-    dispatch(deleteElement())
+    dispatch(deleteElementThunk())
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))

@@ -7,11 +7,11 @@ import { Stage as StageClass } from "konva/lib/Stage"
 import {
   ElementWrapper,
   getElement,
-  addElement,
-  resetToolbar,
+  addElementThunk,
+  selectElementThunk,
+  resetToolbarElementProps,
   setMode,
   setIsEditing,
-  selectElement,
   SLIDE_HEIGHT,
   SLIDE_WIDTH,
   NOT_SELECTED,
@@ -21,6 +21,7 @@ import {
   SAVE_SLIDES_ID,
   setIsSaving,
   SYNCHRONIZE_STATE_ID,
+  generateEditElementId,
 } from "~/entities/presentation"
 import { createImage, isColor } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
@@ -36,14 +37,14 @@ export const Slide = memo(function Slide() {
       isLoading: state.presentation.isLoading,
       isCreating: state.presentation.isCreating,
       isEditing: state.presentation.isEditing,
-      mode: state.presentation.toolbar.mode,
-      imageHeight: state.presentation.toolbar.imageProps.height,
+      mode: state.toolbar.mode,
+      imageHeight: state.toolbar.imageProps.height,
     }),
     shallowEqual,
   )
   const dispatch = useAppDispatch()
   const stageRef = useRef<StageClass>(null)
-  const { register, call } = useDebouncedFunctions()
+  const { register, call, flush } = useDebouncedFunctions()
 
   let takeScreenshot: (() => void) | undefined
 
@@ -78,14 +79,16 @@ export const Slide = memo(function Slide() {
 
     // dropping selected item when click on empty part of the stage
     if (e.target instanceof StageClass && !isCreating && selectedId !== NOT_SELECTED) {
-      dispatch(selectElement(NOT_SELECTED))
+      dispatch(selectElementThunk(NOT_SELECTED))
       dispatch(setMode("cursor"))
-      dispatch(resetToolbar())
+      dispatch(resetToolbarElementProps())
     }
 
     if (isCreating) {
+      // Flushing previous selected item changes before creating a new element
+      flush(generateEditElementId(selectedId))
       dispatch(
-        addElement({
+        addElementThunk({
           x: pointerPosition.x,
           y: pointerPosition.y,
           // Height will be ignored for Text and Shape but used for Image only

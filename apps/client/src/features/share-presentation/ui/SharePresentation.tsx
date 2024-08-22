@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client"
 
 import type { InviteMutation, InviteMutationVariables } from "~/__generated__/graphql"
-import { INVITE_USER } from "~/features/share-presentation/model"
+import { INVITE_USER } from "~/features/share-presentation/api"
 import type { ChildrenAsCallbackWithApolloMutation } from "~/shared/lib"
 
 export function SharePresentation({

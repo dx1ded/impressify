@@ -62,39 +62,43 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
         const context = await getContext(ctx.connectionParams?.authorization as string | undefined)
         const presentationId = args.variableValues?.presentationId as string | undefined
         if (context.user && presentationId) {
-          const state = connections.getSynchronizedState(presentationId)
-          connections.addUser(presentationId, {
-            ...(await userRepository.findOne({
-              select: ["id", "name", "profilePicUrl"],
-              where: { id: context.user.id },
-            })),
-            // If `synchronizedSlides` exist we get the first slide id from there (because it's safer than guessing from slideRepository)
-            currentSlideId: (state.slides
-              ? state.slides[0]
-              : await slideRepository.findOne({
-                  select: ["id"],
-                  where: { presentation: { id: presentationId }, position: 0 },
-                })
-            ).id,
-          })
-          // Delaying it so context gets first and then `pubsub.publish` gets called
-          setTimeout(
-            () =>
-              pubsub.publish(EVENT.PRESENTATION_UPDATED, {
-                presentationUpdated: {
-                  operation: PresentationOperation.Update,
-                  connectedUsers: connections.getUsers(presentationId),
-                  ...(state.name ? { name: state.name } : {}),
-                  ...(state.slides.length ? state.slides : {}),
-                  isSaving: state.isSaving,
-                  _presentationId: presentationId,
-                } as PresentationState,
-              }),
-            0,
-          )
-          // Setting `ctx.extra` for `onDisconnect`. Also, making it as `never` because ctx.extra fields should all be `never`
-          ctx.extra.presentationId = presentationId as never
-          ctx.extra.user = context.user as never
+          try {
+            const state = connections.getSynchronizedState(presentationId)
+            connections.addUser(presentationId, {
+              ...(await userRepository.findOne({
+                select: ["id", "name", "profilePicUrl"],
+                where: { id: context.user.id },
+              })),
+              // If `synchronizedSlides` exist we get the first slide id from there (because it's safer than guessing from slideRepository)
+              currentSlideId: (state.slides?.length
+                ? state.slides[0]
+                : await slideRepository.findOne({
+                    select: ["id"],
+                    where: { presentation: { id: presentationId }, position: 0 },
+                  })
+              ).id,
+            })
+            // Delaying it so context gets first and then `pubsub.publish` gets called
+            setTimeout(
+              () =>
+                pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+                  presentationUpdated: {
+                    operation: PresentationOperation.Update,
+                    connectedUsers: connections.getUsers(presentationId),
+                    ...(state.name ? { name: state.name } : {}),
+                    ...(state.slides ? state.slides : {}),
+                    isSaving: state.isSaving,
+                    _presentationId: presentationId,
+                  } as PresentationState,
+                }),
+              0,
+            )
+            // Setting `ctx.extra` for `onDisconnect`. Also, making it as `never` because ctx.extra fields should all be `never`
+            ctx.extra.presentationId = presentationId as never
+            ctx.extra.user = context.user as never
+          } catch (e) {
+            console.log(e)
+          }
         }
         return context
       },

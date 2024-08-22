@@ -13,7 +13,7 @@ import { Text } from "~/shared/ui/Typography"
 
 export function Recent() {
   const { items, view, sort } = useAppSelector((state) => state.recentPresentations)
-  const userId = useAppSelector((state) => state.user.userId)
+  const userId = useAppSelector((state) => state.user.id)
   const dispatch = useAppDispatch()
   const { loading } = useQuery<FindUserPresentationsQuery, FindUserPresentationsQueryVariables>(
     FIND_USER_PRESENTATIONS,

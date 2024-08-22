@@ -23,7 +23,7 @@ const httpLink = createHttpLink({
 })
 
 const authLink = setContext((_, { headers }) => {
-  const userId = store.getState().user?.userId || ""
+  const userId = store.getState().user?.id || ""
 
   return {
     headers: {
@@ -37,7 +37,7 @@ const wsLink = new GraphQLWsLink(
   createClient({
     url: import.meta.env.VITE_GRAPHQL_WS_URL,
     connectionParams: () => ({
-      authorization: store.getState().user?.userId || "",
+      authorization: store.getState().user?.id || "",
     }),
   }),
 )

@@ -1,20 +1,13 @@
 import { Draggable } from "@hello-pangea/dnd"
 import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
-import { shallowEqual } from "react-redux"
 
 import { Transition } from "~/__generated__/graphql"
-import {
-  changeConnectedUser,
-  EDIT_ELEMENT_ID,
-  setCurrentSlide,
-  type SlideProps,
-  TAKE_SCREENSHOT_ID,
-} from "~/entities/presentation"
+import { type SlideProps, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import { DeleteSlide } from "~/features/delete-slide"
 import { DuplicateSlide } from "~/features/duplicate-slide/ui"
 import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions, setCurrentSlide } from "~/shared/model"
 import { cn } from "~/shared/lib"
-import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
 interface SlideListItemProps {
   slide: SlideProps
@@ -23,14 +16,8 @@ interface SlideListItemProps {
 }
 
 export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) {
-  const connectedUsers = useAppSelector((state) => state.presentation.connectedUsers)
-  const { currentSlide, userId } = useAppSelector(
-    (state) => ({
-      currentSlide: state.presentation.currentSlide,
-      userId: state.user.userId,
-    }),
-    shallowEqual,
-  )
+  const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
+  const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
   const dispatch = useAppDispatch()
   const { flush, flushWithPattern, deleteWithPattern, deleteDebounced } = useDebouncedFunctions()
 
@@ -80,8 +67,7 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
               flush(TAKE_SCREENSHOT_ID)
               deleteWithPattern(EDIT_ELEMENT_ID)
               deleteDebounced(TAKE_SCREENSHOT_ID)
-              dispatch(setCurrentSlide(index))
-              dispatch(changeConnectedUser({ id: userId!, currentSlideId: slide.id }))
+              dispatch(setCurrentSlide({ id: slide.id, index }))
             }}>
             <img src={slide.thumbnailUrl} alt="Slide thumbnail" className="h-full w-full max-w-[10.375rem]" />
             <ConnectionList

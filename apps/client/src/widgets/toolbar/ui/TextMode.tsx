@@ -13,9 +13,10 @@ import {
 import { SelectTrigger as NativeSelectTrigger } from "@radix-ui/react-select"
 import { Fragment } from "react"
 
+import { Alignment } from "~/__generated__/graphql"
 import {
   type TextProps,
-  changeTextProps,
+  updateTextPropsThunk,
   DEFAULT_FONT_LIST,
   TAKE_SCREENSHOT_ID,
   SAVE_SLIDES_ID,
@@ -41,12 +42,12 @@ import { Counter } from "~/shared/ui/Counter"
 import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolbar"
 
 export function TextMode({ isActive }: ModeProps) {
-  const textProps = useAppSelector((state) => state.presentation.toolbar.textProps)
+  const textProps = useAppSelector((state) => state.toolbar.textProps)
   const dispatch = useAppDispatch()
   const { call } = useDebouncedFunctions()
 
   const applyTextChanges = (props: Partial<TextProps>) => {
-    dispatch(changeTextProps(props))
+    dispatch(updateTextPropsThunk(props))
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
@@ -160,15 +161,17 @@ export function TextMode({ isActive }: ModeProps) {
       </ToggleGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Select value={textProps.alignment} onValueChange={(value) => applyTextChanges({ alignment: value })}>
+        <Select
+          value={textProps.alignment}
+          onValueChange={(value: Alignment) => applyTextChanges({ alignment: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <NativeSelectTrigger asChild>
                 <ToolbarButton
                   Icon={
-                    textProps.alignment === "left"
+                    textProps.alignment === Alignment.Left
                       ? AlignLeftIcon
-                      : textProps.alignment === "center"
+                      : textProps.alignment === Alignment.Center
                         ? AlignCenterIcon
                         : AlignRightIcon
                   }
@@ -178,15 +181,15 @@ export function TextMode({ isActive }: ModeProps) {
             <TooltipContent>Align</TooltipContent>
           </Tooltip>
           <SelectContent>
-            <SelectItem value="left">
+            <SelectItem value={Alignment.Left}>
               <AlignLeftIcon className="mr-2 inline-block h-5 w-5" />
               Left
             </SelectItem>
-            <SelectItem value="center">
+            <SelectItem value={Alignment.Center}>
               <AlignCenterIcon className="mr-2 inline-block h-5 w-5" />
               Center
             </SelectItem>
-            <SelectItem value="right">
+            <SelectItem value={Alignment.Right}>
               <AlignRightIcon className="mr-2 inline-block h-5 w-5" />
               Right
             </SelectItem>

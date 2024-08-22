@@ -2,7 +2,7 @@ import { TooltipTrigger } from "@radix-ui/react-tooltip"
 import type { ChangeEvent } from "react"
 
 import {
-  changeImageProps,
+  updateImagePropsThunk,
   SAVE_SLIDES_ID,
   setIsSaving,
   SYNCHRONIZE_STATE_ID,
@@ -22,7 +22,7 @@ export function ImageMode({ isActive }: ModeProps) {
     const { files } = e.target
     if (!files || !files.length) return
     const dataUrl = await convertFileToDataUrl(files[0])
-    dispatch(changeImageProps({ imageUrl: dataUrl }))
+    dispatch(updateImagePropsThunk({ imageUrl: dataUrl }))
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))

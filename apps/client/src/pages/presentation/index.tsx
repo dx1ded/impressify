@@ -33,17 +33,21 @@ import {
   setName,
   setPresentation,
   setSlides,
-  setConnectedUsers,
-  changeConnectedUser,
-  setCurrentSlide,
 } from "~/entities/presentation"
+import { setConnectedUsers, updateConnectedUser } from "~/entities/user"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
 import { Header } from "~/pages/presentation/ui/Header"
 import { isNotNullable } from "~/shared/lib"
+import {
+  DebouncedProvider,
+  useAppDispatch,
+  useAppSelector,
+  useDebouncedFunctions,
+  setCurrentSlide,
+} from "~/shared/model"
 import { Cursor } from "~/shared/ui/Cursor"
 import { Toolbar } from "~/widgets/toolbar"
-import { DebouncedProvider, useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Toaster } from "~/shared/ui-kit/sonner"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 
@@ -62,13 +66,13 @@ const DEBOUNCED_SAVE_CURSOR = 500
 function Presentation() {
   const { id } = useParams<{ id: string }>()
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const connectedUsers = useAppSelector((state) => state.presentation.connectedUsers)
+  const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
   const { name, isSaving, currentSlide, userId } = useAppSelector(
     (state) => ({
       name: state.presentation.presentation.name,
       currentSlide: state.presentation.currentSlide,
       isSaving: state.presentation.isSaving,
-      userId: state.user.userId,
+      userId: state.user.id,
     }),
     shallowEqual,
   )
@@ -161,8 +165,12 @@ function Presentation() {
       if (isNotNullable(state.isSaving)) dispatch(setIsSaving(state.isSaving))
       if (state.connectedUsers) {
         const _user = state.connectedUsers.find((_user) => _user.id === userId)
-        if (_user)
-          dispatch(setCurrentSlide((state.slides || slides).findIndex((_slide) => _slide.id === _user.currentSlideId)))
+        if (_user) {
+          // `_slides` is either the latest copy of slides (which we got from the server) or a local copy because it didn't get updated
+          const _slides = state.slides || slides
+          const _index = _slides.findIndex((_slide) => _slide.id === _user.currentSlideId)
+          dispatch(setCurrentSlide({ id: _slides[_index].id, index: _index }))
+        }
         dispatch(setConnectedUsers(state.connectedUsers))
       }
       if (state.slides) dispatch(setSlides(state.slides))
@@ -172,7 +180,7 @@ function Presentation() {
   })
 
   const mouseMoveHandlerDebounced = useDebouncedCallback((e: MouseEvent<HTMLDivElement>) => {
-    dispatch(changeConnectedUser({ id: userId!, cursorX: e.clientX, cursorY: e.clientY }))
+    dispatch(updateConnectedUser({ id: userId!, cursorX: e.clientX, cursorY: e.clientY }))
     call(SYNCHRONIZE_STATE_ID)
   }, DEBOUNCED_SAVE_CURSOR)
 
@@ -183,8 +191,8 @@ function Presentation() {
           (connectedUser) =>
             connectedUser.id !== userId &&
             connectedUser.currentSlideId === slides[currentSlide].id &&
-            connectedUser.cursorX &&
-            connectedUser.cursorY && (
+            isNotNullable(connectedUser.cursorX) &&
+            isNotNullable(connectedUser.cursorY) && (
               <Cursor
                 key={connectedUser.id}
                 name={connectedUser.name}

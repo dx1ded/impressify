@@ -1,19 +1,19 @@
 import { type MutationResult, useMutation } from "@apollo/client"
-import { type ReactNode, useCallback } from "react"
+import { type ReactNode, useCallback, useMemo } from "react"
 
 import type { RenamePresentationMutation, RenamePresentationMutationVariables } from "~/__generated__/graphql"
 import { setName, setRecentPresentations } from "~/entities/presentation"
-import { RENAME_PRESENTATION } from "~/features/rename-presentation/model"
+import { RENAME_PRESENTATION } from "~/features/rename-presentation/api"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 
 interface RenamePresentationProps {
   children(
-    renamePresentation: (id: string, name: string) => void,
+    renamePresentation: (id: string, name: string) => Promise<void>,
     result: MutationResult<RenamePresentationMutation>,
   ): ReactNode
 }
 
-export function RenamePresentation({ children }: RenamePresentationProps) {
+export function useRenamePresentation() {
   const dispatch = useAppDispatch()
   const recentPresentations = useAppSelector((state) => state.recentPresentations.items)
   const [sendRenamePresentation, result] = useMutation<RenamePresentationMutation, RenamePresentationMutationVariables>(
@@ -38,5 +38,10 @@ export function RenamePresentation({ children }: RenamePresentationProps) {
     [dispatch, recentPresentations, sendRenamePresentation],
   )
 
+  return { renamePresentation, result }
+}
+
+export function RenamePresentation({ children }: RenamePresentationProps) {
+  const { renamePresentation, result } = useRenamePresentation()
   return children(renamePresentation, result)
 }

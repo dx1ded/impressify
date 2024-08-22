@@ -1,6 +1,6 @@
 import {
   generateEditElementId,
-  pasteElement,
+  pasteElementThunk,
   setIsSaving,
   TAKE_SCREENSHOT_ID,
   SAVE_SLIDES_ID,
@@ -18,7 +18,7 @@ export function PasteElement({ children }: ChildrenAsCallbackWithFn) {
 
   const _pasteElement = () => {
     flush(EDIT_SELECTED_ELEMENT_ID)
-    dispatch(pasteElement())
+    dispatch(pasteElementThunk())
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))

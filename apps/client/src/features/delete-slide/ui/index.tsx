@@ -1,8 +1,7 @@
 import { forwardRef } from "react"
-import { shallowEqual } from "react-redux"
 
 import {
-  deleteSlide,
+  deleteSlideThunk,
   EDIT_ELEMENT_ID,
   SAVE_SLIDES_ID,
   setIsSaving,
@@ -16,14 +15,8 @@ export const DeleteSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn<[str
   { children },
   _,
 ) {
-  const { currentSlide, userId } = useAppSelector(
-    (state) => ({
-      currentSlide: state.presentation.currentSlide,
-      userId: state.user.userId,
-    }),
-    shallowEqual,
-  )
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
+  const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
   const dispatch = useAppDispatch()
   const { deleteDebounced, deleteWithPattern, call } = useDebouncedFunctions()
 
@@ -33,7 +26,7 @@ export const DeleteSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn<[str
       deleteDebounced(TAKE_SCREENSHOT_ID)
       deleteWithPattern(EDIT_ELEMENT_ID)
     }
-    dispatch(deleteSlide({ slideId: id, userId: userId! }))
+    dispatch(deleteSlideThunk(id))
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
     call(SYNCHRONIZE_STATE_ID)

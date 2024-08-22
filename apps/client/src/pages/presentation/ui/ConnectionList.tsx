@@ -13,7 +13,7 @@ interface ConnectionListProps {
 }
 
 export function ConnectionList({ className, users, size = "lg" }: ConnectionListProps) {
-  const userId = useAppSelector((state) => state.user.userId)
+  const userId = useAppSelector((state) => state.user.id)
 
   const plusCount = users.length - MAX_DISPLAYED_USERS
 

@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom"
 
 import type { CreatePresentationMutation, CreatePresentationMutationVariables } from "~/__generated__/graphql"
 import { CREATE_PRESENTATION } from "~/features/create-presentation/api"
-import { clear, DEFAULT_NAME } from "~/entities/presentation"
-import { useAppDispatch } from "~/shared/model"
+import { DEFAULT_NAME } from "~/entities/presentation"
+import { useAppDispatch, clear } from "~/shared/model"
 
 interface CreatePresentationProps {
   children(

@@ -8,12 +8,12 @@ import {
   type ElementComponent,
   type ElementProps,
   type Mode,
-  changeShapeProps,
-  editElement,
-  selectElement,
   setIsEditing,
   setIsSaving,
   setMode,
+  setShapeProps,
+  editElementThunk,
+  selectElementThunk,
   generateEditElementId,
   getAnchors,
   textProps,
@@ -61,8 +61,8 @@ export const ElementWrapper = memo(function ElementWrapper({
   const debouncedEdit = register(
     generateEditElementId(props.id),
     (newProps: Partial<ElementProps>) => {
-      // Using id to avoid transformations being applied for `selectedId` (which would be used if not id provided)
-      dispatch(editElement({ ...newProps, id: props.id }))
+      // Using id to avoid transformations being applied for `selectedId` (which would be used if no id provided)
+      dispatch(editElementThunk({ ...newProps, id: props.id }))
       call(TAKE_SCREENSHOT_ID)
       call(SAVE_SLIDES_ID)
       dispatch(setIsSaving(true))
@@ -90,13 +90,13 @@ export const ElementWrapper = memo(function ElementWrapper({
   const selectElementHandler = () => {
     const type = props.__typename
     if (isCreating) return
-    if (!isSelected) dispatch(selectElement(props.id))
+    if (!isSelected) dispatch(selectElementThunk(props.id))
     // After element is selected set a corresponding toolbar mode
     if (mode !== "text" && type === "Text") dispatch(setMode("text"))
     else if (mode !== "image" && type === "Image") dispatch(setMode("image"))
     else if (mode !== "shape" && type === "Shape") {
       dispatch(setMode("shape"))
-      dispatch(changeShapeProps({ type: props.type }))
+      dispatch(setShapeProps({ type: props.type }))
     }
   }
 

@@ -2,7 +2,7 @@ import { PaintBucketIcon, PencilIcon } from "lucide-react"
 
 import {
   type ShapeProps,
-  changeShapeProps,
+  updateShapePropsThunk,
   TAKE_SCREENSHOT_ID,
   SAVE_SLIDES_ID,
   setIsSaving,
@@ -15,12 +15,12 @@ import { ColorPicker } from "~/shared/ui/ColorPicker"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function ShapeMode({ isActive }: ModeProps) {
-  const shapeProps = useAppSelector((state) => state.presentation.toolbar.shapeProps)
+  const shapeProps = useAppSelector((state) => state.toolbar.shapeProps)
   const dispatch = useAppDispatch()
   const { call } = useDebouncedFunctions()
 
   const applyShapeChanges = (props: Partial<ShapeProps>) => {
-    dispatch(changeShapeProps(props))
+    dispatch(updateShapePropsThunk(props))
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))

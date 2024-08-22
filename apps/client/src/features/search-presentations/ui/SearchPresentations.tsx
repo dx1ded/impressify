@@ -4,7 +4,7 @@ import { useRef, useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
 
 import type { SearchPresentationsQuery, SearchPresentationsQueryVariables } from "~/__generated__/graphql"
-import { SEARCH_PRESENTATIONS } from "~/features/search-presentations/model"
+import { SEARCH_PRESENTATIONS } from "~/features/search-presentations/api"
 import { SearchItem } from "~/features/search-presentations/ui"
 import { cn } from "~/shared/lib"
 import { useAppSelector } from "~/shared/model"
@@ -13,7 +13,7 @@ import { Input } from "~/shared/ui-kit/input"
 export function SearchPresentations() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const userId = useAppSelector((state) => state.user.userId)
+  const userId = useAppSelector((state) => state.user.id)
   const [searchPresentations, { data }] = useLazyQuery<SearchPresentationsQuery, SearchPresentationsQueryVariables>(
     SEARCH_PRESENTATIONS,
     {

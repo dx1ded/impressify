@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom"
 
 import type { DuplicatePresentationMutation, DuplicatePresentationMutationVariables } from "~/__generated__/graphql"
 import { DUPLICATE_PRESENTATION } from "~/features/duplicate-presentation/api"
-import { clear } from "~/entities/presentation"
-import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
+import { useAppDispatch, useDebouncedFunctions, clear } from "~/shared/model"
 
 interface DuplicatePresentationProps {
   children(

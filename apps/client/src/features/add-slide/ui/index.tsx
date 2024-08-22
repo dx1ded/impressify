@@ -1,7 +1,7 @@
 import { forwardRef } from "react"
 
 import {
-  addSlide,
+  addSlideThunk,
   setIsSaving,
   EDIT_ELEMENT_ID,
   SAVE_SLIDES_ID,
@@ -18,7 +18,7 @@ export const AddSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(functi
   const _addSlide = () => {
     flush(TAKE_SCREENSHOT_ID)
     flushWithPattern(EDIT_ELEMENT_ID)
-    dispatch(addSlide())
+    dispatch(addSlideThunk())
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
     call(SYNCHRONIZE_STATE_ID)

@@ -9,7 +9,7 @@ import { ImageMode } from "~/widgets/toolbar/ui/ImageMode"
 import { ShapeMode } from "~/widgets/toolbar/ui/ShapeMode"
 
 export function Toolbar() {
-  const mode = useAppSelector((state) => state.presentation.toolbar.mode)
+  const mode = useAppSelector((state) => state.toolbar.mode)
 
   return (
     <div className="bg-secondary mb-6 flex items-center rounded-3xl px-4 py-2">

@@ -2,7 +2,7 @@ import { MenubarSeparator } from "@radix-ui/react-menubar"
 import { ClipboardPaste, CopyIcon, RedoIcon, Trash2, UndoIcon } from "lucide-react"
 
 import { CopyElement, PasteElement } from "~/features/copy-paste-element"
-import { HistoryRedo, HistoryUndo } from "~/features/undo-redo-history"
+import { RedoHistory, UndoHistory } from "~/features/apply-history"
 import { DeleteElement } from "~/features/delete-element"
 import { DuplicateElement } from "~/features/duplicate-element"
 import { MenubarContent, MenubarItem, MenubarMenu, MenubarShortcut, MenubarTrigger } from "~/shared/ui-kit/menubar"
@@ -12,7 +12,7 @@ export function Edit() {
     <MenubarMenu>
       <MenubarTrigger className="px-2 py-0.5">Edit</MenubarTrigger>
       <MenubarContent>
-        <HistoryUndo>
+        <UndoHistory>
           {(undo) => (
             <MenubarItem onSelect={() => undo()}>
               <UndoIcon className="mr-2 h-5 w-5" />
@@ -20,8 +20,8 @@ export function Edit() {
               <MenubarShortcut>⌘Z</MenubarShortcut>
             </MenubarItem>
           )}
-        </HistoryUndo>
-        <HistoryRedo>
+        </UndoHistory>
+        <RedoHistory>
           {(redo) => (
             <MenubarItem onSelect={() => redo()}>
               <RedoIcon className="mr-2 h-5 w-5" />
@@ -29,7 +29,7 @@ export function Edit() {
               <MenubarShortcut>⌘Y</MenubarShortcut>
             </MenubarItem>
           )}
-        </HistoryRedo>
+        </RedoHistory>
         <MenubarSeparator />
         <CopyElement>
           {(copyElement) => (

@@ -1,12 +1,13 @@
 import { UserButton } from "@clerk/clerk-react"
 import { shallowEqual } from "react-redux"
 
-import { CHANGE_NAME_ID, MAX_NAME_LENGTH, setName } from "~/entities/presentation"
+import { CHANGE_NAME_ID, MAX_NAME_LENGTH } from "~/entities/presentation"
+import { useRenamePresentation } from "~/features/rename-presentation"
 import { SharePresentationDialog } from "~/features/share-presentation"
 import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
 import { Menubar } from "~/widgets/menubar"
-import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
+import { useAppSelector, useDebouncedFunctions } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import { Skeleton } from "~/shared/ui-kit/skeleton"
 import { Logo } from "~/shared/ui/Logo"
@@ -15,7 +16,7 @@ import { ResizableInput } from "~/shared/ui/ResizableInput"
 const DEBOUNCED_CHANGE_NAME_TIME = 2000
 
 export function Header() {
-  const connectedUsers = useAppSelector((state) => state.presentation.connectedUsers)
+  const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
   const { name, isLoading, presentationId } = useAppSelector(
     (state) => ({
       name: state.presentation.presentation.name,
@@ -24,15 +25,14 @@ export function Header() {
     }),
     shallowEqual,
   )
-  const dispatch = useAppDispatch()
+  const { renamePresentation } = useRenamePresentation()
   const { register } = useDebouncedFunctions()
 
   const debouncedChangeName = register(
     CHANGE_NAME_ID,
-    (value: string) => {
-      dispatch(setName(value))
-    },
+    (name: string) => renamePresentation(presentationId, name),
     DEBOUNCED_CHANGE_NAME_TIME,
+    [presentationId],
   )
 
   return (

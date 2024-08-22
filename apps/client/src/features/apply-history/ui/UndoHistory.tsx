@@ -1,27 +1,27 @@
 import {
-  applyHistory,
+  applyHistoryStepThunk,
   EDIT_ELEMENT_ID,
   SAVE_SLIDES_ID,
   setIsSaving,
   SYNCHRONIZE_STATE_ID,
   TAKE_SCREENSHOT_ID,
 } from "~/entities/presentation"
-import type { HistoryActionProps } from "~/features/undo-redo-history/lib"
+import type { HistoryActionProps } from "~/features/apply-history/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
-export function HistoryUndo({ children }: HistoryActionProps) {
-  const undoStack = useAppSelector((state) => state.presentation.history.undoStack)
+export function UndoHistory({ children }: HistoryActionProps) {
+  const undoStack = useAppSelector((state) => state.history.undoStack)
   const dispatch = useAppDispatch()
   const { call, flushWithPattern } = useDebouncedFunctions()
 
-  const historyUndoFn = () => {
+  const undoHistoryFn = () => {
     flushWithPattern(EDIT_ELEMENT_ID)
-    dispatch(applyHistory("UNDO"))
+    dispatch(applyHistoryStepThunk("UNDO"))
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
     call(SYNCHRONIZE_STATE_ID)
   }
 
-  return children(historyUndoFn, undoStack.length !== 0)
+  return children(undoHistoryFn, undoStack.length !== 0)
 }

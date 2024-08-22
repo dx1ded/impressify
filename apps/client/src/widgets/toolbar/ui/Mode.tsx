@@ -11,7 +11,8 @@ import {
 } from "lucide-react"
 import { shallowEqual } from "react-redux"
 
-import { Mode as IMode, setMode, resetToolbar, NOT_SELECTED, setIsCreating } from "~/entities/presentation"
+import { ShapeType } from "~/__generated__/graphql"
+import { Mode as IMode, setMode, resetToolbarElementProps, NOT_SELECTED, setIsCreating } from "~/entities/presentation"
 import { InsertImage, InsertShape, InsertText, ChangeShapesType } from "~/features/insert-element"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
@@ -23,8 +24,8 @@ export function Mode() {
   // Done for optimization. You can use a couple of useSelector or this if all props are primitives like here
   const { mode, shape, selectedId, isCreating } = useAppSelector(
     (state) => ({
-      mode: state.presentation.toolbar.mode,
-      shape: state.presentation.toolbar.shapeProps.type,
+      mode: state.toolbar.mode,
+      shape: state.toolbar.shapeProps.type,
       selectedId: state.presentation.selectedId,
       isCreating: state.presentation.isCreating,
     }),
@@ -38,7 +39,7 @@ export function Mode() {
     if (newMode === "cursor") {
       dispatch(setMode("cursor"))
       dispatch(setIsCreating(false))
-      if (selectedId === NOT_SELECTED) dispatch(resetToolbar())
+      if (selectedId === NOT_SELECTED) dispatch(resetToolbarElementProps())
     }
   }
 
@@ -84,15 +85,15 @@ export function Mode() {
                 <ToggleGroupItem value="shape" asChild>
                   <ToolbarButton
                     Icon={
-                      shape === "line"
+                      shape === ShapeType.Line
                         ? MinusIcon
-                        : shape === "square"
+                        : shape === ShapeType.Square
                           ? SquareIcon
-                          : shape === "rectangle"
+                          : shape === ShapeType.Rectangle
                             ? RectangleHorizontalIcon
-                            : shape === "circle"
+                            : shape === ShapeType.Circle
                               ? CircleIcon
-                              : shape === "arrow"
+                              : shape === ShapeType.Arrow
                                 ? ArrowRightIcon
                                 : StarIcon
                     }
@@ -109,27 +110,27 @@ export function Mode() {
             <Select value={shape} onValueChange={changeShapesType}>
               <SelectTrigger className="h-6 w-4 justify-center border-none bg-transparent p-0" />
               <SelectContent>
-                <SelectItem value="line">
+                <SelectItem value={ShapeType.Line}>
                   <MinusIcon className="mr-2 inline-block h-5 w-5" />
                   Line
                 </SelectItem>
-                <SelectItem value="square">
+                <SelectItem value={ShapeType.Square}>
                   <SquareIcon className="mr-2 inline-block h-5 w-5" />
                   Square
                 </SelectItem>
-                <SelectItem value="rectangle">
+                <SelectItem value={ShapeType.Rectangle}>
                   <RectangleHorizontalIcon className="mr-2 inline-block h-5 w-5" />
                   Rectangle
                 </SelectItem>
-                <SelectItem value="circle">
+                <SelectItem value={ShapeType.Circle}>
                   <CircleIcon className="mr-2 inline-block h-5 w-5" />
                   Circle
                 </SelectItem>
-                <SelectItem value="arrow">
+                <SelectItem value={ShapeType.Arrow}>
                   <ArrowRightIcon className="mr-2 inline-block h-5 w-5" />
                   Arrow
                 </SelectItem>
-                <SelectItem value="star">
+                <SelectItem value={ShapeType.Star}>
                   <StarIcon className="mr-2 inline-block h-5 w-5" />
                   Star
                 </SelectItem>

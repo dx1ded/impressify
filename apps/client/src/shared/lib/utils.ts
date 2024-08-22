@@ -68,6 +68,7 @@ export function debounce<T extends (...args: any[]) => any>(fn: T, wait: number)
 export function createImage(url: string) {
   const img = new Image()
   img.src = url
+  img.crossOrigin = "anonymous"
   return img
 }
 

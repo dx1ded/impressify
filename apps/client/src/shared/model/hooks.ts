@@ -1,5 +1,6 @@
+import { createAsyncThunk } from "@reduxjs/toolkit"
 import { useCallback, useContext, useMemo } from "react"
-import { useDispatch, type TypedUseSelectorHook, useSelector } from "react-redux"
+import { type TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 
 import type { AppDispatch, AppStore } from "~/app/model"
 import { debounce } from "~/shared/lib"
@@ -7,6 +8,10 @@ import { DebouncedContext } from "~/shared/model"
 
 export const useAppDispatch: () => AppDispatch = useDispatch
 export const useAppSelector: TypedUseSelectorHook<AppStore> = useSelector
+export const createAsyncAppThunk = createAsyncThunk.withTypes<{
+  state: AppStore
+  dispatch: AppDispatch
+}>()
 
 export const useDebouncedFunctions = () => {
   const { fns } = useContext(DebouncedContext)

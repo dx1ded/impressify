@@ -1,5 +1,5 @@
 import {
-  duplicateElement,
+  duplicateElementThunk,
   generateEditElementId,
   SAVE_SLIDES_ID,
   setIsSaving,
@@ -18,7 +18,7 @@ export function DuplicateElement({ children }: ChildrenAsCallbackWithFn) {
 
   const _duplicateElement = () => {
     flush(EDIT_SELECTED_ELEMENT_ID)
-    dispatch(duplicateElement())
+    dispatch(duplicateElementThunk())
     call(TAKE_SCREENSHOT_ID)
     call(SAVE_SLIDES_ID)
     dispatch(setIsSaving(true))
