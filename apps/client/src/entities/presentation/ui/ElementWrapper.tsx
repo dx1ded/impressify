@@ -1,3 +1,4 @@
+import type { YPresentation } from "@server/hocuspocus/types"
 import type { KonvaEventObject } from "konva/lib/Node"
 import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
 import { memo, useEffect, useRef } from "react"
@@ -9,11 +10,10 @@ import {
   type ElementProps,
   type Mode,
   setIsEditing,
-  setIsSaving,
   setMode,
   setShapeProps,
-  editElementThunk,
-  selectElementThunk,
+  editElement,
+  selectElement,
   generateEditElementId,
   getAnchors,
   textProps,
@@ -21,18 +21,17 @@ import {
   imageProps,
   MIN_ELEMENT_HEIGHT,
   MIN_ELEMENT_WIDTH,
-  SAVE_SLIDES_ID,
-  SYNCHRONIZE_STATE_ID,
   TAKE_SCREENSHOT_ID,
 } from "~/entities/presentation"
-import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
+import { useAppDispatch, useDebouncedFunctions, useYjs } from "~/shared/model"
 
-const DEBOUNCE_EDIT_TIME = 3000
+const DEBOUNCE_EDIT_TIME = 2000
 
 interface ElementWrapperProps {
   Element: ElementComponent | undefined
   props: ElementProps
   mode: Mode
+  currentSlide: number
   isSelected: boolean
   isCreating: boolean
   isEditing: boolean
@@ -42,6 +41,7 @@ export const ElementWrapper = memo(function ElementWrapper({
   Element,
   props,
   mode,
+  currentSlide,
   isSelected,
   isCreating,
   isEditing,
@@ -50,6 +50,7 @@ export const ElementWrapper = memo(function ElementWrapper({
   const elementRef = useRef<never>(null)
   const trRef = useRef<ITransformer>(null)
   const { register, call } = useDebouncedFunctions()
+  const { provider, getMap } = useYjs()
 
   useEffect(() => {
     if (isSelected && elementRef.current && trRef.current) {
@@ -62,13 +63,27 @@ export const ElementWrapper = memo(function ElementWrapper({
     generateEditElementId(props.id),
     (newProps: Partial<ElementProps>) => {
       // Using id to avoid transformations being applied for `selectedId` (which would be used if no id provided)
-      dispatch(editElementThunk({ ...newProps, id: props.id }))
+      dispatch(editElement({ ...newProps, id: props.id }))
       call(TAKE_SCREENSHOT_ID)
-      call(SAVE_SLIDES_ID)
-      dispatch(setIsSaving(true))
-      call(SYNCHRONIZE_STATE_ID)
+
+      const yElement = getMap<YPresentation>()
+        .get("slides")
+        ?.get(currentSlide)
+        ?.get("elements")
+        ?.toArray()
+        .find((_element) => _element.get("id") === props.id)!
+
+      provider?.document.transact(() => {
+        Object.keys(newProps).forEach((key) => {
+          const typedKey = key as keyof ElementProps
+          const typedValue = newProps[typedKey]
+          if (!typedValue) return
+          yElement.set(typedKey, typedValue)
+        })
+      })
     },
     DEBOUNCE_EDIT_TIME,
+    [currentSlide],
   )
 
   const transformElement = (e: KonvaEventObject<Event>) => {
@@ -90,7 +105,7 @@ export const ElementWrapper = memo(function ElementWrapper({
   const selectElementHandler = () => {
     const type = props.__typename
     if (isCreating) return
-    if (!isSelected) dispatch(selectElementThunk(props.id))
+    if (!isSelected) dispatch(selectElement(props.id))
     // After element is selected set a corresponding toolbar mode
     if (mode !== "text" && type === "Text") dispatch(setMode("text"))
     else if (mode !== "image" && type === "Image") dispatch(setMode("image"))

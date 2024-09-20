@@ -1,4 +1,5 @@
-import type { ConnectedUser } from "~/__generated__/graphql"
+import type { UserAwareness } from "@server/hocuspocus/types"
+
 import { cn } from "~/shared/lib"
 import { useAppSelector } from "~/shared/model"
 import { Tooltip, TooltipTrigger, TooltipContent } from "~/shared/ui-kit/tooltip"
@@ -8,7 +9,7 @@ const MAX_DISPLAYED_USERS = 4
 
 interface ConnectionListProps {
   size?: "lg" | "sm"
-  users: ConnectedUser[]
+  users: UserAwareness[]
   className?: string
 }
 
@@ -40,7 +41,8 @@ export function ConnectionList({ className, users, size = "lg" }: ConnectionList
             <Tooltip key={user.id}>
               <TooltipTrigger asChild>
                 <img
-                  className={cn("border-primary rounded-full", size === "sm" ? "h-6 w-6 border" : "h-8 w-8 border-2")}
+                  className={cn("rounded-full", size === "sm" ? "h-6 w-6 border" : "h-8 w-8 border-2")}
+                  style={{ borderColor: user.color }}
                   src={user.profilePicUrl}
                   alt={`${user.name} avatar`}
                 />

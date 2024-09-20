@@ -1,15 +1,17 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import type { UserAwareness } from "@server/hocuspocus/types"
 
-import type { ConnectedUser } from "~/__generated__/graphql"
-import { clear, setCurrentSlide } from "~/shared/model"
+import { clear } from "~/shared/model"
 
 interface UserState {
   id: string | null
-  connectedUsers: ConnectedUser[]
+  token: string | null
+  connectedUsers: UserAwareness[]
 }
 
 const initialState: UserState = {
   id: null,
+  token: null,
   // Users that are subscribed to the presentation update (including yourself)
   connectedUsers: [],
 }
@@ -18,29 +20,20 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUserId: (state, { payload }: PayloadAction<string>) => {
-      state.id = payload
+    setUser: (state, { payload }: PayloadAction<Pick<UserState, "id" | "token">>) => {
+      state.id = payload.id
+      state.token = payload.token
     },
-    setConnectedUsers: (state, { payload }: PayloadAction<ConnectedUser[]>) => {
+    setConnectedUsers: (state, { payload }: PayloadAction<UserAwareness[]>) => {
       state.connectedUsers = payload
-    },
-    updateConnectedUser: (state, { payload }: PayloadAction<Partial<ConnectedUser>>) => {
-      state.connectedUsers = state.connectedUsers.map((user) =>
-        user.id === payload.id ? { ...user, ...payload } : user,
-      )
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(setCurrentSlide, (state, { payload }) => {
-      state.connectedUsers = state.connectedUsers.map((user) =>
-        user.id === state.id ? { ...user, currentSlideId: payload.id } : user,
-      )
-    })
     builder.addCase(clear, (state) => {
       state.connectedUsers = []
     })
   },
 })
 
-export const { setUserId, setConnectedUsers, updateConnectedUser } = userSlice.actions
+export const { setUser, setConnectedUsers } = userSlice.actions
 export const userReducer = userSlice.reducer

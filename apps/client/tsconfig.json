@@ -6,9 +6,9 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "types": ["vite/client"],
-    "baseUrl": "./src",
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./apps/client/src/*"],
+      "@server/*": ["./apps/server/src/*"]
     }
   },
   "files": [],

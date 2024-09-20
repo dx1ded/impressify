@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client"
-import { SortPresentations } from "features/sort-presentations"
 
 import type { FindUserPresentationsQuery, FindUserPresentationsQueryVariables } from "~/__generated__/graphql"
 import { FIND_USER_PRESENTATIONS, PresentationPreview, setRecentPresentations } from "~/entities/presentation"
+import { SortPresentations } from "~/features/sort-presentations"
 import { DeletePresentationAlert } from "~/features/delete-presentation"
 import { RenamePresentationDialog } from "~/features/rename-presentation"
 import { cn } from "~/shared/lib"

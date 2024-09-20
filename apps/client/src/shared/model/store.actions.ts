@@ -1,6 +1,5 @@
 import { createAction } from "@reduxjs/toolkit"
 
-import type { SlideId } from "~/entities/presentation"
-
-export const setCurrentSlide = createAction<{ id: SlideId; index: number }>("presentation/setCurrentSlide")
+// The difference between `switchCurrentSlide` and `setCurrentSlide` is that first propagates cases in other reducers (cleaning history, toolbar, etc)
+export const switchCurrentSlide = createAction<number>("presentation/switchCurrentSlide")
 export const clear = createAction("clear")

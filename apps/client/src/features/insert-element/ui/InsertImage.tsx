@@ -2,7 +2,7 @@ import { forwardRef } from "react"
 
 import {
   setImageProps,
-  selectElementThunk,
+  selectElement,
   DEFAULT_IMAGE_WIDTH,
   NOT_SELECTED,
   setIsCreating,
@@ -28,7 +28,7 @@ export const InsertImage = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(fun
       if (!target.files?.length) return
       const dataUrl = await convertFileToDataUrl(target.files[0])
       const height = await getNormalizedImageHeight(dataUrl, DEFAULT_IMAGE_WIDTH)
-      dispatch(selectElementThunk(NOT_SELECTED))
+      dispatch(selectElement(NOT_SELECTED))
       dispatch(setImageProps({ imageUrl: dataUrl, height }))
     }
     _.oncancel = () => {

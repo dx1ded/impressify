@@ -14,30 +14,6 @@ type PresentationInfo {
   totalShapeElements: Int!
 }
 
-type PresentationState {
-  operation: PresentationOperation!
-  name: String
-  slides: [Slide!]
-  connectedUsers: [ConnectedUser!]
-  isSaving: Boolean
-  # Internal fields not needed anywhere but in resolver
-  _userUpdatedStateId: ID
-  _presentationId: ID!
-}
-
-enum PresentationOperation {
-  UPDATE
-  DELETE
-}
-
-input PresentationStateInput {
-  id: ID!
-  name: String!
-  connectedUser: ConnectedUserInput!
-  slides: [SlideInput!]!
-  isSaving: Boolean!
-}
-
 type Query {
   # @preview means you get only the first slide
   findUserPresentations(preview: Boolean!, sortBy: String!): [Presentation!]
@@ -51,11 +27,4 @@ type Mutation {
   renamePresentation(id: ID!, name: String!): Presentation
   deletePresentation(id: ID!): Boolean
   duplicatePresentation(id: ID!): Presentation
-  # this mutation won't do anything in the database or something like this.
-  # this will only prepare data and call `pubsub.publish` to synchronize local states of every connection
-  synchronizePresentationState(state: PresentationStateInput!): PresentationState
-}
-
-type Subscription {
-  presentationUpdated(presentationId: String!): PresentationState!
 }

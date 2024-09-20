@@ -13,7 +13,7 @@ export const DEFAULT_FONT_FAMILY = "Arial"
 
 export const DEFAULT_BG_COLOR = "rgb(255, 255, 255)"
 export const DEFAULT_TEXT_COLOR = "rgb(0, 0, 0)"
-export const DEFAULT_FILL_COLOR = "transparent"
+export const DEFAULT_FILL_COLOR = "rgb(255, 255, 255)"
 export const DEFAULT_STROKE_COLOR = "rgb(0, 0, 0)"
 export const DEFAULT_BORDER_COLOR = "transparent"
 
@@ -44,6 +44,3 @@ export const MAX_HISTORY_LENGTH = 10
 
 export const TAKE_SCREENSHOT_ID = "take-screenshot"
 export const EDIT_ELEMENT_ID = "edit-element"
-export const CHANGE_NAME_ID = "change-name"
-export const SAVE_SLIDES_ID = "save-slides"
-export const SYNCHRONIZE_STATE_ID = "synchronize-state"

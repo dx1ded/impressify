@@ -23,23 +23,6 @@ export enum Alignment {
   Right = 'RIGHT'
 }
 
-export type ConnectedUser = {
-  __typename?: 'ConnectedUser';
-  currentSlideId: Scalars['String']['output'];
-  cursorX?: Maybe<Scalars['Float']['output']>;
-  cursorY?: Maybe<Scalars['Float']['output']>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  profilePicUrl: Scalars['String']['output'];
-};
-
-export type ConnectedUserInput = {
-  currentSlideId: Scalars['String']['input'];
-  cursorX?: InputMaybe<Scalars['Float']['input']>;
-  cursorY?: InputMaybe<Scalars['Float']['input']>;
-  id: Scalars['ID']['input'];
-};
-
 export type Element = {
   angle: Scalars['Float']['output'];
   height: Scalars['Float']['output'];
@@ -51,12 +34,6 @@ export type Element = {
   width: Scalars['Float']['output'];
   x: Scalars['Float']['output'];
   y: Scalars['Float']['output'];
-};
-
-export type ElementInput = {
-  image: Array<ImageInput>;
-  shape: Array<ShapeInput>;
-  text: Array<TextInput>;
 };
 
 export type History = {
@@ -89,19 +66,6 @@ export type Image = Element & {
   y: Scalars['Float']['output'];
 };
 
-export type ImageInput = {
-  angle: Scalars['Float']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  imageUrl: Scalars['String']['input'];
-  position: Scalars['Int']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   addRecord?: Maybe<HistoryRecord>;
@@ -110,9 +74,7 @@ export type Mutation = {
   duplicatePresentation?: Maybe<Presentation>;
   invite?: Maybe<Scalars['Boolean']['output']>;
   renamePresentation?: Maybe<Presentation>;
-  saveSlides?: Maybe<Array<Maybe<Slide>>>;
   sendHelpRequest?: Maybe<Scalars['Boolean']['output']>;
-  synchronizePresentationState?: Maybe<PresentationState>;
 };
 
 
@@ -149,19 +111,8 @@ export type MutationRenamePresentationArgs = {
 };
 
 
-export type MutationSaveSlidesArgs = {
-  presentationId: Scalars['String']['input'];
-  slides: Array<SlideInput>;
-};
-
-
 export type MutationSendHelpRequestArgs = {
   text: Scalars['String']['input'];
-};
-
-
-export type MutationSynchronizePresentationStateArgs = {
-  state: PresentationStateInput;
 };
 
 export type Presentation = {
@@ -180,30 +131,6 @@ export type PresentationInfo = {
   totalSlides: Scalars['Int']['output'];
   totalTextElements: Scalars['Int']['output'];
   totalUsers: Scalars['Int']['output'];
-};
-
-export enum PresentationOperation {
-  Delete = 'DELETE',
-  Update = 'UPDATE'
-}
-
-export type PresentationState = {
-  __typename?: 'PresentationState';
-  _presentationId: Scalars['ID']['output'];
-  _userUpdatedStateId?: Maybe<Scalars['ID']['output']>;
-  connectedUsers?: Maybe<Array<ConnectedUser>>;
-  isSaving?: Maybe<Scalars['Boolean']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  operation: PresentationOperation;
-  slides?: Maybe<Array<Slide>>;
-};
-
-export type PresentationStateInput = {
-  connectedUser: ConnectedUserInput;
-  id: Scalars['ID']['input'];
-  isSaving: Scalars['Boolean']['input'];
-  name: Scalars['String']['input'];
-  slides: Array<SlideInput>;
 };
 
 export type Query = {
@@ -260,23 +187,6 @@ export type Shape = Element & {
   y: Scalars['Float']['output'];
 };
 
-export type ShapeInput = {
-  angle: Scalars['Float']['input'];
-  fillColor: Scalars['String']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  position: Scalars['Int']['input'];
-  proportional: Scalars['Boolean']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  strokeColor: Scalars['String']['input'];
-  strokeWidth: Scalars['Int']['input'];
-  type: ShapeType;
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
-};
-
 export enum ShapeType {
   Arrow = 'ARROW',
   Circle = 'CIRCLE',
@@ -296,24 +206,6 @@ export type Slide = {
   presentation: Presentation;
   thumbnailUrl: Scalars['String']['output'];
   transition: Transition;
-};
-
-export type SlideInput = {
-  bg: Scalars['String']['input'];
-  elements: ElementInput;
-  id: Scalars['ID']['input'];
-  thumbnailUrl: Scalars['String']['input'];
-  transition: Transition;
-};
-
-export type Subscription = {
-  __typename?: 'Subscription';
-  presentationUpdated: PresentationState;
-};
-
-
-export type SubscriptionPresentationUpdatedArgs = {
-  presentationId: Scalars['String']['input'];
 };
 
 export type Text = Element & {
@@ -339,29 +231,6 @@ export type Text = Element & {
   width: Scalars['Float']['output'];
   x: Scalars['Float']['output'];
   y: Scalars['Float']['output'];
-};
-
-export type TextInput = {
-  alignment: Alignment;
-  angle: Scalars['Float']['input'];
-  bold: Scalars['Boolean']['input'];
-  borderColor: Scalars['String']['input'];
-  fillColor: Scalars['String']['input'];
-  fontFamily: Scalars['String']['input'];
-  fontSize: Scalars['Int']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  italic: Scalars['Boolean']['input'];
-  lineHeight: Scalars['Float']['input'];
-  position: Scalars['Int']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  text: Scalars['String']['input'];
-  textColor: Scalars['String']['input'];
-  underlined: Scalars['Boolean']['input'];
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
 };
 
 export enum Transition {
@@ -405,35 +274,6 @@ export type GetPresentationInfoQueryVariables = Exact<{
 
 
 export type GetPresentationInfoQuery = { __typename?: 'Query', getPresentationInfo?: { __typename?: 'PresentationInfo', totalImageElements: number, totalShapeElements: number, totalSlides: number, totalTextElements: number, totalUsers: number } | null };
-
-export type GetPresentationQueryVariables = Exact<{
-  presentationId: Scalars['String']['input'];
-}>;
-
-
-export type GetPresentationQuery = { __typename?: 'Query', getPresentation?: { __typename?: 'Presentation', id: string, name: string, slides: Array<{ __typename?: 'Slide', id: string, bg: string, transition: Transition, thumbnailUrl: string, elements: Array<{ __typename?: 'Image', imageUrl: string, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number } | { __typename?: 'Shape', type: ShapeType, fillColor: string, strokeColor: string, strokeWidth: number, proportional: boolean, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number } | { __typename?: 'Text', text: string, textColor: string, fillColor: string, borderColor: string, fontFamily: string, fontSize: number, bold: boolean, italic: boolean, underlined: boolean, alignment: Alignment, lineHeight: number, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number }> }> } | null };
-
-export type SaveSlidesMutationVariables = Exact<{
-  presentationId: Scalars['String']['input'];
-  slides: Array<SlideInput> | SlideInput;
-}>;
-
-
-export type SaveSlidesMutation = { __typename?: 'Mutation', saveSlides?: Array<{ __typename?: 'Slide', id: string, bg: string, transition: Transition, thumbnailUrl: string, elements: Array<{ __typename?: 'Image', imageUrl: string, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number } | { __typename?: 'Shape', type: ShapeType, fillColor: string, strokeColor: string, strokeWidth: number, proportional: boolean, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number } | { __typename?: 'Text', text: string, textColor: string, fillColor: string, borderColor: string, fontFamily: string, fontSize: number, bold: boolean, italic: boolean, underlined: boolean, alignment: Alignment, lineHeight: number, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number }> } | null> | null };
-
-export type SynchronizePresentationStateMutationVariables = Exact<{
-  state: PresentationStateInput;
-}>;
-
-
-export type SynchronizePresentationStateMutation = { __typename?: 'Mutation', synchronizePresentationState?: { __typename: 'PresentationState' } | null };
-
-export type PresentationUpdatedSubscriptionVariables = Exact<{
-  presentationId: Scalars['String']['input'];
-}>;
-
-
-export type PresentationUpdatedSubscription = { __typename?: 'Subscription', presentationUpdated: { __typename?: 'PresentationState', operation: PresentationOperation, name?: string | null, isSaving?: boolean | null, slides?: Array<{ __typename?: 'Slide', id: string, bg: string, transition: Transition, thumbnailUrl: string, elements: Array<{ __typename?: 'Image', imageUrl: string, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number } | { __typename?: 'Shape', type: ShapeType, fillColor: string, strokeColor: string, strokeWidth: number, proportional: boolean, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number } | { __typename?: 'Text', text: string, textColor: string, fillColor: string, borderColor: string, fontFamily: string, fontSize: number, bold: boolean, italic: boolean, underlined: boolean, alignment: Alignment, lineHeight: number, id: string, x: number, y: number, width: number, height: number, angle: number, scaleX: number, scaleY: number }> }> | null, connectedUsers?: Array<{ __typename?: 'ConnectedUser', id: string, name: string, profilePicUrl: string, currentSlideId: string, cursorX?: number | null, cursorY?: number | null }> | null } };
 
 export type CreatePresentationMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -491,10 +331,6 @@ export const SlideFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":
 export const AddHistoryRecordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddHistoryRecord"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addRecord"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"presentationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<AddHistoryRecordMutation, AddHistoryRecordMutationVariables>;
 export const FindUserPresentationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FindUserPresentations"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"preview"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findUserPresentations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"preview"},"value":{"kind":"Variable","name":{"kind":"Name","value":"preview"}}},{"kind":"Argument","name":{"kind":"Name","value":"sortBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sortBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"slides"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"thumbnailUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"history"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lastOpened"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<FindUserPresentationsQuery, FindUserPresentationsQueryVariables>;
 export const GetPresentationInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPresentationInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getPresentationInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalImageElements"}},{"kind":"Field","name":{"kind":"Name","value":"totalShapeElements"}},{"kind":"Field","name":{"kind":"Name","value":"totalSlides"}},{"kind":"Field","name":{"kind":"Name","value":"totalTextElements"}},{"kind":"Field","name":{"kind":"Name","value":"totalUsers"}}]}}]}}]} as unknown as DocumentNode<GetPresentationInfoQuery, GetPresentationInfoQueryVariables>;
-export const GetPresentationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPresentation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getPresentation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slides"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SlideFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SlideFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Slide"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"bg"}},{"kind":"Field","name":{"kind":"Name","value":"transition"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailUrl"}},{"kind":"Field","name":{"kind":"Name","value":"elements"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"angle"}},{"kind":"Field","name":{"kind":"Name","value":"scaleX"}},{"kind":"Field","name":{"kind":"Name","value":"scaleY"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Text"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"textColor"}},{"kind":"Field","name":{"kind":"Name","value":"fillColor"}},{"kind":"Field","name":{"kind":"Name","value":"borderColor"}},{"kind":"Field","name":{"kind":"Name","value":"fontFamily"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"bold"}},{"kind":"Field","name":{"kind":"Name","value":"italic"}},{"kind":"Field","name":{"kind":"Name","value":"underlined"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"lineHeight"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Shape"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fillColor"}},{"kind":"Field","name":{"kind":"Name","value":"strokeColor"}},{"kind":"Field","name":{"kind":"Name","value":"strokeWidth"}},{"kind":"Field","name":{"kind":"Name","value":"proportional"}}]}}]}}]}}]} as unknown as DocumentNode<GetPresentationQuery, GetPresentationQueryVariables>;
-export const SaveSlidesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SaveSlides"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"slides"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SlideInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"saveSlides"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"presentationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"slides"},"value":{"kind":"Variable","name":{"kind":"Name","value":"slides"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SlideFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SlideFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Slide"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"bg"}},{"kind":"Field","name":{"kind":"Name","value":"transition"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailUrl"}},{"kind":"Field","name":{"kind":"Name","value":"elements"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"angle"}},{"kind":"Field","name":{"kind":"Name","value":"scaleX"}},{"kind":"Field","name":{"kind":"Name","value":"scaleY"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Text"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"textColor"}},{"kind":"Field","name":{"kind":"Name","value":"fillColor"}},{"kind":"Field","name":{"kind":"Name","value":"borderColor"}},{"kind":"Field","name":{"kind":"Name","value":"fontFamily"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"bold"}},{"kind":"Field","name":{"kind":"Name","value":"italic"}},{"kind":"Field","name":{"kind":"Name","value":"underlined"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"lineHeight"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Shape"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fillColor"}},{"kind":"Field","name":{"kind":"Name","value":"strokeColor"}},{"kind":"Field","name":{"kind":"Name","value":"strokeWidth"}},{"kind":"Field","name":{"kind":"Name","value":"proportional"}}]}}]}}]}}]} as unknown as DocumentNode<SaveSlidesMutation, SaveSlidesMutationVariables>;
-export const SynchronizePresentationStateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SynchronizePresentationState"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"state"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PresentationStateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"synchronizePresentationState"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"state"},"value":{"kind":"Variable","name":{"kind":"Name","value":"state"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]} as unknown as DocumentNode<SynchronizePresentationStateMutation, SynchronizePresentationStateMutationVariables>;
-export const PresentationUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"PresentationUpdated"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"presentationUpdated"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"presentationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"isSaving"}},{"kind":"Field","name":{"kind":"Name","value":"slides"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SlideFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"connectedUsers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"profilePicUrl"}},{"kind":"Field","name":{"kind":"Name","value":"currentSlideId"}},{"kind":"Field","name":{"kind":"Name","value":"cursorX"}},{"kind":"Field","name":{"kind":"Name","value":"cursorY"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SlideFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Slide"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"bg"}},{"kind":"Field","name":{"kind":"Name","value":"transition"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailUrl"}},{"kind":"Field","name":{"kind":"Name","value":"elements"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"angle"}},{"kind":"Field","name":{"kind":"Name","value":"scaleX"}},{"kind":"Field","name":{"kind":"Name","value":"scaleY"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Text"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"textColor"}},{"kind":"Field","name":{"kind":"Name","value":"fillColor"}},{"kind":"Field","name":{"kind":"Name","value":"borderColor"}},{"kind":"Field","name":{"kind":"Name","value":"fontFamily"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"bold"}},{"kind":"Field","name":{"kind":"Name","value":"italic"}},{"kind":"Field","name":{"kind":"Name","value":"underlined"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"lineHeight"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Shape"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fillColor"}},{"kind":"Field","name":{"kind":"Name","value":"strokeColor"}},{"kind":"Field","name":{"kind":"Name","value":"strokeWidth"}},{"kind":"Field","name":{"kind":"Name","value":"proportional"}}]}}]}}]}}]} as unknown as DocumentNode<PresentationUpdatedSubscription, PresentationUpdatedSubscriptionVariables>;
 export const CreatePresentationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePresentation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"template"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPresentation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"Argument","name":{"kind":"Name","value":"template"},"value":{"kind":"Variable","name":{"kind":"Name","value":"template"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreatePresentationMutation, CreatePresentationMutationVariables>;
 export const DeletePresentationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePresentation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePresentation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}}]}]}}]} as unknown as DocumentNode<DeletePresentationMutation, DeletePresentationMutationVariables>;
 export const DuplicatePresentationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DuplicatePresentation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"duplicatePresentation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DuplicatePresentationMutation, DuplicatePresentationMutationVariables>;
@@ -518,23 +354,6 @@ export enum Alignment {
   Right = 'RIGHT'
 }
 
-export type ConnectedUser = {
-  __typename?: 'ConnectedUser';
-  currentSlideId: Scalars['String']['output'];
-  cursorX?: Maybe<Scalars['Float']['output']>;
-  cursorY?: Maybe<Scalars['Float']['output']>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  profilePicUrl: Scalars['String']['output'];
-};
-
-export type ConnectedUserInput = {
-  currentSlideId: Scalars['String']['input'];
-  cursorX?: InputMaybe<Scalars['Float']['input']>;
-  cursorY?: InputMaybe<Scalars['Float']['input']>;
-  id: Scalars['ID']['input'];
-};
-
 export type Element = {
   angle: Scalars['Float']['output'];
   height: Scalars['Float']['output'];
@@ -546,12 +365,6 @@ export type Element = {
   width: Scalars['Float']['output'];
   x: Scalars['Float']['output'];
   y: Scalars['Float']['output'];
-};
-
-export type ElementInput = {
-  image: Array<ImageInput>;
-  shape: Array<ShapeInput>;
-  text: Array<TextInput>;
 };
 
 export type History = {
@@ -584,19 +397,6 @@ export type Image = Element & {
   y: Scalars['Float']['output'];
 };
 
-export type ImageInput = {
-  angle: Scalars['Float']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  imageUrl: Scalars['String']['input'];
-  position: Scalars['Int']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   addRecord?: Maybe<HistoryRecord>;
@@ -605,9 +405,7 @@ export type Mutation = {
   duplicatePresentation?: Maybe<Presentation>;
   invite?: Maybe<Scalars['Boolean']['output']>;
   renamePresentation?: Maybe<Presentation>;
-  saveSlides?: Maybe<Array<Maybe<Slide>>>;
   sendHelpRequest?: Maybe<Scalars['Boolean']['output']>;
-  synchronizePresentationState?: Maybe<PresentationState>;
 };
 
 
@@ -644,19 +442,8 @@ export type MutationRenamePresentationArgs = {
 };
 
 
-export type MutationSaveSlidesArgs = {
-  presentationId: Scalars['String']['input'];
-  slides: Array<SlideInput>;
-};
-
-
 export type MutationSendHelpRequestArgs = {
   text: Scalars['String']['input'];
-};
-
-
-export type MutationSynchronizePresentationStateArgs = {
-  state: PresentationStateInput;
 };
 
 export type Presentation = {
@@ -675,30 +462,6 @@ export type PresentationInfo = {
   totalSlides: Scalars['Int']['output'];
   totalTextElements: Scalars['Int']['output'];
   totalUsers: Scalars['Int']['output'];
-};
-
-export enum PresentationOperation {
-  Delete = 'DELETE',
-  Update = 'UPDATE'
-}
-
-export type PresentationState = {
-  __typename?: 'PresentationState';
-  _presentationId: Scalars['ID']['output'];
-  _userUpdatedStateId?: Maybe<Scalars['ID']['output']>;
-  connectedUsers?: Maybe<Array<ConnectedUser>>;
-  isSaving?: Maybe<Scalars['Boolean']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  operation: PresentationOperation;
-  slides?: Maybe<Array<Slide>>;
-};
-
-export type PresentationStateInput = {
-  connectedUser: ConnectedUserInput;
-  id: Scalars['ID']['input'];
-  isSaving: Scalars['Boolean']['input'];
-  name: Scalars['String']['input'];
-  slides: Array<SlideInput>;
 };
 
 export type Query = {
@@ -755,23 +518,6 @@ export type Shape = Element & {
   y: Scalars['Float']['output'];
 };
 
-export type ShapeInput = {
-  angle: Scalars['Float']['input'];
-  fillColor: Scalars['String']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  position: Scalars['Int']['input'];
-  proportional: Scalars['Boolean']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  strokeColor: Scalars['String']['input'];
-  strokeWidth: Scalars['Int']['input'];
-  type: ShapeType;
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
-};
-
 export enum ShapeType {
   Arrow = 'ARROW',
   Circle = 'CIRCLE',
@@ -791,24 +537,6 @@ export type Slide = {
   presentation: Presentation;
   thumbnailUrl: Scalars['String']['output'];
   transition: Transition;
-};
-
-export type SlideInput = {
-  bg: Scalars['String']['input'];
-  elements: ElementInput;
-  id: Scalars['ID']['input'];
-  thumbnailUrl: Scalars['String']['input'];
-  transition: Transition;
-};
-
-export type Subscription = {
-  __typename?: 'Subscription';
-  presentationUpdated: PresentationState;
-};
-
-
-export type SubscriptionPresentationUpdatedArgs = {
-  presentationId: Scalars['String']['input'];
 };
 
 export type Text = Element & {
@@ -834,29 +562,6 @@ export type Text = Element & {
   width: Scalars['Float']['output'];
   x: Scalars['Float']['output'];
   y: Scalars['Float']['output'];
-};
-
-export type TextInput = {
-  alignment: Alignment;
-  angle: Scalars['Float']['input'];
-  bold: Scalars['Boolean']['input'];
-  borderColor: Scalars['String']['input'];
-  fillColor: Scalars['String']['input'];
-  fontFamily: Scalars['String']['input'];
-  fontSize: Scalars['Int']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  italic: Scalars['Boolean']['input'];
-  lineHeight: Scalars['Float']['input'];
-  position: Scalars['Int']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  text: Scalars['String']['input'];
-  textColor: Scalars['String']['input'];
-  underlined: Scalars['Boolean']['input'];
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
 };
 
 export enum Transition {

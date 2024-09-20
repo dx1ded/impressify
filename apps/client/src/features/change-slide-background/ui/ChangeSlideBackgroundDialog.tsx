@@ -1,16 +1,11 @@
+import type { YPresentation } from "@server/hocuspocus/types"
 import { PaintBucketIcon } from "lucide-react"
 import type { ChangeEvent, ReactNode } from "react"
+import { shallowEqual } from "react-redux"
 
-import {
-  DEFAULT_BG_COLOR,
-  SAVE_SLIDES_ID,
-  SYNCHRONIZE_STATE_ID,
-  TAKE_SCREENSHOT_ID,
-  setBackground,
-  setIsSaving,
-} from "~/entities/presentation"
-import { convertFileToDataUrl } from "~/shared/lib"
-import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
+import { DEFAULT_BG_COLOR, TAKE_SCREENSHOT_ID, setBackground } from "~/entities/presentation"
+import { convertFileToDataUrl, uploadImageToStorage } from "~/shared/lib"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import {
   Dialog,
@@ -28,26 +23,32 @@ import { Small } from "~/shared/ui/Typography"
 
 export function ChangeSlideBackgroundDialog({ children }: { children: ReactNode }) {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
+  const { currentSlide, presentationId } = useAppSelector(
+    (state) => ({
+      currentSlide: state.presentation.currentSlide,
+      presentationId: state.presentation.presentation.id,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
   const { call } = useDebouncedFunctions()
+  const { getMap } = useYjs()
 
   const slide = slides[currentSlide]
   if (!slide) return
 
   const changeBackground = (dataUrl: string) => {
     dispatch(setBackground(dataUrl))
+    getMap<YPresentation>().get("slides")?.get(currentSlide).set("bg", dataUrl)
     call(TAKE_SCREENSHOT_ID)
-    call(SAVE_SLIDES_ID)
-    dispatch(setIsSaving(true))
-    call(SYNCHRONIZE_STATE_ID)
   }
 
   const fileChangeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
     if (!files || !files.length) return
     const dataUrl = await convertFileToDataUrl(files[0])
-    changeBackground(dataUrl)
+    const uploadedImageUrl = await uploadImageToStorage(dataUrl, `${presentationId}/${slide.id}/bg`)
+    changeBackground(uploadedImageUrl)
   }
 
   return (

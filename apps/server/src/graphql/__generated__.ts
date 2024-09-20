@@ -24,23 +24,6 @@ export enum Alignment {
   Right = 'RIGHT'
 }
 
-export type ConnectedUser = {
-  __typename?: 'ConnectedUser';
-  currentSlideId: Scalars['String']['output'];
-  cursorX?: Maybe<Scalars['Float']['output']>;
-  cursorY?: Maybe<Scalars['Float']['output']>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  profilePicUrl: Scalars['String']['output'];
-};
-
-export type ConnectedUserInput = {
-  currentSlideId: Scalars['String']['input'];
-  cursorX?: InputMaybe<Scalars['Float']['input']>;
-  cursorY?: InputMaybe<Scalars['Float']['input']>;
-  id: Scalars['ID']['input'];
-};
-
 export type Element = {
   angle: Scalars['Float']['output'];
   height: Scalars['Float']['output'];
@@ -52,12 +35,6 @@ export type Element = {
   width: Scalars['Float']['output'];
   x: Scalars['Float']['output'];
   y: Scalars['Float']['output'];
-};
-
-export type ElementInput = {
-  image: Array<ImageInput>;
-  shape: Array<ShapeInput>;
-  text: Array<TextInput>;
 };
 
 export type History = {
@@ -90,19 +67,6 @@ export type Image = Element & {
   y: Scalars['Float']['output'];
 };
 
-export type ImageInput = {
-  angle: Scalars['Float']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  imageUrl: Scalars['String']['input'];
-  position: Scalars['Int']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   addRecord?: Maybe<HistoryRecord>;
@@ -111,9 +75,7 @@ export type Mutation = {
   duplicatePresentation?: Maybe<Presentation>;
   invite?: Maybe<Scalars['Boolean']['output']>;
   renamePresentation?: Maybe<Presentation>;
-  saveSlides?: Maybe<Array<Maybe<Slide>>>;
   sendHelpRequest?: Maybe<Scalars['Boolean']['output']>;
-  synchronizePresentationState?: Maybe<PresentationState>;
 };
 
 
@@ -150,19 +112,8 @@ export type MutationRenamePresentationArgs = {
 };
 
 
-export type MutationSaveSlidesArgs = {
-  presentationId: Scalars['String']['input'];
-  slides: Array<SlideInput>;
-};
-
-
 export type MutationSendHelpRequestArgs = {
   text: Scalars['String']['input'];
-};
-
-
-export type MutationSynchronizePresentationStateArgs = {
-  state: PresentationStateInput;
 };
 
 export type Presentation = {
@@ -181,30 +132,6 @@ export type PresentationInfo = {
   totalSlides: Scalars['Int']['output'];
   totalTextElements: Scalars['Int']['output'];
   totalUsers: Scalars['Int']['output'];
-};
-
-export enum PresentationOperation {
-  Delete = 'DELETE',
-  Update = 'UPDATE'
-}
-
-export type PresentationState = {
-  __typename?: 'PresentationState';
-  _presentationId: Scalars['ID']['output'];
-  _userUpdatedStateId?: Maybe<Scalars['ID']['output']>;
-  connectedUsers?: Maybe<Array<ConnectedUser>>;
-  isSaving?: Maybe<Scalars['Boolean']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  operation: PresentationOperation;
-  slides?: Maybe<Array<Slide>>;
-};
-
-export type PresentationStateInput = {
-  connectedUser: ConnectedUserInput;
-  id: Scalars['ID']['input'];
-  isSaving: Scalars['Boolean']['input'];
-  name: Scalars['String']['input'];
-  slides: Array<SlideInput>;
 };
 
 export type Query = {
@@ -261,23 +188,6 @@ export type Shape = Element & {
   y: Scalars['Float']['output'];
 };
 
-export type ShapeInput = {
-  angle: Scalars['Float']['input'];
-  fillColor: Scalars['String']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  position: Scalars['Int']['input'];
-  proportional: Scalars['Boolean']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  strokeColor: Scalars['String']['input'];
-  strokeWidth: Scalars['Int']['input'];
-  type: ShapeType;
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
-};
-
 export enum ShapeType {
   Arrow = 'ARROW',
   Circle = 'CIRCLE',
@@ -297,24 +207,6 @@ export type Slide = {
   presentation: Presentation;
   thumbnailUrl: Scalars['String']['output'];
   transition: Transition;
-};
-
-export type SlideInput = {
-  bg: Scalars['String']['input'];
-  elements: ElementInput;
-  id: Scalars['ID']['input'];
-  thumbnailUrl: Scalars['String']['input'];
-  transition: Transition;
-};
-
-export type Subscription = {
-  __typename?: 'Subscription';
-  presentationUpdated: PresentationState;
-};
-
-
-export type SubscriptionPresentationUpdatedArgs = {
-  presentationId: Scalars['String']['input'];
 };
 
 export type Text = Element & {
@@ -340,29 +232,6 @@ export type Text = Element & {
   width: Scalars['Float']['output'];
   x: Scalars['Float']['output'];
   y: Scalars['Float']['output'];
-};
-
-export type TextInput = {
-  alignment: Alignment;
-  angle: Scalars['Float']['input'];
-  bold: Scalars['Boolean']['input'];
-  borderColor: Scalars['String']['input'];
-  fillColor: Scalars['String']['input'];
-  fontFamily: Scalars['String']['input'];
-  fontSize: Scalars['Int']['input'];
-  height: Scalars['Float']['input'];
-  id: Scalars['ID']['input'];
-  italic: Scalars['Boolean']['input'];
-  lineHeight: Scalars['Float']['input'];
-  position: Scalars['Int']['input'];
-  scaleX: Scalars['Float']['input'];
-  scaleY: Scalars['Float']['input'];
-  text: Scalars['String']['input'];
-  textColor: Scalars['String']['input'];
-  underlined: Scalars['Boolean']['input'];
-  width: Scalars['Float']['input'];
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
 };
 
 export enum Transition {
@@ -461,34 +330,23 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 export type ResolversTypes = ResolversObject<{
   Alignment: Alignment;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  ConnectedUser: ResolverTypeWrapper<ConnectedUser>;
-  ConnectedUserInput: ConnectedUserInput;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   Element: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Element']>;
-  ElementInput: ElementInput;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   History: ResolverTypeWrapper<History>;
   HistoryRecord: ResolverTypeWrapper<HistoryRecord>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Image: ResolverTypeWrapper<Image>;
-  ImageInput: ImageInput;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Presentation: ResolverTypeWrapper<Presentation>;
   PresentationInfo: ResolverTypeWrapper<PresentationInfo>;
-  PresentationOperation: PresentationOperation;
-  PresentationState: ResolverTypeWrapper<PresentationState>;
-  PresentationStateInput: PresentationStateInput;
   Query: ResolverTypeWrapper<{}>;
   Shape: ResolverTypeWrapper<Shape>;
-  ShapeInput: ShapeInput;
   ShapeType: ShapeType;
   Slide: ResolverTypeWrapper<Omit<Slide, 'elements'> & { elements: Array<ResolversTypes['Element']> }>;
-  SlideInput: SlideInput;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-  Subscription: ResolverTypeWrapper<{}>;
   Text: ResolverTypeWrapper<Text>;
-  TextInput: TextInput;
   Transition: Transition;
   User: ResolverTypeWrapper<User>;
 }>;
@@ -496,43 +354,23 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
-  ConnectedUser: ConnectedUser;
-  ConnectedUserInput: ConnectedUserInput;
   Date: Scalars['Date']['output'];
   Element: ResolversInterfaceTypes<ResolversParentTypes>['Element'];
-  ElementInput: ElementInput;
   Float: Scalars['Float']['output'];
   History: History;
   HistoryRecord: HistoryRecord;
   ID: Scalars['ID']['output'];
   Image: Image;
-  ImageInput: ImageInput;
   Int: Scalars['Int']['output'];
   Mutation: {};
   Presentation: Presentation;
   PresentationInfo: PresentationInfo;
-  PresentationState: PresentationState;
-  PresentationStateInput: PresentationStateInput;
   Query: {};
   Shape: Shape;
-  ShapeInput: ShapeInput;
   Slide: Omit<Slide, 'elements'> & { elements: Array<ResolversParentTypes['Element']> };
-  SlideInput: SlideInput;
   String: Scalars['String']['output'];
-  Subscription: {};
   Text: Text;
-  TextInput: TextInput;
   User: User;
-}>;
-
-export type ConnectedUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConnectedUser'] = ResolversParentTypes['ConnectedUser']> = ResolversObject<{
-  currentSlideId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  cursorX?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  cursorY?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  profilePicUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -590,9 +428,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   duplicatePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationDuplicatePresentationArgs, 'id'>>;
   invite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationInviteArgs, 'email' | 'presentationId'>>;
   renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
-  saveSlides?: Resolver<Maybe<Array<Maybe<ResolversTypes['Slide']>>>, ParentType, ContextType, RequireFields<MutationSaveSlidesArgs, 'presentationId' | 'slides'>>;
   sendHelpRequest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationSendHelpRequestArgs, 'text'>>;
-  synchronizePresentationState?: Resolver<Maybe<ResolversTypes['PresentationState']>, ParentType, ContextType, RequireFields<MutationSynchronizePresentationStateArgs, 'state'>>;
 }>;
 
 export type PresentationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Presentation'] = ResolversParentTypes['Presentation']> = ResolversObject<{
@@ -610,17 +446,6 @@ export type PresentationInfoResolvers<ContextType = any, ParentType extends Reso
   totalSlides?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   totalTextElements?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   totalUsers?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type PresentationStateResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationState'] = ResolversParentTypes['PresentationState']> = ResolversObject<{
-  _presentationId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  _userUpdatedStateId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
-  connectedUsers?: Resolver<Maybe<Array<ResolversTypes['ConnectedUser']>>, ParentType, ContextType>;
-  isSaving?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  operation?: Resolver<ResolversTypes['PresentationOperation'], ParentType, ContextType>;
-  slides?: Resolver<Maybe<Array<ResolversTypes['Slide']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -663,10 +488,6 @@ export type SlideResolvers<ContextType = any, ParentType extends ResolversParent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  presentationUpdated?: SubscriptionResolver<ResolversTypes['PresentationState'], "presentationUpdated", ParentType, ContextType, RequireFields<SubscriptionPresentationUpdatedArgs, 'presentationId'>>;
-}>;
-
 export type TextResolvers<ContextType = any, ParentType extends ResolversParentTypes['Text'] = ResolversParentTypes['Text']> = ResolversObject<{
   alignment?: Resolver<ResolversTypes['Alignment'], ParentType, ContextType>;
   angle?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -703,7 +524,6 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
-  ConnectedUser?: ConnectedUserResolvers<ContextType>;
   Date?: GraphQLScalarType;
   Element?: ElementResolvers<ContextType>;
   History?: HistoryResolvers<ContextType>;
@@ -712,11 +532,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Presentation?: PresentationResolvers<ContextType>;
   PresentationInfo?: PresentationInfoResolvers<ContextType>;
-  PresentationState?: PresentationStateResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Shape?: ShapeResolvers<ContextType>;
   Slide?: SlideResolvers<ContextType>;
-  Subscription?: SubscriptionResolvers<ContextType>;
   Text?: TextResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 }>;

@@ -1,3 +1,4 @@
+import type { YPresentation } from "@server/hocuspocus/types"
 import {
   AlignCenterIcon,
   AlignLeftIcon,
@@ -12,19 +13,12 @@ import {
 } from "lucide-react"
 import { SelectTrigger as NativeSelectTrigger } from "@radix-ui/react-select"
 import { Fragment } from "react"
+import { shallowEqual } from "react-redux"
 
 import { Alignment } from "~/__generated__/graphql"
-import {
-  type TextProps,
-  updateTextPropsThunk,
-  DEFAULT_FONT_LIST,
-  TAKE_SCREENSHOT_ID,
-  SAVE_SLIDES_ID,
-  setIsSaving,
-  SYNCHRONIZE_STATE_ID,
-} from "~/entities/presentation"
+import { type TextProps, updateTextProps, DEFAULT_FONT_LIST, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
-import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 import {
   Select,
   SelectContent,
@@ -43,15 +37,34 @@ import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolb
 
 export function TextMode({ isActive }: ModeProps) {
   const textProps = useAppSelector((state) => state.toolbar.textProps)
+  const { currentSlide, selectedId } = useAppSelector(
+    (state) => ({
+      currentSlide: state.presentation.currentSlide,
+      selectedId: state.presentation.selectedId,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
   const { call } = useDebouncedFunctions()
+  const { getMap } = useYjs()
 
   const applyTextChanges = (props: Partial<TextProps>) => {
-    dispatch(updateTextPropsThunk(props))
+    dispatch(updateTextProps(props))
     call(TAKE_SCREENSHOT_ID)
-    call(SAVE_SLIDES_ID)
-    dispatch(setIsSaving(true))
-    call(SYNCHRONIZE_STATE_ID)
+
+    const element = getMap<YPresentation>()
+      .get("slides")
+      ?.get(currentSlide)
+      ?.get("elements")
+      ?.toArray()
+      .find((_element) => _element.get("id") === selectedId)!
+
+    Object.keys(props).forEach((key) => {
+      const typedKey = key as keyof TextProps
+      const typedValue = props[typedKey]
+      if (typedValue === undefined) return
+      element.set(typedKey, typedValue)
+    })
   }
 
   return (

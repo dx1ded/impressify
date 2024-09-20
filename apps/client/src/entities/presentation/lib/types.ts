@@ -1,3 +1,4 @@
+import type { NormalizedYPresentation, NormalizedYElement } from "@server/hocuspocus/types"
 import type { ArrowConfig } from "konva/lib/shapes/Arrow"
 import type { CircleConfig } from "konva/lib/shapes/Circle"
 import type { LineConfig } from "konva/lib/shapes/Line"
@@ -5,12 +6,11 @@ import type { RectConfig } from "konva/lib/shapes/Rect"
 import type { StarConfig } from "konva/lib/shapes/Star"
 import type { Image, Line, Rect, Circle, Arrow, Star } from "react-konva"
 
-import type { FindUserPresentationsQuery, GetPresentationQuery, SlideFieldsFragment } from "~/__generated__/graphql"
+import type { FindUserPresentationsQuery } from "~/__generated__/graphql"
 import type { ArrayElement } from "~/shared/lib"
 import type { EditableText } from "~/shared/ui/EditableText"
 
 export type FindPresentationItem = ArrayElement<NonNullable<FindUserPresentationsQuery["findUserPresentations"]>>
-export type Presentation = NonNullable<GetPresentationQuery["getPresentation"]>
 
 export type Mode = "cursor" | "text" | "image" | "shape"
 export type ShapesConfig = RectConfig & LineConfig & CircleConfig & ArrowConfig & StarConfig
@@ -21,14 +21,14 @@ export type AddTextProps = Coordinates & TextEditProps
 export type AddImageProps = Coordinates & ImageEditProps
 export type AddShapeProps = Coordinates & ShapeEditProps
 
-export type SlideProps = SlideFieldsFragment
+export type SlideProps = NormalizedYPresentation["slides"][number]
 export type ElementProps = SlideProps["elements"][number]
 export type SlideId = SlideProps["id"]
 export type ElementId = ElementProps["id"]
 
-export type TextProps = ElementProps & { __typename: "Text" }
-export type ImageProps = ElementProps & { __typename: "Image" }
-export type ShapeProps = ElementProps & { __typename: "Shape" }
+export type TextProps = NormalizedYElement & { __typename: "Text" }
+export type ImageProps = NormalizedYElement & { __typename: "Image" }
+export type ShapeProps = NormalizedYElement & { __typename: "Shape" }
 
 export type TextEditProps = Pick<
   TextProps,

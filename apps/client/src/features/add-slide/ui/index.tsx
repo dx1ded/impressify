@@ -1,27 +1,24 @@
+import { transformNormalizedToYSlide } from "@server/hocuspocus/transform"
+import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
 import { forwardRef } from "react"
 
-import {
-  addSlideThunk,
-  setIsSaving,
-  EDIT_ELEMENT_ID,
-  SAVE_SLIDES_ID,
-  SYNCHRONIZE_STATE_ID,
-  TAKE_SCREENSHOT_ID,
-} from "~/entities/presentation"
+import { addSlide, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
-import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
+import { useAppDispatch, useDebouncedFunctions, useYjs } from "~/shared/model"
 
 export const AddSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(function AddSlide({ children }, _) {
   const dispatch = useAppDispatch()
-  const { flush, flushWithPattern, call } = useDebouncedFunctions()
+  const { flush, flushWithPattern } = useDebouncedFunctions()
+  const { getMap, updateAwareness } = useYjs()
 
   const _addSlide = () => {
     flush(TAKE_SCREENSHOT_ID)
     flushWithPattern(EDIT_ELEMENT_ID)
-    dispatch(addSlideThunk())
-    call(SAVE_SLIDES_ID)
-    dispatch(setIsSaving(true))
-    call(SYNCHRONIZE_STATE_ID)
+    const newSlide = dispatch(addSlide())
+    getMap<YPresentation>()
+      .get("slides")
+      ?.push([transformNormalizedToYSlide(newSlide)])
+    updateAwareness<UserAwareness>({ currentSlideId: newSlide.id })
   }
 
   return children(_addSlide)

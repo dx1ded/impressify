@@ -17,10 +17,6 @@ const documents = {
     "#graphql\n  fragment SlideFields on Slide {\n    id\n    bg\n    transition\n    thumbnailUrl\n    elements {\n      id\n      x\n      y\n      width\n      height\n      angle\n      scaleX\n      scaleY\n\n      ... on Text {\n        text\n        textColor\n        fillColor\n        borderColor\n        fontFamily\n        fontSize\n        bold\n        italic\n        underlined\n        alignment\n        lineHeight\n      }\n\n      ... on Image {\n        imageUrl\n      }\n\n      ... on Shape {\n        type\n        fillColor\n        strokeColor\n        strokeWidth\n        proportional\n      }\n    }\n  }\n": types.SlideFieldsFragmentDoc,
     "#graphql\n  query FindUserPresentations($preview: Boolean!, $sortBy: String!) {\n    findUserPresentations(preview: $preview, sortBy: $sortBy) {\n      id\n      name\n      users {\n        id\n      }\n      slides {\n        thumbnailUrl\n      }\n      history {\n        records {\n          lastOpened\n          user {\n            id\n          }\n        }\n      }\n    }\n  }\n": types.FindUserPresentationsDocument,
     "#graphql\n  query GetPresentationInfo($id: String!) {\n    getPresentationInfo(id: $id) {\n      totalImageElements\n      totalShapeElements\n      totalSlides\n      totalTextElements\n      totalUsers\n    }\n  }\n": types.GetPresentationInfoDocument,
-    "#graphql\n  query GetPresentation($presentationId: String!) {\n    getPresentation(id: $presentationId) {\n      id\n      name\n      slides {\n        ...SlideFields\n      }\n    }\n  }\n": types.GetPresentationDocument,
-    "#graphql\n  mutation SaveSlides($presentationId: String!, $slides: [SlideInput!]!) {\n    saveSlides(presentationId: $presentationId, slides: $slides) {\n      ...SlideFields\n    }\n  }\n": types.SaveSlidesDocument,
-    "#graphql\n  mutation SynchronizePresentationState($state: PresentationStateInput!) {\n    synchronizePresentationState(state: $state) {\n      __typename\n    }\n  }\n": types.SynchronizePresentationStateDocument,
-    "#graphql\n  subscription PresentationUpdated($presentationId: String!) {\n    presentationUpdated(presentationId: $presentationId) {\n      operation\n      name\n      isSaving\n      slides {\n        ...SlideFields\n      }\n      connectedUsers {\n        id\n        name\n        profilePicUrl\n        currentSlideId\n        cursorX\n        cursorY\n      }\n    }\n  }\n": types.PresentationUpdatedDocument,
     "#graphql\n  mutation CreatePresentation($name: String!, $template: String!) {\n    createPresentation(name: $name, template: $template) {\n      id\n    }\n  }\n": types.CreatePresentationDocument,
     "#graphql\n  mutation DeletePresentation($presentationId: ID!) {\n    deletePresentation(id: $presentationId)\n  }\n": types.DeletePresentationDocument,
     "#graphql\n  mutation DuplicatePresentation($id: ID!) {\n    duplicatePresentation(id: $id) {\n      id\n    }\n  }\n": types.DuplicatePresentationDocument,
@@ -60,22 +56,6 @@ export function gql(source: "#graphql\n  query FindUserPresentations($preview: B
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "#graphql\n  query GetPresentationInfo($id: String!) {\n    getPresentationInfo(id: $id) {\n      totalImageElements\n      totalShapeElements\n      totalSlides\n      totalTextElements\n      totalUsers\n    }\n  }\n"): (typeof documents)["#graphql\n  query GetPresentationInfo($id: String!) {\n    getPresentationInfo(id: $id) {\n      totalImageElements\n      totalShapeElements\n      totalSlides\n      totalTextElements\n      totalUsers\n    }\n  }\n"];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(source: "#graphql\n  query GetPresentation($presentationId: String!) {\n    getPresentation(id: $presentationId) {\n      id\n      name\n      slides {\n        ...SlideFields\n      }\n    }\n  }\n"): (typeof documents)["#graphql\n  query GetPresentation($presentationId: String!) {\n    getPresentation(id: $presentationId) {\n      id\n      name\n      slides {\n        ...SlideFields\n      }\n    }\n  }\n"];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(source: "#graphql\n  mutation SaveSlides($presentationId: String!, $slides: [SlideInput!]!) {\n    saveSlides(presentationId: $presentationId, slides: $slides) {\n      ...SlideFields\n    }\n  }\n"): (typeof documents)["#graphql\n  mutation SaveSlides($presentationId: String!, $slides: [SlideInput!]!) {\n    saveSlides(presentationId: $presentationId, slides: $slides) {\n      ...SlideFields\n    }\n  }\n"];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(source: "#graphql\n  mutation SynchronizePresentationState($state: PresentationStateInput!) {\n    synchronizePresentationState(state: $state) {\n      __typename\n    }\n  }\n"): (typeof documents)["#graphql\n  mutation SynchronizePresentationState($state: PresentationStateInput!) {\n    synchronizePresentationState(state: $state) {\n      __typename\n    }\n  }\n"];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(source: "#graphql\n  subscription PresentationUpdated($presentationId: String!) {\n    presentationUpdated(presentationId: $presentationId) {\n      operation\n      name\n      isSaving\n      slides {\n        ...SlideFields\n      }\n      connectedUsers {\n        id\n        name\n        profilePicUrl\n        currentSlideId\n        cursorX\n        cursorY\n      }\n    }\n  }\n"): (typeof documents)["#graphql\n  subscription PresentationUpdated($presentationId: String!) {\n    presentationUpdated(presentationId: $presentationId) {\n      operation\n      name\n      isSaving\n      slides {\n        ...SlideFields\n      }\n      connectedUsers {\n        id\n        name\n        profilePicUrl\n        currentSlideId\n        cursorX\n        cursorY\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -11,10 +11,3 @@ interface Element {
   # index in an array of elements
   position: Int!
 }
-
-# This is a limitation of GraphQL. You can't do polymorphic inputs, that's why I had to specify separate fields for text, image, and shape - not altogether
-input ElementInput {
-  text: [TextInput!]!
-  image: [ImageInput!]!
-  shape: [ShapeInput!]!
-}

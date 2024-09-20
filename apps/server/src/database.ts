@@ -9,6 +9,7 @@ import { Text } from "./entities/Text"
 import { Image } from "./entities/Image"
 import { Shape } from "./entities/Shape"
 import { User } from "./entities/User"
+import { Document } from "./entities/Document"
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -21,12 +22,15 @@ export const AppDataSource = new DataSource({
   entities: [`${__dirname}/entities/**/*.js`],
 })
 
+export const queryRunner = AppDataSource.createQueryRunner()
+
 export const userRepository = AppDataSource.getRepository(User)
 export const presentationRepository = AppDataSource.getRepository(Presentation)
 export const historyRepository = AppDataSource.getRepository(History)
 export const historyRecordRepository = AppDataSource.getRepository(HistoryRecord)
 export const slideRepository = AppDataSource.getRepository(Slide)
 export const elementRepository = AppDataSource.getRepository(Element) as Repository<Text | Image | Shape>
+export const documentRepository = AppDataSource.getRepository(Document)
 export const textRepository = AppDataSource.getRepository(Text)
 export const imageRepository = AppDataSource.getRepository(Image)
 export const shapeRepository = AppDataSource.getRepository(Shape)

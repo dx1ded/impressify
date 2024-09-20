@@ -1,21 +1,23 @@
 import { UserButton } from "@clerk/clerk-react"
+import type { YPresentation } from "@server/hocuspocus/types"
+import { memo } from "react"
 import { shallowEqual } from "react-redux"
+import { useDebouncedCallback } from "use-debounce"
 
-import { CHANGE_NAME_ID, MAX_NAME_LENGTH } from "~/entities/presentation"
-import { useRenamePresentation } from "~/features/rename-presentation"
+import { MAX_NAME_LENGTH } from "~/entities/presentation"
 import { SharePresentationDialog } from "~/features/share-presentation"
 import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
 import { Menubar } from "~/widgets/menubar"
-import { useAppSelector, useDebouncedFunctions } from "~/shared/model"
+import { useAppSelector, useYjs } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import { Skeleton } from "~/shared/ui-kit/skeleton"
 import { Logo } from "~/shared/ui/Logo"
 import { ResizableInput } from "~/shared/ui/ResizableInput"
 
-const DEBOUNCED_CHANGE_NAME_TIME = 2000
+const DEBOUNCED_CHANGE_NAME_TIME = 200
 
-export function Header() {
+export const Header = memo(function Header() {
   const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
   const { name, isLoading, presentationId } = useAppSelector(
     (state) => ({
@@ -25,15 +27,16 @@ export function Header() {
     }),
     shallowEqual,
   )
-  const { renamePresentation } = useRenamePresentation()
-  const { register } = useDebouncedFunctions()
+  const { getMap } = useYjs()
 
-  const debouncedChangeName = register(
-    CHANGE_NAME_ID,
-    (name: string) => renamePresentation(presentationId, name),
-    DEBOUNCED_CHANGE_NAME_TIME,
-    [presentationId],
-  )
+  const debouncedChangeName = useDebouncedCallback((newName: string) => {
+    const yPresentation = getMap<YPresentation>()
+    const yName = yPresentation.get("name")!
+    if (name !== newName) {
+      yName.delete(0, name.length)
+      yName.insert(0, newName)
+    }
+  }, DEBOUNCED_CHANGE_NAME_TIME)
 
   return (
     <header className="flex items-center justify-between py-2">
@@ -45,9 +48,9 @@ export function Header() {
               <Skeleton className="h-[1.875rem] w-32" />
             ) : (
               <ResizableInput
-                maxLength={MAX_NAME_LENGTH}
-                value={name}
                 className="rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-gray-300"
+                value={name}
+                maxLength={MAX_NAME_LENGTH}
                 data-toast="Presentation name"
                 onChange={(e) => debouncedChangeName(e.target.value)}
               />
@@ -73,4 +76,4 @@ export function Header() {
       </div>
     </header>
   )
-}
+})

@@ -1,3 +1,5 @@
+import { memo } from "react"
+
 import { useAppSelector } from "~/shared/model"
 import { ToolbarSeparator } from "~/shared/ui/Toolbar"
 import { Add } from "~/widgets/toolbar/ui/Add"
@@ -8,7 +10,7 @@ import { TextMode } from "~/widgets/toolbar/ui/TextMode"
 import { ImageMode } from "~/widgets/toolbar/ui/ImageMode"
 import { ShapeMode } from "~/widgets/toolbar/ui/ShapeMode"
 
-export function Toolbar() {
+export const Toolbar = memo(function Toolbar() {
   const mode = useAppSelector((state) => state.toolbar.mode)
 
   return (
@@ -29,4 +31,4 @@ export function Toolbar() {
       <ShapeMode isActive={mode === "shape"} />
     </div>
   )
-}
+})

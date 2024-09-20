@@ -28,29 +28,3 @@ enum Alignment {
   CENTER
   RIGHT
 }
-
-input TextInput {
-  id: ID!
-  x: Float!
-  y: Float!
-  width: Float!
-  height: Float!
-  angle: Float!
-  scaleX: Float!
-  scaleY: Float!
-
-  text: String!
-  textColor: String!
-  fillColor: String!
-  borderColor: String!
-  fontFamily: String!
-  fontSize: Int!
-  bold: Boolean!
-  italic: Boolean!
-  underlined: Boolean!
-  alignment: Alignment!
-  lineHeight: Float!
-
-  # Index in a common element array
-  position: Int!
-}

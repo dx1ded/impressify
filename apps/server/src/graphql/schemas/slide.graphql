@@ -17,17 +17,3 @@ enum Transition {
   SLIDES_FROM_RIGHT
   FLIP
 }
-
-input SlideInput {
-  id: ID!
-  elements: ElementInput!
-  bg: String!
-  transition: Transition!
-  thumbnailUrl: String!
-}
-
-type Mutation {
-  # `slides` argument includes all slides (even those that haven't been updated)
-  # it's done to have a clean architecture despite biggest request body
-  saveSlides(presentationId: String!, slides: [SlideInput!]!): [Slide]
-}

@@ -26,23 +26,3 @@ enum ShapeType {
   ARROW
   STAR
 }
-
-input ShapeInput {
-  id: ID!
-  x: Float!
-  y: Float!
-  width: Float!
-  height: Float!
-  angle: Float!
-  scaleX: Float!
-  scaleY: Float!
-
-  type: ShapeType!
-  fillColor: String!
-  strokeColor: String!
-  strokeWidth: Int!
-  proportional: Boolean!
-
-  # Index in a common element array
-  position: Int!
-}

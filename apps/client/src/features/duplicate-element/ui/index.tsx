@@ -1,11 +1,4 @@
-import {
-  duplicateElementThunk,
-  generateEditElementId,
-  SAVE_SLIDES_ID,
-  setIsSaving,
-  SYNCHRONIZE_STATE_ID,
-  TAKE_SCREENSHOT_ID,
-} from "~/entities/presentation"
+import { duplicateElement, generateEditElementId, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
 
@@ -18,11 +11,8 @@ export function DuplicateElement({ children }: ChildrenAsCallbackWithFn) {
 
   const _duplicateElement = () => {
     flush(EDIT_SELECTED_ELEMENT_ID)
-    dispatch(duplicateElementThunk())
+    dispatch(duplicateElement())
     call(TAKE_SCREENSHOT_ID)
-    call(SAVE_SLIDES_ID)
-    dispatch(setIsSaving(true))
-    call(SYNCHRONIZE_STATE_ID)
   }
 
   return children(_duplicateElement)

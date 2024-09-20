@@ -1,30 +1,44 @@
+import type { YPresentation } from "@server/hocuspocus/types"
 import { PaintBucketIcon, PencilIcon } from "lucide-react"
+import { shallowEqual } from "react-redux"
 
-import {
-  type ShapeProps,
-  updateShapePropsThunk,
-  TAKE_SCREENSHOT_ID,
-  SAVE_SLIDES_ID,
-  setIsSaving,
-  SYNCHRONIZE_STATE_ID,
-} from "~/entities/presentation"
+import { type ShapeProps, updateShapeProps, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
-import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ColorPicker } from "~/shared/ui/ColorPicker"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function ShapeMode({ isActive }: ModeProps) {
   const shapeProps = useAppSelector((state) => state.toolbar.shapeProps)
+  const { currentSlide, selectedId } = useAppSelector(
+    (state) => ({
+      currentSlide: state.presentation.currentSlide,
+      selectedId: state.presentation.selectedId,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
   const { call } = useDebouncedFunctions()
+  const { getMap } = useYjs()
 
   const applyShapeChanges = (props: Partial<ShapeProps>) => {
-    dispatch(updateShapePropsThunk(props))
+    dispatch(updateShapeProps(props))
     call(TAKE_SCREENSHOT_ID)
-    call(SAVE_SLIDES_ID)
-    dispatch(setIsSaving(true))
-    call(SYNCHRONIZE_STATE_ID)
+
+    const element = getMap<YPresentation>()
+      .get("slides")
+      ?.get(currentSlide)
+      ?.get("elements")
+      ?.toArray()
+      .find((_element) => _element.get("id") === selectedId)!
+
+    Object.keys(props).forEach((key) => {
+      const typedKey = key as keyof ShapeProps
+      const typedValue = props[typedKey]
+      if (!typedValue) return
+      element.set(typedKey, typedValue)
+    })
   }
 
   return (

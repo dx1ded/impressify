@@ -1,6 +1,5 @@
+import { type ClerkClient, verifyToken } from "@clerk/clerk-sdk-node"
 import { type Storage, getDownloadURL } from "firebase-admin/storage"
-import type { ConnectionState } from "./types"
-import type { ConnectedUser, ConnectedUserInput } from "./graphql/__generated__"
 
 export async function uploadImageToFirebaseStorage(storage: Storage, dataUrl: string, filePath: string) {
   const bucket = storage.bucket(process.env.FIREBASE_BUCKET_NAME)
@@ -24,59 +23,15 @@ export async function uploadImageToFirebaseStorage(storage: Storage, dataUrl: st
   return getDownloadURL(file)
 }
 
-export function useConnections() {
-  const connections: Record<string, { state: ConnectionState; users: ConnectedUser[] }> = {}
+export async function validateTokenAndGetUser(authorization: string, clerk: ClerkClient) {
+  try {
+    const token = authorization.replace("Bearer ", "")
+    const verifiedToken = await verifyToken(token, {
+      secretKey: process.env.CLERK_SECRET_KEY,
+    })
 
-  function getUsers(presentationId: string) {
-    return connections[presentationId]?.users || []
-  }
-
-  function getSynchronizedState(presentationId: string) {
-    return connections[presentationId]?.state || ({} as ConnectionState)
-  }
-
-  function addUser(presentationId: string, user: ConnectedUser) {
-    if (!connections[presentationId]) {
-      connections[presentationId] = { state: { name: null, slides: [], isSaving: false }, users: [] }
-    }
-    connections[presentationId].users.push(user)
-  }
-
-  function updateUser(presentationId: string, userInput: ConnectedUserInput) {
-    if (!connections[presentationId].users.find((user) => user.id === userInput.id)) return
-    connections[presentationId].users = connections[presentationId].users.map((user) =>
-      user.id === userInput.id ? { ...user, ...userInput } : user,
-    )
-  }
-
-  function updateMultipleUsers(presentationId: string, cb: (user: ConnectedUser) => ConnectedUser) {
-    if (!connections[presentationId]) return
-    connections[presentationId].users = connections[presentationId].users.map(cb)
-  }
-
-  function updateSynchronizedState(presentationId: string, newState: Partial<ConnectionState>) {
-    if (!connections[presentationId]) return
-    connections[presentationId].state = { ...connections[presentationId].state, ...newState }
-  }
-
-  function removeUser(presentationId: string, userId: string) {
-    if (connections[presentationId]) {
-      connections[presentationId].users = connections[presentationId].users.filter((user) => user.id !== userId)
-    }
-  }
-
-  function removeConnection(presentationId: string) {
-    delete connections[presentationId]
-  }
-
-  return {
-    getUsers,
-    getSynchronizedState,
-    addUser,
-    updateUser,
-    updateMultipleUsers,
-    updateSynchronizedState,
-    removeUser,
-    removeConnection,
+    return await clerk.users.getUser(verifiedToken.sub)
+  } catch (e) {
+    return null
   }
 }

@@ -1,12 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
 import { Alignment, ShapeType } from "~/__generated__/graphql"
+import type { AppDispatch, AppStore } from "~/app/model"
 import {
   type Mode,
   type ImageEditProps,
   type ShapeEditProps,
   type TextEditProps,
-  editElementThunk,
+  editElement,
   DEFAULT_BORDER_COLOR,
   DEFAULT_FILL_COLOR,
   DEFAULT_FONT_FAMILY,
@@ -15,7 +16,7 @@ import {
   DEFAULT_STROKE_WIDTH,
   DEFAULT_TEXT_COLOR,
 } from "~/entities/presentation"
-import { clear, createAsyncAppThunk, setCurrentSlide } from "~/shared/model"
+import { clear, switchCurrentSlide } from "~/shared/model"
 
 interface ToolbarState {
   mode: Mode
@@ -76,7 +77,7 @@ const toolbarSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(setCurrentSlide, (state) => {
+    builder.addCase(switchCurrentSlide, (state) => {
       state.mode = initialState.mode
       state.textProps = initialState.textProps
       state.imageProps = initialState.imageProps
@@ -91,29 +92,23 @@ const toolbarSlice = createSlice({
   },
 })
 
-export const updateTextPropsThunk = createAsyncAppThunk<void, Partial<TextEditProps>>(
-  "toolbar/updateTextProps",
-  (textProps, { getState, dispatch }) => {
+export const updateTextProps =
+  (textProps: Partial<TextEditProps>) => (dispatch: AppDispatch, getState: () => AppStore) => {
     dispatch(setTextProps(textProps))
-    dispatch(editElementThunk({ ...textProps, id: getState().presentation.selectedId }))
-  },
-)
+    dispatch(editElement({ ...textProps, id: getState().presentation.selectedId }))
+  }
 
-export const updateImagePropsThunk = createAsyncAppThunk<void, Partial<ImageEditProps>>(
-  "toolbar/updateImageProps",
-  (imageProps, { getState, dispatch }) => {
+export const updateImageProps =
+  (imageProps: Partial<ImageEditProps>) => (dispatch: AppDispatch, getState: () => AppStore) => {
     dispatch(setImageProps(imageProps))
-    dispatch(editElementThunk({ ...imageProps, id: getState().presentation.selectedId }))
-  },
-)
+    dispatch(editElement({ ...imageProps, id: getState().presentation.selectedId }))
+  }
 
-export const updateShapePropsThunk = createAsyncAppThunk<void, Partial<ShapeEditProps>>(
-  "toolbar/updateShapeProps",
-  (shapeProps, { getState, dispatch }) => {
+export const updateShapeProps =
+  (shapeProps: Partial<ShapeEditProps>) => (dispatch: AppDispatch, getState: () => AppStore) => {
     dispatch(setShapeProps(shapeProps))
-    dispatch(editElementThunk({ ...shapeProps, id: getState().presentation.selectedId }))
-  },
-)
+    dispatch(editElement({ ...shapeProps, id: getState().presentation.selectedId }))
+  }
 
 export const { setMode, resetToolbarElementProps, setTextProps, setImageProps, setShapeProps } = toolbarSlice.actions
 export const toolbarReducer = toolbarSlice.reducer

@@ -1,32 +1,43 @@
 import { TooltipTrigger } from "@radix-ui/react-tooltip"
+import type { YPresentation } from "@server/hocuspocus/types"
 import type { ChangeEvent } from "react"
+import { shallowEqual } from "react-redux"
 
-import {
-  updateImagePropsThunk,
-  SAVE_SLIDES_ID,
-  setIsSaving,
-  SYNCHRONIZE_STATE_ID,
-  TAKE_SCREENSHOT_ID,
-} from "~/entities/presentation"
+import { updateImageProps, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
-import { convertFileToDataUrl } from "~/shared/lib"
-import { useAppDispatch, useDebouncedFunctions } from "~/shared/model"
+import { convertFileToDataUrl, uploadImageToStorage } from "~/shared/lib"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 import { Tooltip, TooltipContent } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function ImageMode({ isActive }: ModeProps) {
+  const { presentationId, currentSlide, selectedId } = useAppSelector(
+    (state) => ({
+      presentationId: state.presentation.presentation.id,
+      currentSlide: state.presentation.currentSlide,
+      selectedId: state.presentation.selectedId,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
   const { call } = useDebouncedFunctions()
+  const { getMap } = useYjs()
 
   const replaceImageHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
     if (!files || !files.length) return
     const dataUrl = await convertFileToDataUrl(files[0])
-    dispatch(updateImagePropsThunk({ imageUrl: dataUrl }))
+    const uploadedImageUrl = await uploadImageToStorage(dataUrl, `${presentationId}/${currentSlide}/${selectedId}`)
+
+    dispatch(updateImageProps({ imageUrl: uploadedImageUrl }))
     call(TAKE_SCREENSHOT_ID)
-    call(SAVE_SLIDES_ID)
-    dispatch(setIsSaving(true))
-    call(SYNCHRONIZE_STATE_ID)
+    getMap<YPresentation>()
+      .get("slides")
+      ?.get(currentSlide)
+      ?.get("elements")
+      ?.toArray()
+      .find((_element) => _element.get("id") === selectedId)
+      ?.set("imageUrl", uploadedImageUrl)
   }
 
   return (

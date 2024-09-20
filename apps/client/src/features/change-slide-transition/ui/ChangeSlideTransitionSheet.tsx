@@ -1,8 +1,9 @@
+import type { YPresentation } from "@server/hocuspocus/types"
 import type { ReactNode } from "react"
 
 import { Transition } from "~/__generated__/graphql"
-import { SAVE_SLIDES_ID, setIsSaving, setTransition, SYNCHRONIZE_STATE_ID } from "~/entities/presentation"
-import { useAppDispatch, useAppSelector, useDebouncedFunctions } from "~/shared/model"
+import { setTransition } from "~/entities/presentation"
+import { useAppDispatch, useAppSelector, useYjs } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/ui-kit/select"
 import {
@@ -22,16 +23,14 @@ export function ChangeSlideTransitionSheet({ children }: { children: ReactNode }
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
   const dispatch = useAppDispatch()
-  const { call } = useDebouncedFunctions()
+  const { getMap } = useYjs()
 
   const slide = slides[currentSlide]
   if (!slide) return
 
   const changeHandler = (value: Transition) => {
     dispatch(setTransition(value))
-    call(SAVE_SLIDES_ID)
-    dispatch(setIsSaving(true))
-    call(SYNCHRONIZE_STATE_ID)
+    getMap<YPresentation>().get("slides")?.get(currentSlide).set("transition", value)
   }
 
   return (

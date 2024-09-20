@@ -1,4 +1,5 @@
 import { Draggable } from "@hello-pangea/dnd"
+import type { UserAwareness } from "@server/hocuspocus/types"
 import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
 
 import { Transition } from "~/__generated__/graphql"
@@ -6,7 +7,7 @@ import { type SlideProps, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities
 import { DeleteSlide } from "~/features/delete-slide"
 import { DuplicateSlide } from "~/features/duplicate-slide/ui"
 import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
-import { useAppDispatch, useAppSelector, useDebouncedFunctions, setCurrentSlide } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useDebouncedFunctions, switchCurrentSlide, useYjs } from "~/shared/model"
 import { cn } from "~/shared/lib"
 
 interface SlideListItemProps {
@@ -20,6 +21,17 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
   const dispatch = useAppDispatch()
   const { flush, flushWithPattern, deleteWithPattern, deleteDebounced } = useDebouncedFunctions()
+  const { updateAwareness } = useYjs()
+
+  const switchSlide = () => {
+    if (index === currentSlide) return
+    flushWithPattern(EDIT_ELEMENT_ID)
+    flush(TAKE_SCREENSHOT_ID)
+    deleteWithPattern(EDIT_ELEMENT_ID)
+    deleteDebounced(TAKE_SCREENSHOT_ID)
+    dispatch(switchCurrentSlide(index))
+    updateAwareness<UserAwareness>({ currentSlideId: slide.id })
+  }
 
   return (
     <Draggable key={slide.id} draggableId={slide.id} index={index} disableInteractiveElementBlocking>
@@ -62,13 +74,7 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
               "group relative block flex-1 overflow-hidden rounded-md border-2 border-white shadow",
               index === currentSlide && "border-blue-500",
             )}
-            onClick={() => {
-              flushWithPattern(EDIT_ELEMENT_ID)
-              flush(TAKE_SCREENSHOT_ID)
-              deleteWithPattern(EDIT_ELEMENT_ID)
-              deleteDebounced(TAKE_SCREENSHOT_ID)
-              dispatch(setCurrentSlide({ id: slide.id, index }))
-            }}>
+            onClick={switchSlide}>
             <img src={slide.thumbnailUrl} alt="Slide thumbnail" className="h-full w-full max-w-[10.375rem]" />
             <ConnectionList
               size="sm"
