@@ -34,7 +34,10 @@ export function getInitialAwareness({
     profilePicUrl,
     color: generateUserColor(),
     currentSlideId,
-    cursorX: null,
-    cursorY: null,
+    cursor: {
+      x: null,
+      y: null,
+      isOutsideBoundaries: true,
+    },
   }
 }

@@ -75,7 +75,10 @@ export type UserAwareness = {
   name: string
   profilePicUrl: string
   color: string
-  cursorX: number | null
-  cursorY: number | null
   currentSlideId: string
+  cursor: {
+    x: number | null
+    y: number | null
+    isOutsideBoundaries: boolean
+  }
 }

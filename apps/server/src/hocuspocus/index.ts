@@ -27,6 +27,14 @@ export default new Hocuspocus({
         const presentation = await presentationRepository.findOne({
           relations: ["slides", "slides.elements"],
           where: { id: presentationId },
+          order: {
+            slides: {
+              position: "ASC",
+              elements: {
+                position: "ASC",
+              },
+            },
+          },
         })
 
         // Updating the document (all transformations and settings are inside the function)

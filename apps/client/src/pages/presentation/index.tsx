@@ -4,10 +4,9 @@ import type { HocuspocusProvider } from "@hocuspocus/provider"
 import type { YPresentation, UserAwareness } from "@server/hocuspocus/types"
 import { normalizePresentation } from "@server/hocuspocus/transform"
 import type * as Y from "yjs"
-import { type MouseEvent, useCallback, useState } from "react"
+import { useCallback } from "react"
 import { useParams } from "react-router-dom"
 import { shallowEqual } from "react-redux"
-import { useDebouncedCallback } from "use-debounce"
 
 import type { AddHistoryRecordMutation, AddHistoryRecordMutationVariables } from "~/__generated__/graphql"
 import { ADD_HISTORY_RECORD } from "~/entities/history-record"
@@ -23,9 +22,7 @@ import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
 import { Header } from "~/pages/presentation/ui/Header"
 import { Toolbar } from "~/widgets/toolbar"
-import { isNotNullable } from "~/shared/lib"
 import { DebouncedProvider, YjsProvider, AWARENESS_VALUE_FIELD, useAppSelector, useAppDispatch } from "~/shared/model"
-import { Cursor } from "~/shared/ui/Cursor"
 import { Toaster } from "~/shared/ui-kit/sonner"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 
@@ -37,17 +34,12 @@ export default function PresentationPage() {
   )
 }
 
-const UPDATE_CURSOR_DEBOUNCE_TIME = 150
-
 function Presentation() {
   const { id } = useParams<{ id: string }>()
   const { user } = useUser()
-  const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
-  const { isSaving, currentSlide, userToken } = useAppSelector(
+  const { currentSlide, userToken } = useAppSelector(
     (state) => ({
-      isSaving: state.presentation.isSaving,
       currentSlide: state.presentation.currentSlide,
       userToken: state.user.token,
     }),
@@ -70,10 +62,6 @@ function Presentation() {
       const id = yPresentation.get("id")
       // Checking only for `id` because if this one doesn't exist then the other props neither do
       if (!id) return
-      const updatedIsSaving = yPresentation.get("isSaving")
-      if (updatedIsSaving !== undefined && updatedIsSaving !== isSaving) {
-        return dispatch(setIsSaving(updatedIsSaving || false))
-      }
       const normalizedPresentation = normalizePresentation(yPresentation)
       // Setting `currentSlide` and updating awareness
       const localState = provider.awareness?.getLocalState()
@@ -109,8 +97,9 @@ function Presentation() {
       const presentationAction = !slides.length ? setPresentation : updatePresentation
       dispatch(presentationAction(normalizedPresentation))
       dispatch(setIsLoading(false))
+      dispatch(setIsSaving(yPresentation.get("isSaving") || false))
     },
-    [dispatch, isSaving, slides, currentSlide],
+    [dispatch, slides, currentSlide],
   )
 
   const awarenessChangeHandler = useCallback(
@@ -118,23 +107,6 @@ function Presentation() {
       dispatch(setConnectedUsers(users))
     },
     [dispatch],
-  )
-
-  const mouseMoveHandlerDebounced = useDebouncedCallback(
-    useCallback(
-      (e: MouseEvent<HTMLDivElement>) => {
-        if (!provider || !provider.awareness?.getLocalState()) return
-        const updatedUser: UserAwareness = {
-          ...connectedUsers.find((_user) => _user.id === user?.id)!,
-          cursorX: e.clientX,
-          cursorY: e.clientY,
-        }
-
-        provider.setAwarenessField(AWARENESS_VALUE_FIELD, updatedUser)
-      },
-      [connectedUsers, provider, user?.id],
-    ),
-    UPDATE_CURSOR_DEBOUNCE_TIME,
   )
 
   const setInitialAwareness = useCallback(
@@ -161,25 +133,9 @@ function Presentation() {
       onUpdate={updateHandler}
       onAwarenessChange={awarenessChangeHandler}
       onAuthenticated={addHistoryRecord}
-      setInitialAwareness={setInitialAwareness}
-      setExternalProvider={setProvider}>
+      setInitialAwareness={setInitialAwareness}>
       <TooltipProvider>
-        <div className="flex h-screen flex-col bg-[#f8fafd] px-4" onMouseMove={mouseMoveHandlerDebounced}>
-          {connectedUsers.map(
-            (connectedUser) =>
-              connectedUser.id !== user?.id &&
-              connectedUser.currentSlideId === slides[currentSlide]?.id &&
-              isNotNullable(connectedUser.cursorX) &&
-              isNotNullable(connectedUser.cursorY) && (
-                <Cursor
-                  key={connectedUser.id}
-                  name={connectedUser.name}
-                  color={connectedUser.color}
-                  x={connectedUser.cursorX}
-                  y={connectedUser.cursorY}
-                />
-              ),
-          )}
+        <div className="flex h-screen flex-col bg-[#f8fafd] px-4">
           <div>
             <Header />
             <Toolbar />

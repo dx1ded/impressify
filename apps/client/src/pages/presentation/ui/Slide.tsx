@@ -1,10 +1,11 @@
-import type { YPresentation } from "@server/hocuspocus/types"
+import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
 import { transformNormalizedToYElement } from "@server/hocuspocus/transform"
 import { memo, useRef } from "react"
 import { Layer, Rect, Stage } from "react-konva"
 import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
 import { Stage as StageClass } from "konva/lib/Stage"
+import { useDebouncedCallback } from "use-debounce"
 
 import {
   ElementWrapper,
@@ -23,19 +24,25 @@ import {
   TAKE_SCREENSHOT_ID,
   editElement,
 } from "~/entities/presentation"
-import { createImage, isColor, uploadImageToStorage } from "~/shared/lib"
+import { createImage, isColor, isNotNullable, uploadImageToStorage } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
+import { Cursor } from "~/shared/ui/Cursor"
 
 const SCREENSHOT_DEBOUCE_TIME = 5000
+const UPDATE_CURSOR_DEBOUNCE_TIME = 150
+
+const CONTAINER_BORDER_WIDTH = 2
 
 export const Slide = memo(function Slide() {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const { currentSlide, presentationId, selectedId, isLoading, isCreating, isEditing, mode, imageHeight } =
+  const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
+  const { currentSlide, presentationId, userId, selectedId, isLoading, isCreating, isEditing, mode, imageHeight } =
     useAppSelector(
       (state) => ({
         currentSlide: state.presentation.currentSlide,
         presentationId: state.presentation.presentation.id,
         selectedId: state.presentation.selectedId,
+        userId: state.user.id,
         isLoading: state.presentation.isLoading,
         isCreating: state.presentation.isCreating,
         isEditing: state.presentation.isEditing,
@@ -47,7 +54,7 @@ export const Slide = memo(function Slide() {
   const dispatch = useAppDispatch()
   const stageRef = useRef<StageClass>(null)
   const { register, flush } = useDebouncedFunctions()
-  const { getMap } = useYjs()
+  const { getMap, updateAwareness } = useYjs()
 
   const slide = slides[currentSlide]
 
@@ -118,44 +125,89 @@ export const Slide = memo(function Slide() {
     }
   }
 
+  const mouseMoveHandlerDebounced = useDebouncedCallback((e: KonvaEventObject<MouseEvent>) => {
+    updateAwareness<UserAwareness>({
+      cursor: {
+        x: e.evt.layerX,
+        y: e.evt.layerY,
+        isOutsideBoundaries: false,
+      },
+    })
+  }, UPDATE_CURSOR_DEBOUNCE_TIME)
+
+  const mouseLeaveHandler = (e: KonvaEventObject<MouseEvent>) => {
+    mouseMoveHandlerDebounced.cancel()
+    updateAwareness<UserAwareness>({
+      cursor: {
+        x: e.evt.layerX,
+        y: e.evt.layerY,
+        isOutsideBoundaries: true,
+      },
+    })
+  }
+
   return (
     <div className="flex flex-1 items-center justify-center">
-      <Stage
-        ref={stageRef}
-        className="border"
-        width={SLIDE_WIDTH}
-        height={SLIDE_HEIGHT}
-        style={{ cursor: isCreating ? "crosshair" : "default" }}
-        onClick={handleStageClick}>
-        <Layer>
-          {isLoading ? (
-            <Rect x={0} y={0} width={SLIDE_WIDTH} height={SLIDE_HEIGHT} fill="rgba(0, 0, 0, 0.025)" />
-          ) : (
-            <>
-              <Rect
-                x={0}
-                y={0}
-                width={SLIDE_WIDTH}
-                height={SLIDE_HEIGHT}
-                listening={false}
-                {...(isColor(slide.bg) ? { fill: slide.bg } : { fillPatternImage: createImage(slide.bg) })}
+      <div
+        className="relative border"
+        style={{
+          width: `${SLIDE_WIDTH + CONTAINER_BORDER_WIDTH}px`,
+          height: `${SLIDE_HEIGHT + CONTAINER_BORDER_WIDTH}px`,
+        }}>
+        {connectedUsers.map(
+          (connectedUser) =>
+            connectedUser.id !== userId &&
+            connectedUser.currentSlideId === slides[currentSlide]?.id &&
+            isNotNullable(connectedUser.cursor.x) &&
+            isNotNullable(connectedUser.cursor.y) && (
+              <Cursor
+                key={connectedUser.id}
+                name={connectedUser.name}
+                color={connectedUser.color}
+                x={connectedUser.cursor.x}
+                y={connectedUser.cursor.y}
+                isVisible={!connectedUser.cursor.isOutsideBoundaries}
               />
-              {slide.elements.map((element) => (
-                <ElementWrapper
-                  key={element.id}
-                  Element={getElement(element)}
-                  props={element}
-                  mode={mode}
-                  currentSlide={currentSlide}
-                  isSelected={element.id === selectedId}
-                  isCreating={isCreating}
-                  isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
+            ),
+        )}
+        <Stage
+          ref={stageRef}
+          width={SLIDE_WIDTH}
+          height={SLIDE_HEIGHT}
+          style={{ cursor: isCreating ? "crosshair" : "default" }}
+          onClick={handleStageClick}
+          onMouseMove={mouseMoveHandlerDebounced}
+          onMouseLeave={mouseLeaveHandler}>
+          <Layer>
+            {isLoading ? (
+              <Rect x={0} y={0} width={SLIDE_WIDTH} height={SLIDE_HEIGHT} fill="rgba(0, 0, 0, 0.025)" />
+            ) : (
+              <>
+                <Rect
+                  x={0}
+                  y={0}
+                  width={SLIDE_WIDTH}
+                  height={SLIDE_HEIGHT}
+                  listening={false}
+                  {...(isColor(slide.bg) ? { fill: slide.bg } : { fillPatternImage: createImage(slide.bg) })}
                 />
-              ))}
-            </>
-          )}
-        </Layer>
-      </Stage>
+                {slide.elements.map((element) => (
+                  <ElementWrapper
+                    key={element.id}
+                    Element={getElement(element)}
+                    props={element}
+                    mode={mode}
+                    currentSlide={currentSlide}
+                    isSelected={element.id === selectedId}
+                    isCreating={isCreating}
+                    isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
+                  />
+                ))}
+              </>
+            )}
+          </Layer>
+        </Stage>
+      </div>
     </div>
   )
 })

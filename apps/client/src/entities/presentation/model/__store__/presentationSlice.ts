@@ -303,6 +303,10 @@ export const updatePresentation =
     const state = getState()
     const currentPresentation = state.presentation.presentation
 
+    // Doing deep comparison to avoid presentation update when other properties (not `presentation`) got updated in yjs
+    const presentationDifferences = deepDiff(currentPresentation, updatedPresentation)
+    if (!presentationDifferences) return
+
     // We do deep comparison for element props only. Additionally, it only applies for current slide (other slides just apply new elements array)
     const currentSlide = currentPresentation.slides[state.presentation.currentSlide]
     const updatedSlide = updatedPresentation.slides.find((_slide) => _slide.id === currentSlide.id)
