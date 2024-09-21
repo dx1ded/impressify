@@ -35,6 +35,7 @@ export const EditableText = forwardRef<TextClass, EditableTextInputProps>(functi
     textColor,
     fill,
     borderColor,
+    borderWidth,
     fontSize,
     fontFamily,
     fontStyle,
@@ -56,6 +57,7 @@ export const EditableText = forwardRef<TextClass, EditableTextInputProps>(functi
         textColor={textColor}
         fill={fill}
         borderColor={borderColor}
+        borderWidth={borderWidth}
         fontSize={fontSize}
         fontFamily={fontFamily}
         fontStyle={fontStyle}
@@ -85,6 +87,7 @@ export const EditableText = forwardRef<TextClass, EditableTextInputProps>(functi
       sceneFunc={(context, shape) => {
         context.beginPath()
         context.fillStyle = fill || "transparent"
+        context.lineWidth = borderWidth || 1
         context.strokeStyle = borderColor || "transparent"
         context.rect(0, 0, shape.width(), shape.height())
         context.fill()

@@ -34,6 +34,7 @@ export function getInitialAwareness({
     profilePicUrl,
     color: generateUserColor(),
     currentSlideId,
+    selectedId: "NOT_SELECTED",
     cursor: {
       x: null,
       y: null,

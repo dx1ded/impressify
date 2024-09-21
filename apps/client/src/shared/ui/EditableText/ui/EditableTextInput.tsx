@@ -13,6 +13,7 @@ export function EditableTextInput({
   textColor,
   fill,
   borderColor,
+  borderWidth,
   fontSize,
   fontFamily,
   fontStyle,
@@ -65,6 +66,7 @@ export function EditableTextInput({
           lineHeight,
           justifyContent: align === "center" ? "center" : align === "right" ? "flex-end" : "flex-start",
           ...(borderColor !== "transparent" ? { borderColor } : {}),
+          ...(borderWidth ? { borderWidth: `${borderWidth}px` } : {}),
         }}
         contentEditable
         suppressContentEditableWarning

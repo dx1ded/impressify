@@ -1,6 +1,6 @@
 import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
 import { transformNormalizedToYElement } from "@server/hocuspocus/transform"
-import { memo, useRef } from "react"
+import { memo, useMemo, useRef } from "react"
 import { Layer, Rect, Stage } from "react-konva"
 import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
@@ -13,6 +13,7 @@ import {
   addElement,
   generateEditElementId,
   selectElement,
+  editElement,
   resetToolbarElementProps,
   setMode,
   setThumbnail,
@@ -22,7 +23,6 @@ import {
   SLIDE_WIDTH,
   NOT_SELECTED,
   TAKE_SCREENSHOT_ID,
-  editElement,
 } from "~/entities/presentation"
 import { createImage, isColor, isNotNullable, uploadImageToStorage } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
@@ -67,9 +67,13 @@ export const Slide = memo(function Slide() {
         if (!stageRef.current) return
         // Hiding transformers (if there are some)
         const transformers = stageRef.current.find("Transformer")
+        // Other users element selections (if there are some)
+        const selectionStrokes = stageRef.current.find(".selection-stroke")
         transformers.forEach((tr) => tr.visible(false))
+        selectionStrokes.forEach((el) => el.visible(false))
         const dataUrl = stageRef.current.toDataURL()
         transformers.forEach((tr) => tr.visible(true))
+        selectionStrokes.forEach((el) => el.visible(true))
         const uploadedImageUrl = await uploadImageToStorage(dataUrl, `${presentationId}/${slide.id}/thumbnail`)
         dispatch(setThumbnail(uploadedImageUrl))
         getMap<YPresentation>().get("slides")?.get(currentSlide)?.set("thumbnailUrl", uploadedImageUrl)
@@ -94,6 +98,7 @@ export const Slide = memo(function Slide() {
       dispatch(selectElement(NOT_SELECTED))
       dispatch(setMode("cursor"))
       dispatch(resetToolbarElementProps())
+      updateAwareness<UserAwareness>({ selectedId: NOT_SELECTED })
     }
 
     if (isCreating) {
@@ -121,6 +126,10 @@ export const Slide = memo(function Slide() {
         ?.get("elements")
         ?.push([transformNormalizedToYElement(newEl)])
 
+      // Updating awareness
+      updateAwareness<UserAwareness>({ selectedId: newEl.id })
+
+      // Taking screenshot
       takeScreenshot()
     }
   }
@@ -146,6 +155,19 @@ export const Slide = memo(function Slide() {
     })
   }
 
+  const connectedUsersExcludingYourself = connectedUsers.filter((connectedUser) => connectedUser.id !== userId)
+  const selectedElementsByOthers = useMemo(
+    () =>
+      connectedUsersExcludingYourself.reduce<{ [key: string]: string }>((acc, connectedUser) => {
+        const element = slide?.elements.find((element) => element.id === connectedUser.selectedId)
+        if (element && !acc[element.id]) {
+          acc[element.id] = connectedUser.color
+        }
+        return acc
+      }, {}),
+    [connectedUsersExcludingYourself, slide?.elements],
+  )
+
   return (
     <div className="flex flex-1 items-center justify-center">
       <div
@@ -154,9 +176,8 @@ export const Slide = memo(function Slide() {
           width: `${SLIDE_WIDTH + CONTAINER_BORDER_WIDTH}px`,
           height: `${SLIDE_HEIGHT + CONTAINER_BORDER_WIDTH}px`,
         }}>
-        {connectedUsers.map(
+        {connectedUsersExcludingYourself.map(
           (connectedUser) =>
-            connectedUser.id !== userId &&
             connectedUser.currentSlideId === slides[currentSlide]?.id &&
             isNotNullable(connectedUser.cursor.x) &&
             isNotNullable(connectedUser.cursor.y) && (
@@ -201,6 +222,7 @@ export const Slide = memo(function Slide() {
                     isSelected={element.id === selectedId}
                     isCreating={isCreating}
                     isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
+                    anotherUserColor={selectedElementsByOthers[element.id] || null}
                   />
                 ))}
               </>

@@ -1,4 +1,4 @@
-import type { YPresentation } from "@server/hocuspocus/types"
+import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
 import type { KonvaEventObject } from "konva/lib/Node"
 import type { Transformer as ITransformer } from "konva/lib/shapes/Transformer"
 import { memo, useEffect, useRef } from "react"
@@ -25,7 +25,7 @@ import {
 } from "~/entities/presentation"
 import { useAppDispatch, useDebouncedFunctions, useYjs } from "~/shared/model"
 
-const DEBOUNCE_EDIT_TIME = 2000
+const DEBOUNCE_EDIT_TIME = 1000
 
 interface ElementWrapperProps {
   Element: ElementComponent | undefined
@@ -35,6 +35,7 @@ interface ElementWrapperProps {
   isSelected: boolean
   isCreating: boolean
   isEditing: boolean
+  anotherUserColor: string | null
 }
 
 export const ElementWrapper = memo(function ElementWrapper({
@@ -45,12 +46,13 @@ export const ElementWrapper = memo(function ElementWrapper({
   isSelected,
   isCreating,
   isEditing,
+  anotherUserColor,
 }: ElementWrapperProps) {
   const dispatch = useAppDispatch()
   const elementRef = useRef<never>(null)
   const trRef = useRef<ITransformer>(null)
   const { register, call } = useDebouncedFunctions()
-  const { provider, getMap } = useYjs()
+  const { provider, getMap, updateAwareness } = useYjs()
 
   useEffect(() => {
     if (isSelected && elementRef.current && trRef.current) {
@@ -105,7 +107,10 @@ export const ElementWrapper = memo(function ElementWrapper({
   const selectElementHandler = () => {
     const type = props.__typename
     if (isCreating) return
-    if (!isSelected) dispatch(selectElement(props.id))
+    if (!isSelected) {
+      dispatch(selectElement(props.id))
+      updateAwareness<UserAwareness>({ selectedId: props.id })
+    }
     // After element is selected set a corresponding toolbar mode
     if (mode !== "text" && type === "Text") dispatch(setMode("text"))
     else if (mode !== "image" && type === "Image") dispatch(setMode("image"))
@@ -127,6 +132,7 @@ export const ElementWrapper = memo(function ElementWrapper({
           scaleX={props.scaleX}
           scaleY={props.scaleY}
           rotation={props.angle}
+          // We provide `anotherUserColor` (for stroke around the element if another user selected it) ONLY IF it's not selected by this user (you)
           {...textProps(props)}
           {...imageProps(props)}
           {...shapeProps(props)}
@@ -147,6 +153,7 @@ export const ElementWrapper = memo(function ElementWrapper({
             node.scaleX(1)
             node.scaleY(1)
           }}
+          // If the element is `Text` we provide additional props needed in <EditableText>
           {...(props.__typename === "Text"
             ? {
                 isEditing,
@@ -155,6 +162,26 @@ export const ElementWrapper = memo(function ElementWrapper({
               }
             : {})}
         />
+        {!isSelected && anotherUserColor && (
+          /*
+            Duplicating the element (its appearance only) to show other users selections. It's the only solution I found because I can't just simply apply the selection to original element
+            since when I take a screenshot I need to hide it, and the only way to hide it is to hide the element, so that's why I duplicate it
+          */
+          <Element
+            x={props.x}
+            y={props.y}
+            width={props.width}
+            height={props.height}
+            scaleX={props.scaleX}
+            scaleY={props.scaleY}
+            rotation={props.angle}
+            listening={false}
+            name="selection-stroke"
+            {...textProps(props, anotherUserColor)}
+            {...imageProps(props, anotherUserColor)}
+            {...shapeProps(props, anotherUserColor)}
+          />
+        )}
         {isSelected && !isEditing && (
           <Transformer
             ref={trRef}

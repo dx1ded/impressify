@@ -29,6 +29,7 @@ import {
   DEFAULT_TEXT_HEIGHT,
   DEFAULT_TEXT_WIDTH,
   EDIT_ELEMENT_ID,
+  DEFAULT_SELECTION_STROKE_WIDTH,
 } from "~/entities/presentation"
 import { createImage, ptToPx } from "~/shared/lib"
 import { EditableText, type EditableTextConfig } from "~/shared/ui/EditableText"
@@ -46,7 +47,7 @@ export const formatDate = (timestamp: number) => {
 
 export const generateEditElementId = (id: ElementId) => `${EDIT_ELEMENT_ID}-${id}`
 
-export const textProps = (props: ElementProps): EditableTextConfig => {
+export const textProps = (props: ElementProps, anotherUserColor?: string | null): EditableTextConfig => {
   if (props.__typename !== "Text") return {}
 
   return {
@@ -62,33 +63,36 @@ export const textProps = (props: ElementProps): EditableTextConfig => {
     verticalAlign: "middle",
     wrap: "char",
     lineHeight: props.lineHeight,
+    ...(anotherUserColor ? { borderColor: anotherUserColor, borderWidth: DEFAULT_SELECTION_STROKE_WIDTH } : {}),
   }
 }
 
-export const imageProps = (props: ElementProps): ImageConfig => {
+export const imageProps = (props: ElementProps, anotherUserColor?: string | null): ImageConfig => {
   if (props.__typename !== "Image") return {} as ImageConfig
-  return { image: createImage(props.imageUrl), height: props.height }
+  return {
+    image: createImage(props.imageUrl),
+    height: props.height,
+    ...(anotherUserColor ? { stroke: anotherUserColor, strokeWidth: DEFAULT_SELECTION_STROKE_WIDTH * 2 } : {}),
+  }
 }
 
-export const shapeProps = (props: ElementProps): ShapesConfig => {
-  if (props.__typename === "Shape") {
-    const commonProps = {
-      fill: props.fillColor,
-      stroke: props.strokeColor,
-      strokeWidth: props.strokeWidth,
-    }
-
-    if (props.type === ShapeType.Line || props.type === ShapeType.Arrow) {
-      return { ...commonProps, points: [0, 0, props.width, 0] } as ShapesConfig
-    }
-    if (props.type === ShapeType.Star) {
-      return { ...commonProps, numPoints: 5, innerRadius: 30, outerRadius: 70 } as ShapesConfig
-    }
-
-    return commonProps as ShapesConfig
+export const shapeProps = (props: ElementProps, anotherUserColor?: string | null): ShapesConfig => {
+  if (props.__typename !== "Shape") return {} as ShapesConfig
+  const commonProps = {
+    fill: props.fillColor,
+    stroke: props.strokeColor,
+    strokeWidth: props.strokeWidth,
+    ...(anotherUserColor ? { stroke: anotherUserColor, strokeWidth: DEFAULT_SELECTION_STROKE_WIDTH } : {}),
   }
 
-  return {} as ShapesConfig
+  if (props.type === ShapeType.Line || props.type === ShapeType.Arrow) {
+    return { ...commonProps, points: [0, 0, props.width, 0] } as ShapesConfig
+  }
+  if (props.type === ShapeType.Star) {
+    return { ...commonProps, numPoints: 5, innerRadius: 30, outerRadius: 70 } as ShapesConfig
+  }
+
+  return commonProps as ShapesConfig
 }
 
 export const getElement = (element: ElementProps) => {

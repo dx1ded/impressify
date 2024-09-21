@@ -2,8 +2,6 @@ import { HocuspocusProvider } from "@hocuspocus/provider"
 import type { Doc } from "yjs"
 import {
   type ReactNode,
-  type Dispatch,
-  type SetStateAction,
   memo,
   createContext,
   useContext,
@@ -25,7 +23,6 @@ interface YjsProviderProps {
   onUpdate?: (provider: HocuspocusProvider) => void
   onAwarenessChange?: (users: any[]) => void
   onAuthenticated?: () => void
-  setExternalProvider?: Dispatch<SetStateAction<HocuspocusProvider | null>>
   setInitialAwareness?: (document: Doc) => any
 }
 
@@ -58,7 +55,6 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
   onUpdate,
   onAwarenessChange,
   onAuthenticated,
-  setExternalProvider,
   setInitialAwareness,
 }) {
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
@@ -100,14 +96,12 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
     setProvider(_provider)
 
     // If the parent component needs the provider, update its state
-    if (setExternalProvider) setExternalProvider(_provider)
 
     return () => {
       if (provider) {
         _provider.disconnect()
         isInitialized.current = false
         setProvider(null)
-        if (setExternalProvider) setExternalProvider(null)
       }
     }
   }, [
@@ -116,7 +110,6 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
     name,
     provider,
     setInitialAwareness,
-    setExternalProvider,
     onUpdate,
     onAwarenessChange,
     onAuthenticated,

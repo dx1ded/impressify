@@ -18,6 +18,8 @@ export const DEFAULT_STROKE_COLOR = "rgb(0, 0, 0)"
 export const DEFAULT_BORDER_COLOR = "transparent"
 
 export const DEFAULT_STROKE_WIDTH = 2
+// * selection by another user
+export const DEFAULT_SELECTION_STROKE_WIDTH = 4
 
 export const MIN_ELEMENT_WIDTH = 50
 export const MIN_ELEMENT_HEIGHT = 50

@@ -218,23 +218,23 @@ export const addElement = (elementProps: AddElementPayload) => (dispatch: AppDis
   const state = getState()
   const slide = state.presentation.presentation.slides[state.presentation.currentSlide]
   const slideCopy = { ...slide, elements: [...slide.elements] }
-  let newEl: NormalizedYElement | undefined
+  let newElement: NormalizedYElement | undefined
 
   if (state.toolbar.mode === "text") {
-    slideCopy.elements.push((newEl = getTextConfig({ ...state.toolbar.textProps, ...elementProps })))
+    slideCopy.elements.push((newElement = getTextConfig({ ...state.toolbar.textProps, ...elementProps })))
   } else if (state.toolbar.mode === "image") {
-    slideCopy.elements.push((newEl = getImageConfig({ ...state.toolbar.imageProps, ...elementProps })))
+    slideCopy.elements.push((newElement = getImageConfig({ ...state.toolbar.imageProps, ...elementProps })))
   } else if (state.toolbar.mode === "shape") {
-    slideCopy.elements.push((newEl = getShapeConfig({ ...state.toolbar.shapeProps, ...elementProps })))
+    slideCopy.elements.push((newElement = getShapeConfig({ ...state.toolbar.shapeProps, ...elementProps })))
   }
 
-  if (!newEl) throw new Error("No new element was added")
+  if (!newElement) throw new Error("No new element was added")
 
   dispatch(setElements(slideCopy.elements))
-  dispatch(selectElement(newEl.id))
-  dispatch(addHistoryRecord({ type: "DELETE", id: newEl.id }))
+  dispatch(selectElement(newElement.id))
+  dispatch(addHistoryRecord({ type: "DELETE", id: newElement.id }))
 
-  return { ...newEl }
+  return { ...newElement }
 }
 
 export const editElement =
@@ -259,6 +259,8 @@ export const deleteElement = () => (dispatch: AppDispatch, getState: () => AppSt
   const index = slide.elements.findIndex((element) => element.id === state.presentation.selectedId)
   dispatch(addHistoryRecord({ type: "ADD", element: slide.elements[index], position: index }))
   dispatch(setElements(slide.elements.filter((element) => element.id !== state.presentation.selectedId)))
+
+  return index
 }
 
 export const pasteElement = () => (dispatch: AppDispatch, getState: () => AppStore) => {
@@ -277,6 +279,8 @@ export const pasteElement = () => (dispatch: AppDispatch, getState: () => AppSto
   dispatch(setElements([...slide.elements, newElement]))
   dispatch(selectElement(newElement.id))
   dispatch(addHistoryRecord({ type: "DELETE", id: newElement.id }))
+
+  return newElement
 }
 
 export const duplicateElement = () => (dispatch: AppDispatch, getState: () => AppStore) => {
@@ -296,6 +300,8 @@ export const duplicateElement = () => (dispatch: AppDispatch, getState: () => Ap
   // Redefining copiedElement so coordinates will not be the same when paste 2 and more elements
   dispatch(setCopiedElement(_.omit(newElement, ["id"])))
   dispatch(addHistoryRecord({ type: "DELETE", id: newElement.id }))
+
+  return newElement
 }
 
 export const updatePresentation =

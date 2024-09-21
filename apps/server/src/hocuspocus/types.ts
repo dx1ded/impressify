@@ -76,6 +76,7 @@ export type UserAwareness = {
   profilePicUrl: string
   color: string
   currentSlideId: string
+  selectedId: string
   cursor: {
     x: number | null
     y: number | null
