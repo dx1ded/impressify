@@ -11,5 +11,4 @@ export async function onDisconnect({
   if (clientsCount !== 0) return
   await documentRepository.delete({ name: documentName })
   await save(document)
-  document.destroy()
 }

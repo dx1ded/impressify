@@ -70,6 +70,7 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
       url,
       token,
       name,
+      preserveConnection: false,
       onAwarenessChange(data) {
         if (onAwarenessChange)
           stableOnAwarenessChange(
@@ -94,21 +95,10 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
 
     isInitialized.current = true
     setProvider(_provider)
-
-    // If the parent component needs the provider, update its state
-
-    return () => {
-      if (provider) {
-        _provider.disconnect()
-        isInitialized.current = false
-        setProvider(null)
-      }
-    }
   }, [
     token,
     url,
     name,
-    provider,
     setInitialAwareness,
     onUpdate,
     onAwarenessChange,
@@ -116,6 +106,17 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
     stableOnAwarenessChange,
     stableOnUpdate,
   ])
+
+  useEffect(
+    () => () => {
+      if (provider) {
+        provider.destroy()
+        isInitialized.current = false
+        setProvider(null)
+      }
+    },
+    [provider],
+  )
 
   const getMap = useCallback(
     <T,>(fieldName?: string): T => {
@@ -127,7 +128,7 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
 
   const updateAwareness = useCallback(
     <T,>(updatedProps: Partial<T>) => {
-      if (!provider) throw new Error("Provider is not initialized yet")
+      if (!provider || !provider.isSynced) throw new Error("Provider is not initialized yet")
       const localState = provider.awareness?.getLocalState()
       provider.setAwarenessField(AWARENESS_VALUE_FIELD, {
         ...(localState && localState[AWARENESS_VALUE_FIELD] ? localState[AWARENESS_VALUE_FIELD] : {}),

@@ -138,7 +138,7 @@ function Presentation() {
     <YjsProvider
       url={import.meta.env.VITE_HOCUSPOCUS_URL}
       name={`presentation/${id}`}
-      token={userToken!}
+      token={userToken}
       onUpdate={updateHandler}
       onAwarenessChange={awarenessChangeHandler}
       onAuthenticated={addHistoryRecord}
