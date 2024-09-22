@@ -1,5 +1,6 @@
 import { type ChangeEvent, type ComponentPropsWithoutRef, useCallback, useEffect, useRef } from "react"
 
+import { cn } from "~/shared/lib"
 import { PreserveCursorInput } from "~/shared/ui/PreserveCursorInput"
 
 interface ResizableInputProps extends ComponentPropsWithoutRef<"input"> {
@@ -7,7 +8,7 @@ interface ResizableInputProps extends ComponentPropsWithoutRef<"input"> {
   value: string
 }
 
-export function ResizableInput({ maxLength, value, className, onChange, ...props }: ResizableInputProps) {
+export function ResizableInput({ value, className, onChange, ...props }: ResizableInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const spanRef = useRef<HTMLSpanElement>(null)
 
@@ -28,7 +29,7 @@ export function ResizableInput({ maxLength, value, className, onChange, ...props
 
   return (
     <div className="inline-block">
-      <span ref={spanRef} className={`invisible absolute whitespace-pre ${className}`} />
+      <span ref={spanRef} className={cn("invisible absolute whitespace-pre", className)} />
       <PreserveCursorInput
         ref={inputRef}
         type="text"

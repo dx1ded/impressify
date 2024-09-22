@@ -2,8 +2,10 @@ import { TooltipTrigger } from "@radix-ui/react-tooltip"
 import type { YPresentation } from "@server/hocuspocus/types"
 import type { ChangeEvent } from "react"
 import { shallowEqual } from "react-redux"
+import { toast } from "sonner"
 
-import { updateImageProps, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import { updateImageProps, TAKE_SCREENSHOT_ID, MAX_IMAGE_SIZE } from "~/entities/presentation"
+import { Toaster } from "~/shared/ui-kit/sonner"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { convertFileToDataUrl, uploadImageToStorage } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
@@ -26,6 +28,8 @@ export function ImageMode({ isActive }: ModeProps) {
   const replaceImageHandler = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target
     if (!files || !files.length) return
+    if (files[0].size > MAX_IMAGE_SIZE)
+      return toast(`File cannot be larger than ${MAX_IMAGE_SIZE / (1024 * 1024)}MB`, { position: "top-right" })
     const dataUrl = await convertFileToDataUrl(files[0])
     const uploadedImageUrl = await uploadImageToStorage(dataUrl, `${presentationId}/${currentSlide}/${selectedId}`)
 
@@ -42,6 +46,7 @@ export function ImageMode({ isActive }: ModeProps) {
 
   return (
     <ToolbarGroup style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
+      <Toaster />
       <Tooltip>
         <TooltipTrigger asChild>
           <div>

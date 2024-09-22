@@ -15,7 +15,7 @@ import { Skeleton } from "~/shared/ui-kit/skeleton"
 import { Logo } from "~/shared/ui/Logo"
 import { ResizableInput } from "~/shared/ui/ResizableInput"
 
-const DEBOUNCED_CHANGE_NAME_TIME = 200
+const DEBOUNCE_CHANGE_NAME_TIME = 200
 
 export const Header = memo(function Header() {
   const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
@@ -36,7 +36,7 @@ export const Header = memo(function Header() {
       yName.delete(0, name.length)
       yName.insert(0, newName)
     }
-  }, DEBOUNCED_CHANGE_NAME_TIME)
+  }, DEBOUNCE_CHANGE_NAME_TIME)
 
   return (
     <header className="flex items-center justify-between py-2">
@@ -51,7 +51,6 @@ export const Header = memo(function Header() {
                 className="rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-gray-300"
                 value={name}
                 maxLength={MAX_NAME_LENGTH}
-                data-toast="Presentation name"
                 onChange={(e) => debouncedChangeName(e.target.value)}
               />
             )}

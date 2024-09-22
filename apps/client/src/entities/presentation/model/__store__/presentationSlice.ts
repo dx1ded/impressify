@@ -1,5 +1,5 @@
 import _ from "lodash"
-import deepDiff from "deep-diff"
+import { diff as deepDiff } from "deep-diff"
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import type { NormalizedYPresentation, NormalizedYElement } from "@server/hocuspocus/types"
 import { nanoid } from "nanoid"
