@@ -9,6 +9,7 @@ import { Shape } from "../../entities/Shape"
 import { Slide } from "../../entities/Slide"
 import { Text } from "../../entities/Text"
 import type { Resolvers } from "../__generated__"
+import { deletePresentationFiles } from "../../helpers"
 
 export default {
   Query: {
@@ -172,9 +173,10 @@ export default {
       })
       return presentationRepository.save(newPresentation)
     },
-    async deletePresentation(_, { id }, { user }) {
+    async deletePresentation(_, { id }, { user, storage }) {
       if (!user) return null
       await presentationRepository.delete({ id })
+      await deletePresentationFiles(storage, id)
       return true
     },
   },
