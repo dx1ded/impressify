@@ -1,7 +1,7 @@
 import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
 import { transformNormalizedToYElement } from "@server/hocuspocus/transform"
 import { memo, useMemo, useRef } from "react"
-import { Layer, Rect, Stage } from "react-konva"
+import { Image, Layer, Rect, Stage } from "react-konva"
 import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
 import { Stage as StageClass } from "konva/lib/Stage"
@@ -209,14 +209,19 @@ export const Slide = memo(function Slide() {
               <Rect x={0} y={0} width={SLIDE_WIDTH} height={SLIDE_HEIGHT} fill="rgba(0, 0, 0, 0.025)" />
             ) : (
               <>
-                <Rect
-                  x={0}
-                  y={0}
-                  width={SLIDE_WIDTH}
-                  height={SLIDE_HEIGHT}
-                  listening={false}
-                  {...(isColor(slide.bg) ? { fill: slide.bg } : { fillPatternImage: createImage(slide.bg) })}
-                />
+                {/* Background */}
+                {isColor(slide.bg) ? (
+                  <Rect x={0} y={0} width={SLIDE_WIDTH} height={SLIDE_HEIGHT} listening={false} fill={slide.bg} />
+                ) : (
+                  <Image
+                    x={0}
+                    y={0}
+                    width={SLIDE_WIDTH}
+                    height={SLIDE_HEIGHT}
+                    listening={false}
+                    image={createImage(slide.bg)}
+                  />
+                )}
                 {slide.elements.map((element) => (
                   <ElementWrapper
                     key={element.id}
