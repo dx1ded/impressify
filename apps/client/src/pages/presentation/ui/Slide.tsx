@@ -1,7 +1,7 @@
 import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
 import { transformNormalizedToYElement } from "@server/hocuspocus/transform"
 import { memo, useMemo, useRef } from "react"
-import { Image, Layer, Rect, Stage } from "react-konva"
+import { Layer, Rect, Stage } from "react-konva"
 import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
 import { Stage as StageClass } from "konva/lib/Stage"
@@ -28,6 +28,7 @@ import {
 import { createImage, isColor, isNotNullable, uploadImageToStorage } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 import { Cursor } from "~/shared/ui/Cursor"
+import { ProportionalImage } from "~/shared/ui/ProportionalImage"
 
 const SCREENSHOT_DEBOUCE_TIME = 5000
 const UPDATE_CURSOR_DEBOUNCE_TIME = 150
@@ -213,7 +214,7 @@ export const Slide = memo(function Slide() {
                 {isColor(slide.bg) ? (
                   <Rect x={0} y={0} width={SLIDE_WIDTH} height={SLIDE_HEIGHT} listening={false} fill={slide.bg} />
                 ) : (
-                  <Image
+                  <ProportionalImage
                     x={0}
                     y={0}
                     width={SLIDE_WIDTH}
