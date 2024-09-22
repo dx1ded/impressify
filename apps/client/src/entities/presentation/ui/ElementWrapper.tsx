@@ -22,6 +22,7 @@ import {
   MIN_ELEMENT_HEIGHT,
   MIN_ELEMENT_WIDTH,
   TAKE_SCREENSHOT_ID,
+  ELEMENT_SELECTION_NAME,
 } from "~/entities/presentation"
 import { useAppDispatch, useDebouncedFunctions, useYjs } from "~/shared/model"
 
@@ -35,7 +36,7 @@ interface ElementWrapperProps {
   isSelected: boolean
   isCreating: boolean
   isEditing: boolean
-  anotherUserColor: string | null
+  anotherUserColor?: string
 }
 
 export const ElementWrapper = memo(function ElementWrapper({
@@ -176,7 +177,7 @@ export const ElementWrapper = memo(function ElementWrapper({
             scaleY={props.scaleY}
             rotation={props.angle}
             listening={false}
-            name="selection-stroke"
+            name={ELEMENT_SELECTION_NAME}
             {...textProps(props, anotherUserColor)}
             {...imageProps(props, anotherUserColor)}
             {...shapeProps(props, anotherUserColor)}

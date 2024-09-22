@@ -43,6 +43,28 @@ export function EditableTextInput({
     selection.addRange(range)
   }, [])
 
+  // Update `textValue` when `value` got changed + preserve the selection position
+  useEffect(() => {
+    if (!divRef.current) return
+
+    const selection = window.getSelection()
+    if (!selection || !divRef.current.firstChild) return
+
+    // Save the selection position (anchor and focus offsets)
+    const { anchorOffset } = selection
+
+    // Update text content
+    divRef.current.textContent = value
+
+    // Restore the selection after content change
+    const range = document.createRange()
+    range.setStart(divRef.current.firstChild, Math.min(anchorOffset, value.length)) // Avoid exceeding text length
+    range.collapse(true) // Move caret to position
+
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }, [value])
+
   const [style, weight] = fontStyle!.split(" ")
 
   return (

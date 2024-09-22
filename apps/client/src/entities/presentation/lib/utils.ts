@@ -47,7 +47,7 @@ export const formatDate = (timestamp: number) => {
 
 export const generateEditElementId = (id: ElementId) => `${EDIT_ELEMENT_ID}-${id}`
 
-export const textProps = (props: ElementProps, anotherUserColor?: string | null): EditableTextConfig => {
+export const textProps = (props: ElementProps, anotherUserColor?: string): EditableTextConfig => {
   if (props.__typename !== "Text") return {}
 
   return {
@@ -67,7 +67,7 @@ export const textProps = (props: ElementProps, anotherUserColor?: string | null)
   }
 }
 
-export const imageProps = (props: ElementProps, anotherUserColor?: string | null): ImageConfig => {
+export const imageProps = (props: ElementProps, anotherUserColor?: string): ImageConfig => {
   if (props.__typename !== "Image") return {} as ImageConfig
   return {
     image: createImage(props.imageUrl),
@@ -76,7 +76,7 @@ export const imageProps = (props: ElementProps, anotherUserColor?: string | null
   }
 }
 
-export const shapeProps = (props: ElementProps, anotherUserColor?: string | null): ShapesConfig => {
+export const shapeProps = (props: ElementProps, anotherUserColor?: string): ShapesConfig => {
   if (props.__typename !== "Shape") return {} as ShapesConfig
   const commonProps = {
     fill: props.fillColor,

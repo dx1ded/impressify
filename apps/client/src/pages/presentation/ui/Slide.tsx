@@ -23,6 +23,7 @@ import {
   SLIDE_WIDTH,
   NOT_SELECTED,
   TAKE_SCREENSHOT_ID,
+  ELEMENT_SELECTION_NAME,
 } from "~/entities/presentation"
 import { createImage, isColor, isNotNullable, uploadImageToStorage } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
@@ -65,21 +66,25 @@ export const Slide = memo(function Slide() {
       TAKE_SCREENSHOT_ID,
       async () => {
         if (!stageRef.current) return
-        // Hiding transformers (if there are some)
         const transformers = stageRef.current.find("Transformer")
         // Other users element selections (if there are some)
-        const selectionStrokes = stageRef.current.find(".selection-stroke")
+        const selectionStrokes = stageRef.current.find(`.${ELEMENT_SELECTION_NAME}`)
+
         transformers.forEach((tr) => tr.visible(false))
         selectionStrokes.forEach((el) => el.visible(false))
+
+        // Taking a screenshot while transformers and selectionStrokes are hidden
         const dataUrl = stageRef.current.toDataURL()
+
         transformers.forEach((tr) => tr.visible(true))
         selectionStrokes.forEach((el) => el.visible(true))
+
         const uploadedImageUrl = await uploadImageToStorage(dataUrl, `${presentationId}/${slide.id}/thumbnail`)
         dispatch(setThumbnail(uploadedImageUrl))
         getMap<YPresentation>().get("slides")?.get(currentSlide)?.set("thumbnailUrl", uploadedImageUrl)
       },
       SCREENSHOT_DEBOUCE_TIME,
-      [slide?.id],
+      [slide?.id, currentSlide],
     )
   }
 
@@ -222,7 +227,8 @@ export const Slide = memo(function Slide() {
                     isSelected={element.id === selectedId}
                     isCreating={isCreating}
                     isEditing={element.__typename === "Text" ? isEditing && element.id === selectedId : false}
-                    anotherUserColor={selectedElementsByOthers[element.id] || null}
+                    // Might be `undefined`
+                    anotherUserColor={selectedElementsByOthers[element.id]}
                   />
                 ))}
               </>

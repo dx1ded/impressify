@@ -22,8 +22,14 @@ import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
 import { Header } from "~/pages/presentation/ui/Header"
 import { Toolbar } from "~/widgets/toolbar"
-import { DebouncedProvider, YjsProvider, AWARENESS_VALUE_FIELD, useAppSelector, useAppDispatch } from "~/shared/model"
-import { Toaster } from "~/shared/ui-kit/sonner"
+import {
+  DebouncedProvider,
+  YjsProvider,
+  AWARENESS_VALUE_FIELD,
+  useAppSelector,
+  useAppDispatch,
+  switchCurrentSlide,
+} from "~/shared/model"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 
 export default function PresentationPage() {
@@ -77,15 +83,18 @@ function Presentation() {
           const deletedSlideIndex = slides.findIndex((_slide) => _slide.id === connectedUser.currentSlideId)
           // We set the new `currentSlide` as previous one
           newIndex = deletedSlideIndex - 1
+          // Using `switchCurrentSlide` so props (isCreating / selectedId, ...) reset
+          dispatch(switchCurrentSlide(newIndex))
         }
         // When slide got moved
         else if (savedCurrentSlideIndex !== currentSlide) {
           // A new index of the current slide
           newIndex = savedCurrentSlideIndex
+          // Using `setCurrentSlide` so no props (isCreating / selectedId, ...) change
+          dispatch(setCurrentSlide(newIndex))
         }
 
         if (newIndex !== -1) {
-          dispatch(setCurrentSlide(newIndex))
           provider.awareness?.setLocalStateField(AWARENESS_VALUE_FIELD, {
             ...connectedUser,
             currentSlideId: normalizedPresentation.slides[newIndex].id,
@@ -145,8 +154,6 @@ function Presentation() {
             <Slide />
           </div>
         </div>
-        {/* To use <ResizableInput/> */}
-        <Toaster />
       </TooltipProvider>
     </YjsProvider>
   )
