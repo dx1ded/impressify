@@ -1,6 +1,6 @@
 type HistoryRecord {
   id: Int!
-  user: User!
+  user: PresentationUser!
   history: History!
   lastOpened: Date!
 }

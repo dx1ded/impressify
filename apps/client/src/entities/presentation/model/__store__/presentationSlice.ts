@@ -44,10 +44,8 @@ const initialState: PresentationState = {
   presentation: {
     id: "",
     name: "",
-    ownerId: "",
     slides: [],
-    editors: [],
-    readers: [],
+    users: [],
   },
   copiedElement: null,
   // currentSlide is an index
@@ -135,6 +133,7 @@ const presentationSlice = createSlice({
       state.isLoading = initialState.isLoading
       state.isCreating = initialState.isCreating
       state.isEditing = initialState.isEditing
+      state.isSaving = initialState.isSaving
     })
   },
 })

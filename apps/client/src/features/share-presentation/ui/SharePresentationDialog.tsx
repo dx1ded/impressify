@@ -23,6 +23,7 @@ import {
   DialogDescription,
   DialogClose,
 } from "~/shared/ui-kit/dialog"
+import { Skeleton } from "~/shared/ui-kit/skeleton"
 import { Text } from "~/shared/ui/Typography"
 
 const FIND_USERS_DEBOUNCE_TIME = 500
@@ -68,7 +69,11 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent onClick={() => setIsMenuOpen(false)}>
         <DialogHeader className="min-w-0">
-          <DialogTitle className="truncate leading-normal">Share &quot;{presentationData?.name}&quot;</DialogTitle>
+          {dataResult.loading ? (
+            <Skeleton className="h-[1.6875rem] w-72" />
+          ) : (
+            <DialogTitle className="truncate leading-normal">Share &quot;{presentationData?.name}&quot;</DialogTitle>
+          )}
           <DialogDescription hidden>Share this presentation with someone else to work in a team</DialogDescription>
         </DialogHeader>
         <div className="relative">

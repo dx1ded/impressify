@@ -9,7 +9,7 @@ import { useCallback } from "react"
 import { useParams } from "react-router-dom"
 import { shallowEqual } from "react-redux"
 
-import type { AddHistoryRecordMutation, AddHistoryRecordMutationVariables } from "~/__generated__/graphql"
+import { type AddHistoryRecordMutation, type AddHistoryRecordMutationVariables, Role } from "~/__generated__/graphql"
 import { ADD_HISTORY_RECORD } from "~/entities/history-record"
 import {
   setIsLoading,
@@ -114,8 +114,12 @@ function Presentation() {
       dispatch(setIsSaving(yPresentation.get("isSaving") || false))
 
       // Updating user permission (isCreator / isEditor)
-      if (normalizedPresentation.ownerId === user?.id) dispatch(setIsCreator(true))
-      const updatedIsEditor = normalizedPresentation.editors.some((editorId) => editorId === user?.id)
+      if (normalizedPresentation.users.find((_user) => _user.role === Role.Creator)?.id === user?.id) {
+        dispatch(setIsCreator(true))
+      }
+      const updatedIsEditor = normalizedPresentation.users.some(
+        (_user) => _user.id === user?.id && (_user.role === Role.Editor || _user.role === Role.Creator),
+      )
       if (updatedIsEditor !== isEditor) {
         dispatch(setIsEditor(updatedIsEditor))
         // Creating an alert that tells user they have a new role (if so)

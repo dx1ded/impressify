@@ -1,7 +1,6 @@
 import { useUser } from "@clerk/clerk-react"
 
-import type { GetPresentationDataQuery, Presentation } from "~/__generated__/graphql"
-import { getUserRole } from "~/features/share-presentation/lib"
+import { type GetPresentationDataQuery, type Presentation, Role } from "~/__generated__/graphql"
 import { PresentationUser } from "~/features/share-presentation/ui/PresentationUser"
 import { Skeleton } from "~/shared/ui-kit/skeleton"
 
@@ -27,8 +26,7 @@ export function UserList({ presentationId, data, loading }: UserListProps) {
           <PresentationUser
             key={user.id}
             user={user}
-            role={getUserRole(user?.id, data)}
-            isCurrentUserOwner={data?.owner.id === currentUser?.id}
+            isCurrentUserCreator={data?.users.find((_user) => _user.role === Role.Creator)?.id === currentUser?.id}
             presentationId={presentationId}
           />
         ))

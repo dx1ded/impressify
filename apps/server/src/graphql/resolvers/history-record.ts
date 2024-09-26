@@ -1,6 +1,6 @@
 import type { ApolloContext } from ".."
 import type { Resolvers } from "../__generated__"
-import { historyRepository, presentationRepository, userRepository } from "../../database"
+import { historyRepository, presentationRepository, presentationUserRepository } from "../../database"
 import { HistoryRecord } from "../../entities/HistoryRecord"
 
 export default {
@@ -23,7 +23,7 @@ export default {
         return userRecordExists
       }
 
-      const _user = await userRepository.findOneBy({ id: user.id })
+      const _user = await presentationUserRepository.findOneBy({ id: user.id })
       const newRecord = new HistoryRecord(_user, presentation.history)
       presentation.history.records.push(newRecord)
       const savedPresentation = await presentationRepository.save(presentation)
@@ -32,7 +32,7 @@ export default {
   },
   HistoryRecord: {
     user(parent) {
-      return userRepository.findOneBy({ records: { id: parent.id } })
+      return presentationUserRepository.findOneBy({ record: { id: parent.id } })
     },
     history(parent) {
       return historyRepository.findOneBy({ records: { id: parent.id } })

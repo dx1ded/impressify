@@ -1,7 +1,9 @@
 type PresentationUser {
   id: ID!
-  role: Role
-  user: User!
+  presentation: Presentation!
+  record: HistoryRecord
+  role: Role!
+  props: User!
 }
 
 enum Role {

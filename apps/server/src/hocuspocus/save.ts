@@ -9,7 +9,8 @@ import { Shape } from "../entities/Shape"
 
 export async function save(document: Y.Doc) {
   const yPresentation = document.getMap() as YPresentation
-  const normalizedPresentation = normalizePresentation(yPresentation)
+  // Omitting `users` (just in case)
+  const { users, ...normalizedPresentation } = normalizePresentation(yPresentation)
   const presentation = await presentationRepository.findOne({
     relations: ["slides", "slides.elements", "slides.presentation"],
     where: { id: normalizedPresentation.id },

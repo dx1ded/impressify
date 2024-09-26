@@ -1,7 +1,8 @@
 import { ILike } from "typeorm"
 import type { ApolloContext } from ".."
-import { type Resolvers, Result, Permission } from "../__generated__"
+import { type Resolvers, Result, Role } from "../__generated__"
 import { userRepository, presentationRepository } from "../../database"
+import { PresentationUser } from "../../entities/PresentationUser"
 
 export default {
   Query: {
@@ -15,50 +16,35 @@ export default {
     },
   },
   Mutation: {
-    async invite(_, { userId, presentationId, permission }, { user }) {
+    async invite(_, { userId, presentationId, role }, { user }) {
       if (!user) return null
 
       const foundUser = await userRepository.findOneBy({ id: userId })
       if (!foundUser) return Result.NotFound
 
       const presentation = await presentationRepository.findOne({
-        relations: ["users", "owner", "editors", "readers"],
+        relations: ["users"],
         where: { id: presentationId },
       })
       if (!presentation || presentation.users.some((user) => user.id === userId)) return Result.Error
-      if (presentation.owner.id !== user.id) return Result.NotAllowed
+      if (presentation.users.find((_user) => _user.role === Role.Creator).id !== user.id) return Result.NotAllowed
 
-      presentation.users.push(foundUser)
-
-      if (permission === Permission.Read) {
-        presentation.readers.push(foundUser)
-      } else if (permission === Permission.ReadWrite) {
-        presentation.editors.push(foundUser)
-      }
+      presentation.users.push(new PresentationUser(presentation, foundUser, role))
 
       await presentationRepository.save(presentation)
       return Result.Success
     },
-    async changeUserRole(_, { userId, presentationId, permission }, { user }) {
+    async changeUserRole(_, { userId, presentationId, role }, { user }) {
       if (!user) return null
 
-      const foundUser = await userRepository.findOneBy({ id: userId })
-      if (!foundUser) return Result.NotFound
-
       const presentation = await presentationRepository.findOne({
-        relations: ["users", "owner", "editors", "readers"],
+        relations: ["users"],
         where: { id: presentationId },
       })
       if (!presentation || !presentation.users.some((user) => user.id === userId)) return Result.Error
-      if (presentation.owner.id !== user.id) return Result.NotAllowed
+      if (presentation.users.find((_user) => _user.role === Role.Creator).id !== user.id) return Result.NotAllowed
 
-      if (permission === Permission.Read) {
-        presentation.readers.push(foundUser)
-        presentation.editors = presentation.editors.filter((editor) => editor.id !== userId)
-      } else if (permission === Permission.ReadWrite) {
-        presentation.editors.push(foundUser)
-        presentation.readers = presentation.readers.filter((reader) => reader.id !== userId)
-      }
+      presentation.users = presentation.users.map((_user) => (_user.id === userId ? { ..._user, role } : _user))
 
       await presentationRepository.save(presentation)
       return Result.Success

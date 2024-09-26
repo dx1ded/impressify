@@ -2,10 +2,12 @@ import * as Y from "yjs"
 import type {
   YElement,
   YSlide,
+  YUser,
+  YPresentation,
   NormalizedYElement,
   NormalizedYSlide,
-  YPresentation,
   NormalizedYPresentation,
+  NormalizedYUser,
 } from "./types"
 
 export function transformNormalizedToYSlide(slide: NormalizedYSlide) {
@@ -63,13 +65,24 @@ export function transformNormalizedToYElement(element: NormalizedYElement) {
   return yElement
 }
 
+export function transformNormalizedToYUser(user: NormalizedYUser) {
+  const yUser = new Y.Map() as YUser
+  yUser.set("id", user.id)
+  yUser.set("role", user.role)
+  return yUser
+}
+
 export function normalizePresentation(yPresentation: YPresentation): NormalizedYPresentation {
   return {
     id: yPresentation.get("id"),
     name: yPresentation.get("name").toString(),
-    editors: yPresentation.get("editors").toArray(),
-    readers: yPresentation.get("readers").toArray(),
-    ownerId: yPresentation.get("ownerId"),
+    users: yPresentation
+      .get("users")
+      .toArray()
+      .map((user) => ({
+        id: user.get("id"),
+        role: user.get("role"),
+      })),
     slides: yPresentation.get("slides").map(
       (ySlide): NormalizedYSlide => ({
         id: ySlide.get("id"),

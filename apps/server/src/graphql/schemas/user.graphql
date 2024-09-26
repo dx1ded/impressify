@@ -3,11 +3,6 @@ type User {
   name: String!
   email: String!
   profilePicUrl: String!
-  presentations: [Presentation!]!
-  records: [HistoryRecord!]!
-  ownership: [Presentation!]!
-  reader: [Presentation!]!
-  editor: [Presentation!]!
 }
 
 type Query {
@@ -17,7 +12,7 @@ type Query {
 }
 
 type Mutation {
-  invite(userId: String!, presentationId: String!, permission: Permission!): Result
-  changeUserRole(userId: String!, presentationId: String!, permission: Permission!): Result
+  invite(userId: String!, presentationId: String!, role: Role!): Result
+  changeUserRole(userId: String!, presentationId: String!, role: Role!): Result
   sendHelpRequest(text: String!): Result
 }

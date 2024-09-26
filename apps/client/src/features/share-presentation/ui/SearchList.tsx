@@ -1,7 +1,8 @@
 import { useMutation } from "@apollo/client"
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
+import { transformNormalizedToYUser } from "@server/hocuspocus/transform"
 import type { YPresentation } from "@server/hocuspocus/types"
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 
 import {
   type FindUsersQuery,
@@ -9,10 +10,10 @@ import {
   type InviteMutation,
   type InviteMutationVariables,
   type Presentation,
-  Permission,
+  Result,
+  Role,
 } from "~/__generated__/graphql"
 import { GET_PRESENTATION_DATA, INVITE_USER } from "~/features/share-presentation/api"
-import type { IPresentationUser } from "~/features/share-presentation/lib"
 import { useYjs } from "~/shared/model"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "~/shared/ui-kit/dropdown-menu"
 import { Small, Text } from "~/shared/ui/Typography"
@@ -23,16 +24,19 @@ interface UserListProps {
   isMenuOpen: boolean
 }
 
+type IUser = NonNullable<UserListProps["users"]>[number]
+
 export function SearchList({ presentationId, users, isMenuOpen }: UserListProps) {
   const [inviteUser] = useMutation<InviteMutation, InviteMutationVariables>(INVITE_USER)
   const { getMap } = useYjs()
 
-  const selectHandler = async (e: Event, user: IPresentationUser) => {
+  const selectHandler = async (e: Event, user: IUser) => {
     const target = e.target as HTMLDivElement
-    const permission = target.dataset.value as Permission
+    const role = target.dataset.value as Role
     await inviteUser({
-      variables: { userId: user.id, presentationId, permission },
-      update: (cache) => {
+      variables: { userId: user.id, presentationId, role },
+      update: (cache, query) => {
+        if (query.data?.invite !== Result.Success) return
         // Get the current users from the cache
         const cachedData = cache.readQuery<GetPresentationDataQuery>({
           query: GET_PRESENTATION_DATA,
@@ -41,18 +45,10 @@ export function SearchList({ presentationId, users, isMenuOpen }: UserListProps)
 
         if (cachedData?.getPresentation?.users) {
           // Add the newly invited user to the cached user list
-          const updatedUsers = [...cachedData.getPresentation.users, user]
-          const updatedReaders = [...cachedData.getPresentation.readers]
-          const updatedEditors = [...cachedData.getPresentation.editors]
-
-          if (permission === Permission.Read) {
-            updatedReaders.push(user)
-            const yReaders = getMap<YPresentation>().get("readers")
-            if (!yReaders?.toArray().find((readerId) => readerId === user.id)) yReaders?.push([user.id])
-          } else if (permission === Permission.ReadWrite) {
-            updatedEditors.push(user)
-            const yEditors = getMap<YPresentation>().get("editors")
-            if (!yEditors?.toArray().find((editorId) => editorId === user.id)) yEditors?.push([user.id])
+          const updatedUsers = [...cachedData.getPresentation.users, { id: user.id, role, props: user }]
+          const yUsers = getMap<YPresentation>().get("users")
+          if (!yUsers?.toArray().find((_user) => _user.get("id") === user.id)) {
+            yUsers?.push([transformNormalizedToYUser({ id: user.id, role })])
           }
 
           // Write the updated users back into the cache
@@ -62,8 +58,6 @@ export function SearchList({ presentationId, users, isMenuOpen }: UserListProps)
               getPresentation: {
                 ...cachedData.getPresentation,
                 users: updatedUsers,
-                readers: updatedReaders,
-                editors: updatedEditors,
               },
             },
             variables: { presentationId },
@@ -99,13 +93,13 @@ export function SearchList({ presentationId, users, isMenuOpen }: UserListProps)
                 <Text className="mb-0.5 font-medium">Make as</Text>
                 <DropdownMenuItem
                   className="cursor-pointer p-1 text-gray-600 hover:bg-gray-100"
-                  data-value={Permission.Read}
+                  data-value={Role.Reader}
                   onSelect={(e) => selectHandler(e, user)}>
                   Reader
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="cursor-pointer p-1 text-gray-600 hover:bg-gray-100"
-                  data-value={Permission.ReadWrite}
+                  data-value={Role.Editor}
                   onSelect={(e) => selectHandler(e, user)}>
                   Editor
                 </DropdownMenuItem>

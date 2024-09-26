@@ -4,8 +4,3 @@ enum Result {
   ERROR
   SUCCESS
 }
-
-enum Permission {
-  READ
-  READ_WRITE
-}

@@ -5,74 +5,61 @@ import type { YPresentation } from "@server/hocuspocus/types"
 import { EllipsisVerticalIcon } from "lucide-react"
 
 import {
+  type ChangeUserRoleMutation,
+  type ChangeUserRoleMutationVariables,
   type GetPresentationDataQuery,
   type Presentation,
-  Permission,
-  ChangeUserRoleMutation,
-  ChangeUserRoleMutationVariables,
+  Result,
+  Role,
 } from "~/__generated__/graphql"
-import type { UserRole } from "~/entities/user"
 import { CHANGE_USER_ROLE, GET_PRESENTATION_DATA } from "~/features/share-presentation/api"
-import type { IPresentationUser } from "~/features/share-presentation/lib"
 import { cn } from "~/shared/lib"
 import { useYjs } from "~/shared/model"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "~/shared/ui-kit/dropdown-menu"
 import { Small, Text } from "~/shared/ui/Typography"
 
+export type IPresentationUser = NonNullable<GetPresentationDataQuery["getPresentation"]>["users"][number]
+
 interface PresentationUserProps {
   user: IPresentationUser
-  role: UserRole
-  isCurrentUserOwner: boolean
+  isCurrentUserCreator: boolean
   presentationId: Presentation["id"]
 }
 
-export function PresentationUser({ user, role, isCurrentUserOwner, presentationId }: PresentationUserProps) {
+export function PresentationUser({ user, isCurrentUserCreator, presentationId }: PresentationUserProps) {
   const { user: currentUser } = useUser()
   const [changeUserRole] = useMutation<ChangeUserRoleMutation, ChangeUserRoleMutationVariables>(CHANGE_USER_ROLE)
-  const { provider, getMap } = useYjs()
+  const { getMap } = useYjs()
 
   const selectHandler = async (e: Event) => {
     const target = e.target as HTMLDivElement
-    const permission = target.dataset.value as Permission
+    const role = target.dataset.value as Role
     await changeUserRole({
-      variables: { presentationId, userId: user.id, permission },
-      update: (cache) => {
+      variables: { presentationId, userId: user.id, role },
+      update: (cache, query) => {
+        if (query.data?.changeUserRole !== Result.Success) return
         const cachedData = cache.readQuery<GetPresentationDataQuery>({
           query: GET_PRESENTATION_DATA,
           variables: { presentationId },
         })
 
         if (cachedData?.getPresentation) {
-          let updatedReaders = [...cachedData.getPresentation.readers]
-          let updatedEditors = [...cachedData.getPresentation.editors]
-          const yReaders = getMap<YPresentation>().get("readers")
-          const yEditors = getMap<YPresentation>().get("editors")
+          const updatedUsers = [...cachedData.getPresentation.users].map((_user) =>
+            _user.id === user.id ? { ..._user, role } : _user,
+          )
 
-          if (permission === Permission.Read) {
-            updatedReaders.push(user)
-            updatedEditors = updatedEditors.filter((editor) => editor.id !== user.id)
-            // Updating yjs document
-            provider?.document?.transact(() => {
-              yReaders?.push([user.id])
-              yEditors?.delete(yEditors?.toArray().findIndex((editorId) => editorId === user.id)!)
-            })
-          } else if (permission === Permission.ReadWrite) {
-            updatedEditors.push(user)
-            updatedReaders = updatedReaders.filter((reader) => reader.id !== user.id)
-            // Updating yjs document
-            provider?.document?.transact(() => {
-              yEditors?.push([user.id])
-              yReaders?.delete(yReaders?.toArray().findIndex((readerId) => readerId === user.id)!)
-            })
-          }
+          getMap<YPresentation>()
+            .get("users")
+            ?.toArray()
+            .find((_user) => _user.get("id") === user.id)
+            ?.set("role", role)
 
           cache.writeQuery<GetPresentationDataQuery>({
             query: GET_PRESENTATION_DATA,
             data: {
               getPresentation: {
                 ...cachedData.getPresentation,
-                readers: updatedReaders,
-                editors: updatedEditors,
+                users: updatedUsers,
               },
             },
             variables: { presentationId },
@@ -82,24 +69,25 @@ export function PresentationUser({ user, role, isCurrentUserOwner, presentationI
     })
   }
 
-  const isOwner = isCurrentUserOwner && user.id !== currentUser?.id
+  // current user is owner but this current iteration is not them
+  const isOwnerAndNotIteration = isCurrentUserCreator && user.id !== currentUser?.id
 
   return (
     <div className="group flex min-w-0 items-center justify-between gap-2">
       <div className="flex min-w-0 items-center gap-2">
-        <img src={user.profilePicUrl} className="h-8 w-8 rounded-full" alt={user.name} />
+        <img src={user.props.profilePicUrl} className="h-8 w-8 rounded-full" alt={user.props.name} />
         <div className="min-w-0">
           <Small as="p" className="mb-0.5 truncate">
-            {user.name} {user.id === currentUser?.id ? "(you)" : ""}
+            {user.props.name} {user.id === currentUser?.id ? "(you)" : ""}
           </Small>
-          <p className="truncate text-xs font-normal text-gray-500">{user.email}</p>
+          <p className="truncate text-xs font-normal text-gray-500">{user.props.email}</p>
         </div>
       </div>
       <div className="flex items-center">
-        <Small className={cn("text-grayish font-normal", isOwner && "group-hover:mr-2")}>
-          {role === "owner" ? "Owner" : role === "editor" ? "Editor" : "Reader"}
+        <Small className={cn("text-grayish font-normal", isOwnerAndNotIteration && "group-hover:mr-2")}>
+          {user.role === Role.Creator ? "Creator" : user.role === Role.Editor ? "Editor" : "Reader"}
         </Small>
-        {isOwner && (
+        {isOwnerAndNotIteration && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -112,13 +100,13 @@ export function PresentationUser({ user, role, isCurrentUserOwner, presentationI
               <Text className="mb-0.5 font-medium">Make as</Text>
               <DropdownMenuItem
                 className="cursor-pointer p-1 text-gray-600 hover:bg-gray-100"
-                data-value={Permission.Read}
+                data-value={Role.Reader}
                 onSelect={selectHandler}>
                 Reader
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer p-1 text-gray-600 hover:bg-gray-100"
-                data-value={Permission.ReadWrite}
+                data-value={Role.Editor}
                 onSelect={selectHandler}>
                 Editor
               </DropdownMenuItem>

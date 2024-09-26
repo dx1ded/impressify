@@ -42,7 +42,9 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(clear, (state) => {
-      state.connectedUsers = []
+      state.connectedUsers = initialState.connectedUsers
+      state.isEditor = initialState.isEditor
+      state.isCreator = initialState.isCreator
     })
   },
 })

@@ -2,11 +2,8 @@ type Presentation {
   id: ID!
   name: String!
   slides: [Slide!]!
-  users: [User!]!
+  users: [PresentationUser!]!
   history: History!
-  owner: User!
-  readers: [User!]!
-  editors: [User!]!
 }
 
 type PresentationInfo {

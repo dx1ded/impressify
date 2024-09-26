@@ -1,14 +1,21 @@
 import _ from "lodash"
 import { ILike, In } from "typeorm"
 import type { ApolloContext } from ".."
-import { historyRepository, presentationRepository, slideRepository, userRepository } from "../../database"
+import {
+  historyRepository,
+  presentationRepository,
+  slideRepository,
+  userRepository,
+  presentationUserRepository,
+} from "../../database"
 import { History } from "../../entities/History"
 import { Image } from "../../entities/Image"
 import { Presentation } from "../../entities/Presentation"
+import { PresentationUser } from "../../entities/PresentationUser"
 import { Shape } from "../../entities/Shape"
 import { Slide } from "../../entities/Slide"
 import { Text } from "../../entities/Text"
-import { type Resolvers, Result } from "../__generated__"
+import { type Resolvers, Result, Role } from "../__generated__"
 import { deletePresentationFiles } from "../../helpers"
 
 export default {
@@ -98,10 +105,7 @@ export default {
       const currentUser = await userRepository.findOneBy({ id: user.id })
       const presentation = new Presentation(name)
 
-      presentation.users = [currentUser]
-      presentation.owner = currentUser
-      presentation.readers = []
-      presentation.editors = [currentUser]
+      presentation.users = [new PresentationUser(presentation, currentUser, Role.Creator)]
 
       const slide = new Slide({ presentation })
       const history = new History(presentation)
@@ -118,6 +122,10 @@ export default {
 
       const presentation = await presentationRepository.findOneBy({ id })
       if (!presentation) return null
+
+      const presentationUser = await presentationUserRepository.findOneBy({ id: user.id, presentation: { id } })
+      if (presentationUser.role === Role.Reader) return null
+
       presentation.name = name
       return presentationRepository.save(presentation)
     },
@@ -130,18 +138,15 @@ export default {
       })
 
       if (!presentation) return null
-      const currentUser = await userRepository.findOneBy({ id: user.id })
       const newPresentation = new Presentation(presentation.name)
 
-      newPresentation.users = [currentUser]
-      newPresentation.owner = currentUser
-      newPresentation.readers = []
-      newPresentation.editors = [currentUser]
+      const currentUser = await userRepository.findOneBy({ id: user.id })
+      newPresentation.users = [new PresentationUser(presentation, currentUser, Role.Creator)]
 
       const history = new History(newPresentation)
-
       history.records = []
       newPresentation.history = history
+
       newPresentation.slides = presentation.slides.map((slide) => {
         const newSlide = new Slide({
           presentation: newPresentation,
@@ -149,6 +154,7 @@ export default {
           transition: slide.transition,
           thumbnailUrl: slide.thumbnailUrl,
         })
+
         newSlide.elements = slide.elements.map((element) => {
           const commonProps = {
             ..._.pick(element, ["id", "x", "y", "width", "height", "angle", "scaleX", "scaleY", "position"]),
@@ -185,10 +191,14 @@ export default {
         })
         return newSlide
       })
+
       return presentationRepository.save(newPresentation)
     },
     async deletePresentation(_, { id }, { user, storage }) {
       if (!user) return null
+
+      const presentationUser = await presentationUserRepository.findOneBy({ id: user.id, presentation: { id } })
+      if (presentationUser.role !== Role.Creator) return Result.NotAllowed
 
       await presentationRepository.delete({ id })
       await deletePresentationFiles(storage, id)
@@ -214,19 +224,10 @@ export default {
       })
     },
     users(parent) {
-      return userRepository.findBy({ presentations: { id: parent.id } })
+      return presentationUserRepository.findBy({ presentation: { id: parent.id } })
     },
     history(parent) {
       return historyRepository.findOneBy({ presentation: { id: parent.id } })
-    },
-    owner(parent) {
-      return userRepository.findOneBy({ ownership: { id: parent.id } })
-    },
-    readers(parent) {
-      return userRepository.findBy({ reader: { id: parent.id } })
-    },
-    editors(parent) {
-      return userRepository.findBy({ editor: { id: parent.id } })
     },
   },
 } as Resolvers<ApolloContext>

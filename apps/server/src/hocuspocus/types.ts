@@ -4,6 +4,7 @@ import type { User } from "@clerk/clerk-sdk-node"
 import type { TypedMap } from "yjs-types"
 import type { save } from "./save"
 import type { Presentation } from "../entities/Presentation"
+import type { PresentationUser } from "../entities/PresentationUser"
 import type { Slide } from "../entities/Slide"
 import type { Text } from "../entities/Text"
 import type { Image } from "../entities/Image"
@@ -18,9 +19,7 @@ export type WithHocuspocusContext<T> = Omit<T, "context"> & { context: Hocuspocu
 
 export type NormalizedYPresentation = Pick<Presentation, "id" | "name"> & {
   slides: NormalizedYSlide[]
-  editors: User["id"][]
-  readers: User["id"][]
-  ownerId: User["id"]
+  users: NormalizedYUser[]
 }
 
 export type NormalizedYSlide = Omit<Slide, "presentation" | "elements" | "position" | "createdAt"> & {
@@ -38,13 +37,13 @@ export type NormalizedYElement =
       __typename: "Shape"
     })
 
+export type NormalizedYUser = Pick<PresentationUser, "id" | "role">
+
 export type YPresentation = TypedMap<
   Pick<Presentation, "id"> & {
     name: Y.Text
     slides: Y.Array<YSlide>
-    editors: Y.Array<User["id"]>
-    readers: Y.Array<User["id"]>
-    ownerId: User["id"]
+    users: Y.Array<YUser>
     isSaving: boolean
   }
 >
@@ -75,6 +74,8 @@ export type YShape = TypedMap<
     __typename: "Shape"
   }
 >
+
+export type YUser = TypedMap<NormalizedYUser>
 
 export type UserAwareness = {
   id: string

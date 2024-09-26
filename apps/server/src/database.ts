@@ -3,6 +3,7 @@ import { DataSource, Repository } from "typeorm"
 import { Element } from "./entities/Element"
 import { Slide } from "./entities/Slide"
 import { Presentation } from "./entities/Presentation"
+import { PresentationUser } from "./entities/PresentationUser"
 import { History } from "./entities/History"
 import { HistoryRecord } from "./entities/HistoryRecord"
 import { Text } from "./entities/Text"
@@ -26,6 +27,7 @@ export const queryRunner = AppDataSource.createQueryRunner()
 
 export const userRepository = AppDataSource.getRepository(User)
 export const presentationRepository = AppDataSource.getRepository(Presentation)
+export const presentationUserRepository = AppDataSource.getRepository(PresentationUser)
 export const historyRepository = AppDataSource.getRepository(History)
 export const historyRecordRepository = AppDataSource.getRepository(HistoryRecord)
 export const slideRepository = AppDataSource.getRepository(Slide)
