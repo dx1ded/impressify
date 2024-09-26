@@ -1,4 +1,5 @@
 import { ArrowLeftRightIcon, Copy, DropletIcon, Plus, Trash2 } from "lucide-react"
+import { shallowEqual } from "react-redux"
 
 import { AddSlide } from "~/features/add-slide"
 import { ChangeSlideBackgroundDialog } from "~/features/change-slide-background"
@@ -16,7 +17,14 @@ import {
 } from "~/shared/ui-kit/menubar"
 
 export function Slide() {
-  const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
+  const { currentSlide, isEditor, isLoading } = useAppSelector(
+    (state) => ({
+      currentSlide: state.presentation.currentSlide,
+      isEditor: state.user.isEditor,
+      isLoading: state.presentation.isLoading,
+    }),
+    shallowEqual,
+  )
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
 
   const slide = slides[currentSlide]
@@ -27,7 +35,7 @@ export function Slide() {
       <MenubarContent>
         <AddSlide>
           {(addSlide) => (
-            <MenubarItem onSelect={addSlide}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={addSlide}>
               <Plus className="mr-2 h-5 w-5" />
               New slide
               <MenubarShortcut>Ctrl+M</MenubarShortcut>
@@ -36,7 +44,7 @@ export function Slide() {
         </AddSlide>
         <DuplicateSlide>
           {(duplicateSlide) => (
-            <MenubarItem onSelect={() => duplicateSlide(slide.id)}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={() => duplicateSlide(slide.id)}>
               <Copy className="mr-2 h-5 w-5" />
               Duplicate slide
             </MenubarItem>
@@ -44,7 +52,7 @@ export function Slide() {
         </DuplicateSlide>
         <DeleteSlide>
           {(deleteSlide) => (
-            <MenubarItem onSelect={() => deleteSlide(slide.id)}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={() => deleteSlide(slide.id)}>
               <Trash2 className="mr-2 h-5 w-5" />
               Delete slide
             </MenubarItem>
@@ -53,14 +61,14 @@ export function Slide() {
         <MenubarSeparator />
         <ChangeSlideBackgroundDialog>
           {/* e.preventDefault because MenubarItem has custom behaviour */}
-          <MenubarItem onSelect={(e) => e.preventDefault()}>
+          <MenubarItem disabled={!isEditor || isLoading} onSelect={(e) => e.preventDefault()}>
             <DropletIcon className="mr-2 h-5 w-5" />
             Change background
           </MenubarItem>
         </ChangeSlideBackgroundDialog>
         <ChangeSlideTransitionSheet>
           {/* e.preventDefault because MenubarItem has custom behaviour */}
-          <MenubarItem onSelect={(e) => e.preventDefault()}>
+          <MenubarItem disabled={!isEditor || isLoading} onSelect={(e) => e.preventDefault()}>
             <ArrowLeftRightIcon className="mr-2 h-5 w-5" />
             Transition
           </MenubarItem>

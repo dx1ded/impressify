@@ -38,21 +38,32 @@ const CONTAINER_BORDER_WIDTH = 2
 export const Slide = memo(function Slide() {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
-  const { currentSlide, presentationId, userId, selectedId, isLoading, isCreating, isEditing, mode, imageHeight } =
-    useAppSelector(
-      (state) => ({
-        currentSlide: state.presentation.currentSlide,
-        presentationId: state.presentation.presentation.id,
-        selectedId: state.presentation.selectedId,
-        userId: state.user.id,
-        isLoading: state.presentation.isLoading,
-        isCreating: state.presentation.isCreating,
-        isEditing: state.presentation.isEditing,
-        mode: state.toolbar.mode,
-        imageHeight: state.toolbar.imageProps.height,
-      }),
-      shallowEqual,
-    )
+  const {
+    currentSlide,
+    presentationId,
+    userId,
+    selectedId,
+    isLoading,
+    isCreating,
+    isEditing,
+    mode,
+    imageHeight,
+    isEditor,
+  } = useAppSelector(
+    (state) => ({
+      currentSlide: state.presentation.currentSlide,
+      presentationId: state.presentation.presentation.id,
+      selectedId: state.presentation.selectedId,
+      userId: state.user.id,
+      isLoading: state.presentation.isLoading,
+      isCreating: state.presentation.isCreating,
+      isEditing: state.presentation.isEditing,
+      mode: state.toolbar.mode,
+      imageHeight: state.toolbar.imageProps.height,
+      isEditor: state.user.isEditor,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
   const stageRef = useRef<StageClass>(null)
   const { register, flush } = useDebouncedFunctions()
@@ -201,6 +212,7 @@ export const Slide = memo(function Slide() {
           ref={stageRef}
           width={SLIDE_WIDTH}
           height={SLIDE_HEIGHT}
+          listening={isEditor && !isLoading}
           style={{ cursor: isCreating ? "crosshair" : "default" }}
           onClick={handleStageClick}
           onMouseMove={mouseMoveHandlerDebounced}

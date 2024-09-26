@@ -44,7 +44,10 @@ const initialState: PresentationState = {
   presentation: {
     id: "",
     name: "",
+    ownerId: "",
     slides: [],
+    editors: [],
+    readers: [],
   },
   copiedElement: null,
   // currentSlide is an index

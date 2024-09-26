@@ -65,47 +65,50 @@ export function transformNormalizedToYElement(element: NormalizedYElement) {
 
 export function normalizePresentation(yPresentation: YPresentation): NormalizedYPresentation {
   return {
-    id: yPresentation.get("id")!,
-    name: yPresentation.get("name")!.toString(),
-    slides: yPresentation.get("slides")!.map(
+    id: yPresentation.get("id"),
+    name: yPresentation.get("name").toString(),
+    editors: yPresentation.get("editors").toArray(),
+    readers: yPresentation.get("readers").toArray(),
+    ownerId: yPresentation.get("ownerId"),
+    slides: yPresentation.get("slides").map(
       (ySlide): NormalizedYSlide => ({
-        id: ySlide.get("id")!,
-        bg: ySlide.get("bg")!,
+        id: ySlide.get("id"),
+        bg: ySlide.get("bg"),
         thumbnailUrl: ySlide.get("thumbnailUrl")!,
         transition: ySlide.get("transition")!,
         elements: ySlide.get("elements")!.map((yElement) => {
           const element = {
-            __typename: yElement.get("__typename")!,
-            id: yElement.get("id")!,
-            x: yElement.get("x")!,
-            y: yElement.get("y")!,
-            width: yElement.get("width")!,
-            height: yElement.get("height")!,
-            angle: yElement.get("angle")!,
-            scaleX: yElement.get("scaleX")!,
-            scaleY: yElement.get("scaleY")!,
+            __typename: yElement.get("__typename"),
+            id: yElement.get("id"),
+            x: yElement.get("x"),
+            y: yElement.get("y"),
+            width: yElement.get("width"),
+            height: yElement.get("height"),
+            angle: yElement.get("angle"),
+            scaleX: yElement.get("scaleX"),
+            scaleY: yElement.get("scaleY"),
           } as NormalizedYElement
 
           if (element.__typename === "Text") {
-            element.text = yElement.get("text")!.toString()
-            element.textColor = yElement.get("textColor")!
-            element.fillColor = yElement.get("fillColor")!
-            element.borderColor = yElement.get("borderColor")!
-            element.fontFamily = yElement.get("fontFamily")!
-            element.fontSize = yElement.get("fontSize")!
-            element.bold = yElement.get("bold")!
-            element.italic = yElement.get("italic")!
-            element.underlined = yElement.get("underlined")!
-            element.alignment = yElement.get("alignment")!
-            element.lineHeight = yElement.get("lineHeight")!
+            element.text = yElement.get("text").toString()
+            element.textColor = yElement.get("textColor")
+            element.fillColor = yElement.get("fillColor")
+            element.borderColor = yElement.get("borderColor")
+            element.fontFamily = yElement.get("fontFamily")
+            element.fontSize = yElement.get("fontSize")
+            element.bold = yElement.get("bold")
+            element.italic = yElement.get("italic")
+            element.underlined = yElement.get("underlined")
+            element.alignment = yElement.get("alignment")
+            element.lineHeight = yElement.get("lineHeight")
           } else if (element.__typename === "Image") {
-            element.imageUrl = yElement.get("imageUrl")!
+            element.imageUrl = yElement.get("imageUrl")
           } else {
-            element.type = yElement.get("type")!
-            element.fillColor = yElement.get("fillColor")!
-            element.strokeColor = yElement.get("strokeColor")!
-            element.strokeWidth = yElement.get("strokeWidth")!
-            element.proportional = yElement.get("proportional")!
+            element.type = yElement.get("type")
+            element.fillColor = yElement.get("fillColor")
+            element.strokeColor = yElement.get("strokeColor")
+            element.strokeWidth = yElement.get("strokeWidth")
+            element.proportional = yElement.get("proportional")
           }
 
           return element

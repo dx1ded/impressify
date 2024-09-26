@@ -1,10 +1,17 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import type { ReactNode } from "react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { useLazyQuery } from "@apollo/client"
+import { type ChangeEvent, type ReactNode, useState } from "react"
+import { useDebouncedCallback } from "use-debounce"
 
-import { SharePresentation } from "~/features/share-presentation"
-import { UserEmailSchema } from "~/features/share-presentation/model"
+import {
+  type FindUsersQuery,
+  type FindUsersQueryVariables,
+  type GetPresentationDataQuery,
+  type GetPresentationDataQueryVariables,
+  type Presentation,
+} from "~/__generated__/graphql"
+import { FIND_USERS, GET_PRESENTATION_DATA } from "~/features/share-presentation/api"
+import { SearchList } from "~/features/share-presentation/ui/SearchList"
+import { UserList } from "~/features/share-presentation/ui/UserList"
 import { Button } from "~/shared/ui-kit/button"
 import { Input } from "~/shared/ui-kit/input"
 import {
@@ -16,50 +23,76 @@ import {
   DialogDescription,
   DialogClose,
 } from "~/shared/ui-kit/dialog"
+import { Text } from "~/shared/ui/Typography"
 
-export function SharePresentationDialog({ children, presentationId }: { children: ReactNode; presentationId: string }) {
-  const { register, handleSubmit, formState } = useForm<z.infer<typeof UserEmailSchema>>({
-    resolver: zodResolver(UserEmailSchema),
+const FIND_USERS_DEBOUNCE_TIME = 500
+const USERS_LIMIT = 5
+
+interface SharePresentationDialogProps {
+  presentationId: Presentation["id"]
+  children: ReactNode
+}
+
+export function SharePresentationDialog({ presentationId, children }: SharePresentationDialogProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const [getPresentationData, dataResult] = useLazyQuery<GetPresentationDataQuery, GetPresentationDataQueryVariables>(
+    GET_PRESENTATION_DATA,
+    {
+      fetchPolicy: "network-only",
+      variables: { presentationId },
+    },
+  )
+  const [findUsers, findUsersResult] = useLazyQuery<FindUsersQuery, FindUsersQueryVariables>(FIND_USERS, {
+    onCompleted(data) {
+      setIsMenuOpen(!!data?.findUsers?.length)
+    },
   })
 
+  const openChangeHandler = (open: boolean) => {
+    if (open) getPresentationData()
+    else setIsMenuOpen(false)
+  }
+
+  const inputChangeHandler = useDebouncedCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+    if (!value) return setIsMenuOpen(false)
+    await findUsers({ variables: { query: value, limit: USERS_LIMIT } })
+  }, FIND_USERS_DEBOUNCE_TIME)
+
+  const presentationData = dataResult.data?.getPresentation
+  const findUsersData = findUsersResult.data?.findUsers
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={openChangeHandler}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Share presentation</DialogTitle>
-          <DialogDescription>You can share this presentation with someone else to work in a team!</DialogDescription>
+      <DialogContent onClick={() => setIsMenuOpen(false)}>
+        <DialogHeader className="min-w-0">
+          <DialogTitle className="truncate leading-normal">Share &quot;{presentationData?.name}&quot;</DialogTitle>
+          <DialogDescription hidden>Share this presentation with someone else to work in a team</DialogDescription>
         </DialogHeader>
-        <SharePresentation>
-          {(sharePresentation, { data, loading, called }) => (
-            <>
-              <div className="flex items-center gap-2">
-                <Input {...register("email")} />
-                {data?.invite && called ? (
-                  <DialogClose className="h-full" asChild>
-                    <Button size="sm" className="h-full px-7">
-                      Close
-                    </Button>
-                  </DialogClose>
-                ) : (
-                  <Button
-                    disabled={loading}
-                    size="sm"
-                    className="h-full px-7"
-                    onClick={handleSubmit(({ email }) => sharePresentation({ variables: { email, presentationId } }))}>
-                    Save
-                  </Button>
-                )}
-              </div>
-              {formState.errors.email && (
-                <small className="block font-medium text-red-400">{formState.errors.email.message}</small>
-              )}
-              {data?.invite && called && (
-                <small className="block font-medium text-green-400">User has been invited</small>
-              )}
-            </>
-          )}
-        </SharePresentation>
+        <div className="relative">
+          <Input
+            type="text"
+            className="px-3 py-5"
+            placeholder="Add people to work with you"
+            onChange={inputChangeHandler}
+          />
+          <SearchList
+            presentationId={presentationId}
+            users={findUsersData?.filter((user) => !presentationData?.users.some((_user) => _user.id === user.id))}
+            isMenuOpen={isMenuOpen}
+          />
+        </div>
+        <div className="mb-2">
+          <Text className="mb-3 font-medium">People with access</Text>
+          <UserList presentationId={presentationId} data={presentationData} loading={dataResult.loading} />
+        </div>
+        <DialogClose asChild>
+          <Button size="sm" variant="blue" className="rounded-3xl">
+            Done
+          </Button>
+        </DialogClose>
       </DialogContent>
     </Dialog>
   )

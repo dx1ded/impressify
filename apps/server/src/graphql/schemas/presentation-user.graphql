@@ -1,0 +1,11 @@
+type PresentationUser {
+  id: ID!
+  role: Role
+  user: User!
+}
+
+enum Role {
+  CREATOR
+  EDITOR
+  READER
+}

@@ -10,10 +10,12 @@ import {
   StarIcon,
   Type,
 } from "lucide-react"
+import { shallowEqual } from "react-redux"
 
 import { ShapeType } from "~/__generated__/graphql"
 import { AddSlide } from "~/features/add-slide"
 import { ChangeShapesType, InsertImage, InsertText } from "~/features/insert-element"
+import { useAppSelector } from "~/shared/model"
 import {
   MenubarContent,
   MenubarItem,
@@ -27,13 +29,21 @@ import {
 } from "~/shared/ui-kit/menubar"
 
 export function Insert() {
+  const { isEditor, isLoading } = useAppSelector(
+    (state) => ({
+      isEditor: state.user.isEditor,
+      isLoading: state.presentation.isLoading,
+    }),
+    shallowEqual,
+  )
+
   return (
     <MenubarMenu>
       <MenubarTrigger className="px-2 py-0.5">Insert</MenubarTrigger>
       <MenubarContent>
         <InsertText>
           {(insertText) => (
-            <MenubarItem onSelect={insertText}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={insertText}>
               <Type className="mr-2 h-5 w-5" />
               Text box
             </MenubarItem>
@@ -41,14 +51,14 @@ export function Insert() {
         </InsertText>
         <InsertImage>
           {(insertImage) => (
-            <MenubarItem onSelect={insertImage}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={insertImage}>
               <ImageIcon className="mr-2 h-5 w-5" />
               Image
             </MenubarItem>
           )}
         </InsertImage>
         <MenubarSub>
-          <MenubarSubTrigger>
+          <MenubarSubTrigger disabled={!isEditor || isLoading}>
             <ShapesIcon className="mr-2 h-5 w-5" />
             Shape
           </MenubarSubTrigger>
@@ -88,7 +98,7 @@ export function Insert() {
         <MenubarSeparator />
         <AddSlide>
           {(addSlide) => (
-            <MenubarItem onSelect={addSlide}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={addSlide}>
               <Plus className="mr-2 h-5 w-5" />
               New slide
               <MenubarShortcut>Ctrl+M</MenubarShortcut>

@@ -8,7 +8,7 @@ import { Presentation } from "../../entities/Presentation"
 import { Shape } from "../../entities/Shape"
 import { Slide } from "../../entities/Slide"
 import { Text } from "../../entities/Text"
-import type { Resolvers } from "../__generated__"
+import { type Resolvers, Result } from "../__generated__"
 import { deletePresentationFiles } from "../../helpers"
 
 export default {
@@ -95,7 +95,14 @@ export default {
     async createPresentation(_, { name }, { user }) {
       if (!user) return null
 
-      const presentation = new Presentation(name, [await userRepository.findOneBy({ id: user.id })])
+      const currentUser = await userRepository.findOneBy({ id: user.id })
+      const presentation = new Presentation(name)
+
+      presentation.users = [currentUser]
+      presentation.owner = currentUser
+      presentation.readers = []
+      presentation.editors = [currentUser]
+
       const slide = new Slide({ presentation })
       const history = new History(presentation)
 
@@ -123,7 +130,14 @@ export default {
       })
 
       if (!presentation) return null
-      const newPresentation = new Presentation(presentation.name, [await userRepository.findOneBy({ id: user.id })])
+      const currentUser = await userRepository.findOneBy({ id: user.id })
+      const newPresentation = new Presentation(presentation.name)
+
+      newPresentation.users = [currentUser]
+      newPresentation.owner = currentUser
+      newPresentation.readers = []
+      newPresentation.editors = [currentUser]
+
       const history = new History(newPresentation)
 
       history.records = []
@@ -175,9 +189,10 @@ export default {
     },
     async deletePresentation(_, { id }, { user, storage }) {
       if (!user) return null
+
       await presentationRepository.delete({ id })
       await deletePresentationFiles(storage, id)
-      return true
+      return Result.Success
     },
   },
   Presentation: {
@@ -189,8 +204,10 @@ export default {
           where: { presentation: { id: parent.id } },
           order: { position: "ASC" },
         })
+
         return firstSlide ? [firstSlide] : []
       }
+
       return slideRepository.find({
         where: { presentation: { id: parent.id } },
         order: { position: "ASC" },
@@ -199,8 +216,17 @@ export default {
     users(parent) {
       return userRepository.findBy({ presentations: { id: parent.id } })
     },
-    async history(parent) {
+    history(parent) {
       return historyRepository.findOneBy({ presentation: { id: parent.id } })
+    },
+    owner(parent) {
+      return userRepository.findOneBy({ ownership: { id: parent.id } })
+    },
+    readers(parent) {
+      return userRepository.findBy({ reader: { id: parent.id } })
+    },
+    editors(parent) {
+      return userRepository.findBy({ editor: { id: parent.id } })
     },
   },
 } as Resolvers<ApolloContext>

@@ -69,17 +69,25 @@ export type Image = Element & {
 export type Mutation = {
   __typename?: 'Mutation';
   addRecord?: Maybe<HistoryRecord>;
+  changeUserRole?: Maybe<Result>;
   createPresentation?: Maybe<Presentation>;
-  deletePresentation?: Maybe<Scalars['Boolean']['output']>;
+  deletePresentation?: Maybe<Result>;
   duplicatePresentation?: Maybe<Presentation>;
-  invite?: Maybe<Scalars['Boolean']['output']>;
+  invite?: Maybe<Result>;
   renamePresentation?: Maybe<Presentation>;
-  sendHelpRequest?: Maybe<Scalars['Boolean']['output']>;
+  sendHelpRequest?: Maybe<Result>;
 };
 
 
 export type MutationAddRecordArgs = {
   presentationId: Scalars['String']['input'];
+};
+
+
+export type MutationChangeUserRoleArgs = {
+  permission: Permission;
+  presentationId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -100,8 +108,9 @@ export type MutationDuplicatePresentationArgs = {
 
 
 export type MutationInviteArgs = {
-  email: Scalars['String']['input'];
+  permission: Permission;
   presentationId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -115,11 +124,19 @@ export type MutationSendHelpRequestArgs = {
   text: Scalars['String']['input'];
 };
 
+export enum Permission {
+  Read = 'READ',
+  ReadWrite = 'READ_WRITE'
+}
+
 export type Presentation = {
   __typename?: 'Presentation';
+  editors: Array<User>;
   history: History;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  owner: User;
+  readers: Array<User>;
   slides: Array<Slide>;
   users: Array<User>;
 };
@@ -133,9 +150,17 @@ export type PresentationInfo = {
   totalUsers: Scalars['Int']['output'];
 };
 
+export type PresentationUser = {
+  __typename?: 'PresentationUser';
+  id: Scalars['ID']['output'];
+  role?: Maybe<Role>;
+  user: User;
+};
+
 export type Query = {
   __typename?: 'Query';
   findUserPresentations?: Maybe<Array<Presentation>>;
+  findUsers?: Maybe<Array<User>>;
   getPresentation?: Maybe<Presentation>;
   getPresentationInfo?: Maybe<PresentationInfo>;
   searchPresentations?: Maybe<Array<Presentation>>;
@@ -146,6 +171,13 @@ export type Query = {
 export type QueryFindUserPresentationsArgs = {
   preview: Scalars['Boolean']['input'];
   sortBy: Scalars['String']['input'];
+};
+
+
+export type QueryFindUsersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  query: Scalars['String']['input'];
 };
 
 
@@ -167,6 +199,19 @@ export type QuerySearchPresentationsArgs = {
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
+
+export enum Result {
+  Error = 'ERROR',
+  NotAllowed = 'NOT_ALLOWED',
+  NotFound = 'NOT_FOUND',
+  Success = 'SUCCESS'
+}
+
+export enum Role {
+  Creator = 'CREATOR',
+  Editor = 'EDITOR',
+  Reader = 'READER'
+}
 
 export type Shape = Element & {
   __typename?: 'Shape';
@@ -243,11 +288,14 @@ export enum Transition {
 
 export type User = {
   __typename?: 'User';
+  editor: Array<Presentation>;
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  ownership: Array<Presentation>;
   presentations: Array<Presentation>;
   profilePicUrl: Scalars['String']['output'];
+  reader: Array<Presentation>;
   records: Array<HistoryRecord>;
 };
 
@@ -288,7 +336,7 @@ export type DeletePresentationMutationVariables = Exact<{
 }>;
 
 
-export type DeletePresentationMutation = { __typename?: 'Mutation', deletePresentation?: boolean | null };
+export type DeletePresentationMutation = { __typename?: 'Mutation', deletePresentation?: Result | null };
 
 export type DuplicatePresentationMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -302,7 +350,7 @@ export type SendHelpRequestMutationVariables = Exact<{
 }>;
 
 
-export type SendHelpRequestMutation = { __typename?: 'Mutation', sendHelpRequest?: boolean | null };
+export type SendHelpRequestMutation = { __typename?: 'Mutation', sendHelpRequest?: Result | null };
 
 export type RenamePresentationMutationVariables = Exact<{
   presentationId: Scalars['ID']['input'];
@@ -320,12 +368,37 @@ export type SearchPresentationsQueryVariables = Exact<{
 export type SearchPresentationsQuery = { __typename?: 'Query', searchPresentations?: Array<{ __typename?: 'Presentation', id: string, name: string, history: { __typename?: 'History', records: Array<{ __typename?: 'HistoryRecord', lastOpened: any, user: { __typename?: 'User', id: string } }> } }> | null };
 
 export type InviteMutationVariables = Exact<{
-  email: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+  presentationId: Scalars['String']['input'];
+  permission: Permission;
+}>;
+
+
+export type InviteMutation = { __typename?: 'Mutation', invite?: Result | null };
+
+export type GetPresentationDataQueryVariables = Exact<{
   presentationId: Scalars['String']['input'];
 }>;
 
 
-export type InviteMutation = { __typename?: 'Mutation', invite?: boolean | null };
+export type GetPresentationDataQuery = { __typename?: 'Query', getPresentation?: { __typename?: 'Presentation', name: string, owner: { __typename?: 'User', id: string }, readers: Array<{ __typename?: 'User', id: string }>, editors: Array<{ __typename?: 'User', id: string }>, users: Array<{ __typename?: 'User', id: string, name: string, email: string, profilePicUrl: string }> } | null };
+
+export type FindUsersQueryVariables = Exact<{
+  query: Scalars['String']['input'];
+  limit: Scalars['Int']['input'];
+}>;
+
+
+export type FindUsersQuery = { __typename?: 'Query', findUsers?: Array<{ __typename?: 'User', id: string, name: string, email: string, profilePicUrl: string }> | null };
+
+export type ChangeUserRoleMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+  presentationId: Scalars['String']['input'];
+  permission: Permission;
+}>;
+
+
+export type ChangeUserRoleMutation = { __typename?: 'Mutation', changeUserRole?: Result | null };
 
 export const SlideFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SlideFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Slide"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"bg"}},{"kind":"Field","name":{"kind":"Name","value":"transition"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailUrl"}},{"kind":"Field","name":{"kind":"Name","value":"elements"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"angle"}},{"kind":"Field","name":{"kind":"Name","value":"scaleX"}},{"kind":"Field","name":{"kind":"Name","value":"scaleY"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Text"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"textColor"}},{"kind":"Field","name":{"kind":"Name","value":"fillColor"}},{"kind":"Field","name":{"kind":"Name","value":"borderColor"}},{"kind":"Field","name":{"kind":"Name","value":"fontFamily"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"bold"}},{"kind":"Field","name":{"kind":"Name","value":"italic"}},{"kind":"Field","name":{"kind":"Name","value":"underlined"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"lineHeight"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Shape"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fillColor"}},{"kind":"Field","name":{"kind":"Name","value":"strokeColor"}},{"kind":"Field","name":{"kind":"Name","value":"strokeWidth"}},{"kind":"Field","name":{"kind":"Name","value":"proportional"}}]}}]}}]}}]} as unknown as DocumentNode<SlideFieldsFragment, unknown>;
 export const AddHistoryRecordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddHistoryRecord"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addRecord"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"presentationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<AddHistoryRecordMutation, AddHistoryRecordMutationVariables>;
@@ -337,7 +410,10 @@ export const DuplicatePresentationDocument = {"kind":"Document","definitions":[{
 export const SendHelpRequestDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SendHelpRequest"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"text"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendHelpRequest"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"text"},"value":{"kind":"Variable","name":{"kind":"Name","value":"text"}}}]}]}}]} as unknown as DocumentNode<SendHelpRequestMutation, SendHelpRequestMutationVariables>;
 export const RenamePresentationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RenamePresentation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"renamePresentation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<RenamePresentationMutation, RenamePresentationMutationVariables>;
 export const SearchPresentationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SearchPresentations"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchPresentations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"history"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lastOpened"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SearchPresentationsQuery, SearchPresentationsQueryVariables>;
-export const InviteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Invite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"invite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"presentationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}}]}]}}]} as unknown as DocumentNode<InviteMutation, InviteMutationVariables>;
+export const InviteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Invite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"permission"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Permission"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"invite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"Argument","name":{"kind":"Name","value":"presentationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"permission"},"value":{"kind":"Variable","name":{"kind":"Name","value":"permission"}}}]}]}}]} as unknown as DocumentNode<InviteMutation, InviteMutationVariables>;
+export const GetPresentationDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPresentationData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getPresentation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"owner"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"readers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"editors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"profilePicUrl"}}]}}]}}]}}]} as unknown as DocumentNode<GetPresentationDataQuery, GetPresentationDataQueryVariables>;
+export const FindUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FindUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"query"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findUsers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"query"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"profilePicUrl"}}]}}]}}]} as unknown as DocumentNode<FindUsersQuery, FindUsersQueryVariables>;
+export const ChangeUserRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ChangeUserRole"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"permission"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Permission"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"changeUserRole"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"Argument","name":{"kind":"Name","value":"presentationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"presentationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"permission"},"value":{"kind":"Variable","name":{"kind":"Name","value":"permission"}}}]}]}}]} as unknown as DocumentNode<ChangeUserRoleMutation, ChangeUserRoleMutationVariables>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -400,17 +476,25 @@ export type Image = Element & {
 export type Mutation = {
   __typename?: 'Mutation';
   addRecord?: Maybe<HistoryRecord>;
+  changeUserRole?: Maybe<Result>;
   createPresentation?: Maybe<Presentation>;
-  deletePresentation?: Maybe<Scalars['Boolean']['output']>;
+  deletePresentation?: Maybe<Result>;
   duplicatePresentation?: Maybe<Presentation>;
-  invite?: Maybe<Scalars['Boolean']['output']>;
+  invite?: Maybe<Result>;
   renamePresentation?: Maybe<Presentation>;
-  sendHelpRequest?: Maybe<Scalars['Boolean']['output']>;
+  sendHelpRequest?: Maybe<Result>;
 };
 
 
 export type MutationAddRecordArgs = {
   presentationId: Scalars['String']['input'];
+};
+
+
+export type MutationChangeUserRoleArgs = {
+  permission: Permission;
+  presentationId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -431,8 +515,9 @@ export type MutationDuplicatePresentationArgs = {
 
 
 export type MutationInviteArgs = {
-  email: Scalars['String']['input'];
+  permission: Permission;
   presentationId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -446,11 +531,19 @@ export type MutationSendHelpRequestArgs = {
   text: Scalars['String']['input'];
 };
 
+export enum Permission {
+  Read = 'READ',
+  ReadWrite = 'READ_WRITE'
+}
+
 export type Presentation = {
   __typename?: 'Presentation';
+  editors: Array<User>;
   history: History;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  owner: User;
+  readers: Array<User>;
   slides: Array<Slide>;
   users: Array<User>;
 };
@@ -464,9 +557,17 @@ export type PresentationInfo = {
   totalUsers: Scalars['Int']['output'];
 };
 
+export type PresentationUser = {
+  __typename?: 'PresentationUser';
+  id: Scalars['ID']['output'];
+  role?: Maybe<Role>;
+  user: User;
+};
+
 export type Query = {
   __typename?: 'Query';
   findUserPresentations?: Maybe<Array<Presentation>>;
+  findUsers?: Maybe<Array<User>>;
   getPresentation?: Maybe<Presentation>;
   getPresentationInfo?: Maybe<PresentationInfo>;
   searchPresentations?: Maybe<Array<Presentation>>;
@@ -477,6 +578,13 @@ export type Query = {
 export type QueryFindUserPresentationsArgs = {
   preview: Scalars['Boolean']['input'];
   sortBy: Scalars['String']['input'];
+};
+
+
+export type QueryFindUsersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  query: Scalars['String']['input'];
 };
 
 
@@ -498,6 +606,19 @@ export type QuerySearchPresentationsArgs = {
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
+
+export enum Result {
+  Error = 'ERROR',
+  NotAllowed = 'NOT_ALLOWED',
+  NotFound = 'NOT_FOUND',
+  Success = 'SUCCESS'
+}
+
+export enum Role {
+  Creator = 'CREATOR',
+  Editor = 'EDITOR',
+  Reader = 'READER'
+}
 
 export type Shape = Element & {
   __typename?: 'Shape';
@@ -574,10 +695,13 @@ export enum Transition {
 
 export type User = {
   __typename?: 'User';
+  editor: Array<Presentation>;
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  ownership: Array<Presentation>;
   presentations: Array<Presentation>;
   profilePicUrl: Scalars['String']['output'];
+  reader: Array<Presentation>;
   records: Array<HistoryRecord>;
 };

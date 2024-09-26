@@ -1,6 +1,7 @@
 import { Draggable } from "@hello-pangea/dnd"
 import type { UserAwareness } from "@server/hocuspocus/types"
 import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
+import { shallowEqual } from "react-redux"
 
 import { Transition } from "~/__generated__/graphql"
 import { type SlideProps, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
@@ -18,23 +19,37 @@ interface SlideListItemProps {
 
 export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) {
   const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
-  const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
+  const { currentSlide, isEditor, isLoading } = useAppSelector(
+    (state) => ({
+      currentSlide: state.presentation.currentSlide,
+      isEditor: state.user.isEditor,
+      isLoading: state.presentation.isLoading,
+    }),
+    shallowEqual,
+  )
   const dispatch = useAppDispatch()
   const { flush, flushWithPattern, deleteWithPattern, deleteDebounced } = useDebouncedFunctions()
   const { updateAwareness } = useYjs()
 
   const switchSlide = () => {
     if (index === currentSlide) return
-    flushWithPattern(EDIT_ELEMENT_ID)
-    flush(TAKE_SCREENSHOT_ID)
-    deleteWithPattern(EDIT_ELEMENT_ID)
-    deleteDebounced(TAKE_SCREENSHOT_ID)
+    if (!isEditor) {
+      flushWithPattern(EDIT_ELEMENT_ID)
+      flush(TAKE_SCREENSHOT_ID)
+      deleteWithPattern(EDIT_ELEMENT_ID)
+      deleteDebounced(TAKE_SCREENSHOT_ID)
+    }
     dispatch(switchCurrentSlide(index))
     updateAwareness<UserAwareness>({ currentSlideId: slide.id })
   }
 
   return (
-    <Draggable key={slide.id} draggableId={slide.id} index={index} disableInteractiveElementBlocking>
+    <Draggable
+      key={slide.id}
+      draggableId={slide.id}
+      index={index}
+      isDragDisabled={!isEditor || isLoading}
+      disableInteractiveElementBlocking>
       {(provided) => (
         <div
           ref={provided.innerRef}

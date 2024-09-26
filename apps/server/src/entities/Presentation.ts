@@ -4,6 +4,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryColumn,
@@ -26,7 +27,7 @@ export class Presentation implements IPresentation {
   @OneToMany(() => Slide, (slide) => slide.presentation, { cascade: true })
   slides: Relation<Slide[]>
 
-  @ManyToMany(() => User, (user) => user.presentations)
+  @ManyToMany(() => User, (user) => user.presentations, { cascade: true })
   @JoinTable()
   users: Relation<User[]>
 
@@ -34,9 +35,19 @@ export class Presentation implements IPresentation {
   @JoinColumn()
   history: Relation<History>
 
-  constructor(name: string, users: User[]) {
+  @ManyToOne(() => User, (user) => user.ownership, { cascade: true })
+  owner: Relation<User>
+
+  @ManyToMany(() => User, (user) => user.reader, { cascade: true })
+  @JoinTable()
+  readers: Relation<User[]>
+
+  @ManyToMany(() => User, (user) => user.editor, { cascade: true })
+  @JoinTable()
+  editors: Relation<User[]>
+
+  constructor(name: string) {
     this.id = nanoid(6)
     this.name = name
-    this.users = users
   }
 }

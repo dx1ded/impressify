@@ -1,20 +1,30 @@
 import { MenubarSeparator } from "@radix-ui/react-menubar"
 import { ClipboardPaste, CopyIcon, RedoIcon, Trash2, UndoIcon } from "lucide-react"
+import { shallowEqual } from "react-redux"
 
 import { CopyElement, PasteElement } from "~/features/copy-paste-element"
 import { RedoHistory, UndoHistory } from "~/features/apply-history"
 import { DeleteElement } from "~/features/delete-element"
 import { DuplicateElement } from "~/features/duplicate-element"
+import { useAppSelector } from "~/shared/model"
 import { MenubarContent, MenubarItem, MenubarMenu, MenubarShortcut, MenubarTrigger } from "~/shared/ui-kit/menubar"
 
 export function Edit() {
+  const { isEditor, isLoading } = useAppSelector(
+    (state) => ({
+      isEditor: state.user.isEditor,
+      isLoading: state.presentation.isLoading,
+    }),
+    shallowEqual,
+  )
+
   return (
     <MenubarMenu>
       <MenubarTrigger className="px-2 py-0.5">Edit</MenubarTrigger>
       <MenubarContent>
         <UndoHistory>
           {(undo) => (
-            <MenubarItem onSelect={() => undo()}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={() => undo()}>
               <UndoIcon className="mr-2 h-5 w-5" />
               Undo
               <MenubarShortcut>⌘Z</MenubarShortcut>
@@ -23,7 +33,7 @@ export function Edit() {
         </UndoHistory>
         <RedoHistory>
           {(redo) => (
-            <MenubarItem onSelect={() => redo()}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={() => redo()}>
               <RedoIcon className="mr-2 h-5 w-5" />
               Redo
               <MenubarShortcut>⌘Y</MenubarShortcut>
@@ -33,7 +43,7 @@ export function Edit() {
         <MenubarSeparator />
         <CopyElement>
           {(copyElement) => (
-            <MenubarItem onSelect={() => copyElement()}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={() => copyElement()}>
               <CopyIcon className="mr-2 h-5 w-5" />
               Copy
               <MenubarShortcut>⌘C</MenubarShortcut>
@@ -42,7 +52,7 @@ export function Edit() {
         </CopyElement>
         <PasteElement>
           {(pasteElement) => (
-            <MenubarItem onSelect={() => pasteElement()}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={() => pasteElement()}>
               <ClipboardPaste className="mr-2 h-5 w-5" />
               Paste
               <MenubarShortcut>⌘V</MenubarShortcut>
@@ -52,7 +62,7 @@ export function Edit() {
         <MenubarSeparator />
         <DeleteElement>
           {(deleteElement) => (
-            <MenubarItem onSelect={() => deleteElement()}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={() => deleteElement()}>
               <Trash2 className="mr-2 h-5 w-5" />
               Delete
             </MenubarItem>
@@ -60,7 +70,7 @@ export function Edit() {
         </DeleteElement>
         <DuplicateElement>
           {(duplicateElement) => (
-            <MenubarItem onSelect={() => duplicateElement()}>
+            <MenubarItem disabled={!isEditor || isLoading} onSelect={() => duplicateElement()}>
               <CopyIcon className="mr-2 h-5 w-5" />
               Duplicate
               <MenubarShortcut>⌘O</MenubarShortcut>

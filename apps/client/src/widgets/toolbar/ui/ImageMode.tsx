@@ -13,11 +13,12 @@ import { Tooltip, TooltipContent } from "~/shared/ui-kit/tooltip"
 import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function ImageMode({ isActive }: ModeProps) {
-  const { presentationId, currentSlide, selectedId } = useAppSelector(
+  const { presentationId, currentSlide, selectedId, isEditor } = useAppSelector(
     (state) => ({
       presentationId: state.presentation.presentation.id,
       currentSlide: state.presentation.currentSlide,
       selectedId: state.presentation.selectedId,
+      isEditor: state.user.isEditor,
     }),
     shallowEqual,
   )
@@ -50,7 +51,7 @@ export function ImageMode({ isActive }: ModeProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <div>
-            <ToolbarButton>
+            <ToolbarButton disabled={!isEditor}>
               <label htmlFor="replace-image" className="cursor-pointer">
                 Replace image
               </label>

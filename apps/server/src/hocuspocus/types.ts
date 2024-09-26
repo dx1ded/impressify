@@ -16,8 +16,11 @@ export interface HocuspocusContext {
 
 export type WithHocuspocusContext<T> = Omit<T, "context"> & { context: HocuspocusContext }
 
-export type NormalizedYPresentation = Omit<Presentation, "slides" | "users" | "history"> & {
+export type NormalizedYPresentation = Pick<Presentation, "id" | "name"> & {
   slides: NormalizedYSlide[]
+  editors: User["id"][]
+  readers: User["id"][]
+  ownerId: User["id"]
 }
 
 export type NormalizedYSlide = Omit<Slide, "presentation" | "elements" | "position" | "createdAt"> & {
@@ -36,9 +39,12 @@ export type NormalizedYElement =
     })
 
 export type YPresentation = TypedMap<
-  Omit<Presentation, "slides" | "users" | "history" | "name"> & {
+  Pick<Presentation, "id"> & {
     name: Y.Text
     slides: Y.Array<YSlide>
+    editors: Y.Array<User["id"]>
+    readers: Y.Array<User["id"]>
+    ownerId: User["id"]
     isSaving: boolean
   }
 >

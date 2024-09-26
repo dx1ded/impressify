@@ -3,6 +3,7 @@ import { useUser } from "@clerk/clerk-react"
 import type { HocuspocusProvider } from "@hocuspocus/provider"
 import type { YPresentation, UserAwareness } from "@server/hocuspocus/types"
 import { normalizePresentation } from "@server/hocuspocus/transform"
+import { toast } from "sonner"
 import type * as Y from "yjs"
 import { useCallback } from "react"
 import { useParams } from "react-router-dom"
@@ -17,10 +18,11 @@ import {
   updatePresentation,
   setPresentation,
 } from "~/entities/presentation"
-import { getInitialAwareness, setConnectedUsers } from "~/entities/user"
+import { getInitialAwareness, setConnectedUsers, setIsCreator, setIsEditor } from "~/entities/user"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
 import { Header } from "~/pages/presentation/ui/Header"
+import { Toaster } from "~/shared/ui-kit/sonner"
 import { Toolbar } from "~/widgets/toolbar"
 import {
   DebouncedProvider,
@@ -44,10 +46,11 @@ function Presentation() {
   const { id } = useParams<{ id: string }>()
   const { user } = useUser()
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const { currentSlide, userToken } = useAppSelector(
+  const { currentSlide, userToken, isEditor } = useAppSelector(
     (state) => ({
       currentSlide: state.presentation.currentSlide,
       userToken: state.user.token,
+      isEditor: state.user.isEditor,
     }),
     shallowEqual,
   )
@@ -102,13 +105,24 @@ function Presentation() {
         }
       }
       // Updating store
+      const isInitialLoad = !slides.length
       // If it's an initial load we use `setPresentation` otherwise if it's an update we use `updatePresentation` which runs deep comparison
-      const presentationAction = !slides.length ? setPresentation : updatePresentation
+      const presentationAction = isInitialLoad ? setPresentation : updatePresentation
+
       dispatch(presentationAction(normalizedPresentation))
       dispatch(setIsLoading(false))
       dispatch(setIsSaving(yPresentation.get("isSaving") || false))
+
+      // Updating user permission (isCreator / isEditor)
+      if (normalizedPresentation.ownerId === user?.id) dispatch(setIsCreator(true))
+      const updatedIsEditor = normalizedPresentation.editors.some((editorId) => editorId === user?.id)
+      if (updatedIsEditor !== isEditor) {
+        dispatch(setIsEditor(updatedIsEditor))
+        // Creating an alert that tells user they have a new role (if so)
+        if (!isInitialLoad) toast(`You're now ${updatedIsEditor ? "an editor" : "a reader"}`)
+      }
     },
-    [dispatch, slides, currentSlide],
+    [dispatch, slides, user?.id, currentSlide, isEditor],
   )
 
   const awarenessChangeHandler = useCallback(
@@ -154,6 +168,7 @@ function Presentation() {
             <Slide />
           </div>
         </div>
+        <Toaster />
       </TooltipProvider>
     </YjsProvider>
   )

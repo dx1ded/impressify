@@ -22,12 +22,14 @@ import { ToggleGroup, ToggleGroupItem } from "~/shared/ui-kit/toggle-group"
 
 export function Mode() {
   // Done for optimization. You can use a couple of useSelector or this if all props are primitives like here
-  const { mode, shape, selectedId, isCreating } = useAppSelector(
+  const { mode, shape, selectedId, isCreating, isLoading, isEditor } = useAppSelector(
     (state) => ({
       mode: state.toolbar.mode,
       shape: state.toolbar.shapeProps.type,
       selectedId: state.presentation.selectedId,
       isCreating: state.presentation.isCreating,
+      isLoading: state.presentation.isLoading,
+      isEditor: state.user.isEditor,
     }),
     shallowEqual,
   )
@@ -44,7 +46,12 @@ export function Mode() {
   }
 
   return (
-    <ToggleGroup type="single" className="gap-2" value={isCreating ? mode : "cursor"} onValueChange={changeHandler}>
+    <ToggleGroup
+      type="single"
+      className="gap-2"
+      value={isCreating ? mode : "cursor"}
+      disabled={!isEditor}
+      onValueChange={changeHandler}>
       <Tooltip>
         <TooltipTrigger asChild>
           <ToggleGroupItem value="cursor" asChild>
@@ -107,7 +114,7 @@ export function Mode() {
         </Tooltip>
         <ChangeShapesType>
           {(changeShapesType) => (
-            <Select value={shape} onValueChange={changeShapesType}>
+            <Select value={shape} disabled={!isEditor || isLoading} onValueChange={changeShapesType}>
               <SelectTrigger className="h-6 w-4 justify-center border-none bg-transparent p-0" />
               <SelectContent>
                 <SelectItem value={ShapeType.Line}>

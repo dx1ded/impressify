@@ -1,0 +1,11 @@
+enum Result {
+  NOT_FOUND
+  NOT_ALLOWED
+  ERROR
+  SUCCESS
+}
+
+enum Permission {
+  READ
+  READ_WRITE
+}

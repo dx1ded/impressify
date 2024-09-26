@@ -37,10 +37,11 @@ import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolb
 
 export function TextMode({ isActive }: ModeProps) {
   const textProps = useAppSelector((state) => state.toolbar.textProps)
-  const { currentSlide, selectedId } = useAppSelector(
+  const { currentSlide, selectedId, isEditor } = useAppSelector(
     (state) => ({
       currentSlide: state.presentation.currentSlide,
       selectedId: state.presentation.selectedId,
+      isEditor: state.user.isEditor,
     }),
     shallowEqual,
   )
@@ -70,7 +71,10 @@ export function TextMode({ isActive }: ModeProps) {
   return (
     <div style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
       <ToolbarGroup>
-        <ColorPicker color={textProps.fillColor} onChange={(value) => applyTextChanges({ fillColor: value })}>
+        <ColorPicker
+          color={textProps.fillColor}
+          disabled={!isEditor}
+          onChange={(value) => applyTextChanges({ fillColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={PaintBucketIcon} />
@@ -78,7 +82,10 @@ export function TextMode({ isActive }: ModeProps) {
             <TooltipContent>Fill color</TooltipContent>
           </Tooltip>
         </ColorPicker>
-        <ColorPicker color={textProps.borderColor} onChange={(value) => applyTextChanges({ borderColor: value })}>
+        <ColorPicker
+          color={textProps.borderColor}
+          disabled={!isEditor}
+          onChange={(value) => applyTextChanges({ borderColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={PencilIcon} />
@@ -89,7 +96,10 @@ export function TextMode({ isActive }: ModeProps) {
       </ToolbarGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <Select value={textProps.fontFamily} onValueChange={(value) => applyTextChanges({ fontFamily: value })}>
+        <Select
+          value={textProps.fontFamily}
+          disabled={!isEditor}
+          onValueChange={(value) => applyTextChanges({ fontFamily: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <SelectTrigger className="h-6 gap-4 border-none bg-transparent font-medium">
@@ -120,6 +130,7 @@ export function TextMode({ isActive }: ModeProps) {
         <Counter
           className="w-10"
           value={textProps.fontSize}
+          disabled={!isEditor}
           onChange={(value) => applyTextChanges({ fontSize: value })}
         />
       </ToolbarGroup>
@@ -132,6 +143,7 @@ export function TextMode({ isActive }: ModeProps) {
           textProps.italic ? "italic" : "",
           textProps.underlined ? "underlined" : "",
         ]}
+        disabled={!isEditor}
         onValueChange={(values) =>
           applyTextChanges({
             bold: values.includes("bold"),
@@ -142,7 +154,7 @@ export function TextMode({ isActive }: ModeProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <ToggleGroupItem value="bold" asChild>
-              <ToolbarButton Icon={BoldIcon} />
+              <ToolbarButton Icon={BoldIcon} disabled={!isEditor} />
             </ToggleGroupItem>
           </TooltipTrigger>
           <TooltipContent>Bold (⌘+B)</TooltipContent>
@@ -150,7 +162,7 @@ export function TextMode({ isActive }: ModeProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <ToggleGroupItem value="italic" asChild>
-              <ToolbarButton Icon={ItalicIcon} />
+              <ToolbarButton Icon={ItalicIcon} disabled={!isEditor} />
             </ToggleGroupItem>
           </TooltipTrigger>
           <TooltipContent>Italic (⌘+I)</TooltipContent>
@@ -158,12 +170,15 @@ export function TextMode({ isActive }: ModeProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <ToggleGroupItem value="underlined" asChild>
-              <ToolbarButton Icon={UnderlineIcon} />
+              <ToolbarButton Icon={UnderlineIcon} disabled={!isEditor} />
             </ToggleGroupItem>
           </TooltipTrigger>
           <TooltipContent>Underlined (⌘+U)</TooltipContent>
         </Tooltip>
-        <ColorPicker color={textProps.textColor} onChange={(value) => applyTextChanges({ textColor: value })}>
+        <ColorPicker
+          color={textProps.textColor}
+          disabled={!isEditor}
+          onChange={(value) => applyTextChanges({ textColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <ToolbarButton Icon={TypeIcon} />
@@ -176,6 +191,7 @@ export function TextMode({ isActive }: ModeProps) {
       <ToolbarGroup>
         <Select
           value={textProps.alignment}
+          disabled={!isEditor}
           onValueChange={(value: Alignment) => applyTextChanges({ alignment: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -208,7 +224,10 @@ export function TextMode({ isActive }: ModeProps) {
             </SelectItem>
           </SelectContent>
         </Select>
-        <Select value={`${textProps.lineHeight}`} onValueChange={(value) => applyTextChanges({ lineHeight: +value })}>
+        <Select
+          value={`${textProps.lineHeight}`}
+          disabled={!isEditor}
+          onValueChange={(value) => applyTextChanges({ lineHeight: +value })}>
           <Tooltip>
             <TooltipTrigger asChild>
               <NativeSelectTrigger asChild>

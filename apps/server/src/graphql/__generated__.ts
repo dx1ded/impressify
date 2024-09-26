@@ -70,17 +70,25 @@ export type Image = Element & {
 export type Mutation = {
   __typename?: 'Mutation';
   addRecord?: Maybe<HistoryRecord>;
+  changeUserRole?: Maybe<Result>;
   createPresentation?: Maybe<Presentation>;
-  deletePresentation?: Maybe<Scalars['Boolean']['output']>;
+  deletePresentation?: Maybe<Result>;
   duplicatePresentation?: Maybe<Presentation>;
-  invite?: Maybe<Scalars['Boolean']['output']>;
+  invite?: Maybe<Result>;
   renamePresentation?: Maybe<Presentation>;
-  sendHelpRequest?: Maybe<Scalars['Boolean']['output']>;
+  sendHelpRequest?: Maybe<Result>;
 };
 
 
 export type MutationAddRecordArgs = {
   presentationId: Scalars['String']['input'];
+};
+
+
+export type MutationChangeUserRoleArgs = {
+  permission: Permission;
+  presentationId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -101,8 +109,9 @@ export type MutationDuplicatePresentationArgs = {
 
 
 export type MutationInviteArgs = {
-  email: Scalars['String']['input'];
+  permission: Permission;
   presentationId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -116,11 +125,19 @@ export type MutationSendHelpRequestArgs = {
   text: Scalars['String']['input'];
 };
 
+export enum Permission {
+  Read = 'READ',
+  ReadWrite = 'READ_WRITE'
+}
+
 export type Presentation = {
   __typename?: 'Presentation';
+  editors: Array<User>;
   history: History;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  owner: User;
+  readers: Array<User>;
   slides: Array<Slide>;
   users: Array<User>;
 };
@@ -134,9 +151,17 @@ export type PresentationInfo = {
   totalUsers: Scalars['Int']['output'];
 };
 
+export type PresentationUser = {
+  __typename?: 'PresentationUser';
+  id: Scalars['ID']['output'];
+  role?: Maybe<Role>;
+  user: User;
+};
+
 export type Query = {
   __typename?: 'Query';
   findUserPresentations?: Maybe<Array<Presentation>>;
+  findUsers?: Maybe<Array<User>>;
   getPresentation?: Maybe<Presentation>;
   getPresentationInfo?: Maybe<PresentationInfo>;
   searchPresentations?: Maybe<Array<Presentation>>;
@@ -147,6 +172,13 @@ export type Query = {
 export type QueryFindUserPresentationsArgs = {
   preview: Scalars['Boolean']['input'];
   sortBy: Scalars['String']['input'];
+};
+
+
+export type QueryFindUsersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  query: Scalars['String']['input'];
 };
 
 
@@ -168,6 +200,19 @@ export type QuerySearchPresentationsArgs = {
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
+
+export enum Result {
+  Error = 'ERROR',
+  NotAllowed = 'NOT_ALLOWED',
+  NotFound = 'NOT_FOUND',
+  Success = 'SUCCESS'
+}
+
+export enum Role {
+  Creator = 'CREATOR',
+  Editor = 'EDITOR',
+  Reader = 'READER'
+}
 
 export type Shape = Element & {
   __typename?: 'Shape';
@@ -244,11 +289,14 @@ export enum Transition {
 
 export type User = {
   __typename?: 'User';
+  editor: Array<Presentation>;
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  ownership: Array<Presentation>;
   presentations: Array<Presentation>;
   profilePicUrl: Scalars['String']['output'];
+  reader: Array<Presentation>;
   records: Array<HistoryRecord>;
 };
 
@@ -339,9 +387,13 @@ export type ResolversTypes = ResolversObject<{
   Image: ResolverTypeWrapper<Image>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
+  Permission: Permission;
   Presentation: ResolverTypeWrapper<Presentation>;
   PresentationInfo: ResolverTypeWrapper<PresentationInfo>;
+  PresentationUser: ResolverTypeWrapper<PresentationUser>;
   Query: ResolverTypeWrapper<{}>;
+  Result: Result;
+  Role: Role;
   Shape: ResolverTypeWrapper<Shape>;
   ShapeType: ShapeType;
   Slide: ResolverTypeWrapper<Omit<Slide, 'elements'> & { elements: Array<ResolversTypes['Element']> }>;
@@ -365,6 +417,7 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   Presentation: Presentation;
   PresentationInfo: PresentationInfo;
+  PresentationUser: PresentationUser;
   Query: {};
   Shape: Shape;
   Slide: Omit<Slide, 'elements'> & { elements: Array<ResolversParentTypes['Element']> };
@@ -423,18 +476,22 @@ export type ImageResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addRecord?: Resolver<Maybe<ResolversTypes['HistoryRecord']>, ParentType, ContextType, RequireFields<MutationAddRecordArgs, 'presentationId'>>;
+  changeUserRole?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationChangeUserRoleArgs, 'permission' | 'presentationId' | 'userId'>>;
   createPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationCreatePresentationArgs, 'name' | 'template'>>;
-  deletePresentation?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeletePresentationArgs, 'id'>>;
+  deletePresentation?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationDeletePresentationArgs, 'id'>>;
   duplicatePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationDuplicatePresentationArgs, 'id'>>;
-  invite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationInviteArgs, 'email' | 'presentationId'>>;
+  invite?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationInviteArgs, 'permission' | 'presentationId' | 'userId'>>;
   renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
-  sendHelpRequest?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationSendHelpRequestArgs, 'text'>>;
+  sendHelpRequest?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationSendHelpRequestArgs, 'text'>>;
 }>;
 
 export type PresentationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Presentation'] = ResolversParentTypes['Presentation']> = ResolversObject<{
+  editors?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   history?: Resolver<ResolversTypes['History'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  readers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   slides?: Resolver<Array<ResolversTypes['Slide']>, ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -449,8 +506,16 @@ export type PresentationInfoResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PresentationUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationUser'] = ResolversParentTypes['PresentationUser']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   findUserPresentations?: Resolver<Maybe<Array<ResolversTypes['Presentation']>>, ParentType, ContextType, RequireFields<QueryFindUserPresentationsArgs, 'preview' | 'sortBy'>>;
+  findUsers?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType, RequireFields<QueryFindUsersArgs, 'query'>>;
   getPresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<QueryGetPresentationArgs, 'id'>>;
   getPresentationInfo?: Resolver<Maybe<ResolversTypes['PresentationInfo']>, ParentType, ContextType, RequireFields<QueryGetPresentationInfoArgs, 'id'>>;
   searchPresentations?: Resolver<Maybe<Array<ResolversTypes['Presentation']>>, ParentType, ContextType, RequireFields<QuerySearchPresentationsArgs, 'name'>>;
@@ -514,11 +579,14 @@ export type TextResolvers<ContextType = any, ParentType extends ResolversParentT
 }>;
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
+  editor?: Resolver<Array<ResolversTypes['Presentation']>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ownership?: Resolver<Array<ResolversTypes['Presentation']>, ParentType, ContextType>;
   presentations?: Resolver<Array<ResolversTypes['Presentation']>, ParentType, ContextType>;
   profilePicUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  reader?: Resolver<Array<ResolversTypes['Presentation']>, ParentType, ContextType>;
   records?: Resolver<Array<ResolversTypes['HistoryRecord']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -532,6 +600,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Presentation?: PresentationResolvers<ContextType>;
   PresentationInfo?: PresentationInfoResolvers<ContextType>;
+  PresentationUser?: PresentationUserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Shape?: ShapeResolvers<ContextType>;
   Slide?: SlideResolvers<ContextType>;

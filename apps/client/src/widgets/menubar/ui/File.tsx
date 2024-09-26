@@ -21,11 +21,14 @@ import {
 } from "~/shared/ui-kit/menubar"
 
 export function File() {
-  const { presentationId, presentationName, currentSlide } = useAppSelector(
+  const { presentationId, presentationName, currentSlide, isEditor, isCreator, isLoading } = useAppSelector(
     (state) => ({
       presentationId: state.presentation.presentation.id,
       presentationName: state.presentation.presentation.name,
       currentSlide: state.presentation.currentSlide,
+      isEditor: state.user.isEditor,
+      isCreator: state.user.isCreator,
+      isLoading: state.presentation.isLoading,
     }),
     shallowEqual,
   )
@@ -47,6 +50,7 @@ export function File() {
             <CreatePresentation>
               {(createPresentation) => (
                 <MenubarItem
+                  disabled={isLoading}
                   onSelect={() => {
                     flushAll()
                     deleteAll()
@@ -59,13 +63,17 @@ export function File() {
           </MenubarSubContent>
         </MenubarSub>
         <MenubarSub>
-          <MenubarSubTrigger>
+          <MenubarSubTrigger disabled={isLoading}>
             <Files className="mr-2 h-5 w-5" />
             Make a copy
           </MenubarSubTrigger>
           <MenubarSubContent>
             <DuplicateSlide>
-              {(duplicateSlide) => <MenubarItem onSelect={() => duplicateSlide(slide.id)}>Current slide</MenubarItem>}
+              {(duplicateSlide) => (
+                <MenubarItem disabled={!isEditor} onSelect={() => duplicateSlide(slide.id)}>
+                  Current slide
+                </MenubarItem>
+              )}
             </DuplicateSlide>
             <DuplicatePresentation>
               {(duplicatePresentation) => (
@@ -77,12 +85,12 @@ export function File() {
         <MenubarSeparator />
         <SharePresentationDialog presentationId={presentationId}>
           {/* e.preventDefault because MenubarItem has custom behaviour */}
-          <MenubarItem onSelect={(e) => e.preventDefault()}>
+          <MenubarItem disabled={!isEditor || isLoading} onSelect={(e) => e.preventDefault()}>
             <UserPlus className="mr-2 h-5 w-5" />
             Share
           </MenubarItem>
         </SharePresentationDialog>
-        <MenubarItem>
+        <MenubarItem disabled={isLoading}>
           <DownloadIcon className="mr-2 h-5 w-5" />
           Download
         </MenubarItem>
@@ -91,7 +99,7 @@ export function File() {
           {(RenameDialog) => (
             <RenameDialog presentationId={presentationId} presentationName={presentationName}>
               {/* e.preventDefault because MenubarItem has custom behaviour */}
-              <MenubarItem onSelect={(e) => e.preventDefault()}>
+              <MenubarItem disabled={!isEditor || isLoading} onSelect={(e) => e.preventDefault()}>
                 <PencilLine className="mr-2 h-5 w-5" />
                 Rename
               </MenubarItem>
@@ -102,7 +110,7 @@ export function File() {
           {(DeleteAlert) => (
             <DeleteAlert presentationId={presentationId} beforeHandler={deleteAll}>
               {/* e.preventDefault because MenubarItem has custom behaviour */}
-              <MenubarItem onSelect={(e) => e.preventDefault()}>
+              <MenubarItem disabled={!isCreator || isLoading} onSelect={(e) => e.preventDefault()}>
                 <Trash2 className="mr-2 h-5 w-5" />
                 Move to trash
               </MenubarItem>
@@ -112,7 +120,7 @@ export function File() {
         <MenubarSeparator />
         <PresentationInfoDialog presentationId={presentationId}>
           {/* e.preventDefault because MenubarItem has custom behaviour */}
-          <MenubarItem onSelect={(e) => e.preventDefault()}>
+          <MenubarItem disabled={isLoading} onSelect={(e) => e.preventDefault()}>
             <Info className="mr-2 h-5 w-5" />
             Details
           </MenubarItem>

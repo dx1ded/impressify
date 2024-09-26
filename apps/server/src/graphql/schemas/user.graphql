@@ -5,13 +5,19 @@ type User {
   profilePicUrl: String!
   presentations: [Presentation!]!
   records: [HistoryRecord!]!
+  ownership: [Presentation!]!
+  reader: [Presentation!]!
+  editor: [Presentation!]!
 }
 
 type Query {
   user(id: ID!): User
+  # query -> name OR email
+  findUsers(query: String!, offset: Int, limit: Int): [User!]
 }
 
 type Mutation {
-  invite(email: String!, presentationId: String!): Boolean
-  sendHelpRequest(text: String!): Boolean
+  invite(userId: String!, presentationId: String!, permission: Permission!): Result
+  changeUserRole(userId: String!, presentationId: String!, permission: Permission!): Result
+  sendHelpRequest(text: String!): Result
 }

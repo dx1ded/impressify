@@ -1,6 +1,7 @@
 import { CircleHelpIcon, KeyboardIcon } from "lucide-react"
 
 import { GetHelpDialog } from "~/features/get-help"
+import { useAppSelector } from "~/shared/model"
 import {
   Dialog,
   DialogContent,
@@ -14,13 +15,15 @@ import { Shortcut } from "~/shared/ui/Shortcut"
 import { Small } from "~/shared/ui/Typography"
 
 export function Help() {
+  const isLoading = useAppSelector((state) => state.presentation.isLoading)
+
   return (
     <MenubarMenu>
       <MenubarTrigger className="px-2 py-0.5">Help</MenubarTrigger>
       <MenubarContent>
         <GetHelpDialog>
           {/* e.preventDefault because MenubarItem has custom behaviour */}
-          <MenubarItem onSelect={(e) => e.preventDefault()}>
+          <MenubarItem disabled={isLoading} onSelect={(e) => e.preventDefault()}>
             <CircleHelpIcon className="mr-2 h-5 w-5" />
             Help
           </MenubarItem>
@@ -28,7 +31,7 @@ export function Help() {
         {/* e.preventDefault because MenubarItem has custom behaviour */}
         <Dialog>
           <DialogTrigger asChild>
-            <MenubarItem onSelect={(e) => e.preventDefault()}>
+            <MenubarItem disabled={isLoading} onSelect={(e) => e.preventDefault()}>
               <KeyboardIcon className="mr-2 h-5 w-5" />
               Keyboard shortcuts
             </MenubarItem>

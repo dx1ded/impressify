@@ -23,6 +23,15 @@ export class User implements IUser {
   @OneToMany(() => HistoryRecord, (record) => record.user)
   records: Relation<HistoryRecord[]>
 
+  @OneToMany(() => Presentation, (presentation) => presentation.owner)
+  ownership: Relation<Presentation[]>
+
+  @ManyToMany(() => Presentation, (presentation) => presentation.readers)
+  reader: Relation<Presentation[]>
+
+  @ManyToMany(() => Presentation, (presentation) => presentation.editors)
+  editor: Relation<Presentation[]>
+
   constructor(id: string, firstName: string, lastName: string, email: string, profilePicUrl: string) {
     this.id = id
     this.name = `${firstName} ${lastName}`

@@ -7,7 +7,7 @@ interface CounterProps extends Omit<ComponentPropsWithoutRef<"input">, "onChange
   onChange(value: number): void
 }
 
-export function Counter({ className, onChange, ...props }: CounterProps) {
+export function Counter({ className, onChange, disabled, ...props }: CounterProps) {
   const counterRef = useRef<HTMLInputElement>(null)
 
   const handleInputChange = () => {
@@ -21,6 +21,7 @@ export function Counter({ className, onChange, ...props }: CounterProps) {
         type="button"
         className="text-md h-4 w-4"
         aria-label="Decrease counter"
+        disabled={disabled}
         onClick={() => {
           counterRef.current?.stepDown.call(counterRef.current)
           handleInputChange()
@@ -34,6 +35,7 @@ export function Counter({ className, onChange, ...props }: CounterProps) {
           "h-6 flex-1 rounded border border-gray-400 bg-transparent text-center text-xs font-semibold",
           className,
         )}
+        disabled={disabled}
         onInput={handleInputChange}
         {...props}
       />
@@ -41,6 +43,7 @@ export function Counter({ className, onChange, ...props }: CounterProps) {
         type="button"
         className="text-md h-4 w-4"
         aria-label="Increase counter"
+        disabled={disabled}
         onClick={() => {
           counterRef.current?.stepUp.call(counterRef.current)
           handleInputChange()

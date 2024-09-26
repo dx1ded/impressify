@@ -23,7 +23,10 @@ const documents = {
     "#graphql\n  mutation SendHelpRequest($text: String!) {\n    sendHelpRequest(text: $text)\n  }\n": types.SendHelpRequestDocument,
     "#graphql\n  mutation RenamePresentation($presentationId: ID!, $name: String!) {\n    renamePresentation(id: $presentationId, name: $name) {\n      id\n    }\n  }\n": types.RenamePresentationDocument,
     "#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            id\n          }\n        }\n      }\n    }\n  }\n": types.SearchPresentationsDocument,
-    "#graphql\n  mutation Invite($email: String!, $presentationId: String!) {\n    invite(email: $email, presentationId: $presentationId)\n  }\n": types.InviteDocument,
+    "#graphql\n  mutation Invite($userId: String!, $presentationId: String!, $permission: Permission!) {\n    invite(userId: $userId, presentationId: $presentationId, permission: $permission)\n  }\n": types.InviteDocument,
+    "#graphql\n  query GetPresentationData($presentationId: String!) {\n    getPresentation(id: $presentationId) {\n      name\n      owner {\n        id\n      }\n      readers {\n        id\n      }\n      editors {\n        id\n      }\n      users {\n        id\n        name\n        email\n        profilePicUrl\n      }\n    }\n  }\n": types.GetPresentationDataDocument,
+    "#graphql\n  query FindUsers($query: String!, $limit: Int!) {\n    findUsers(query: $query, limit: $limit) {\n      id\n      name\n      email\n      profilePicUrl\n    }\n  }\n": types.FindUsersDocument,
+    "#graphql\n  mutation ChangeUserRole($userId: String!, $presentationId: String!, $permission: Permission!) {\n    changeUserRole(userId: $userId, presentationId: $presentationId, permission: $permission)\n  }\n": types.ChangeUserRoleDocument,
 };
 
 /**
@@ -83,7 +86,19 @@ export function gql(source: "#graphql\n  query SearchPresentations($name: String
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "#graphql\n  mutation Invite($email: String!, $presentationId: String!) {\n    invite(email: $email, presentationId: $presentationId)\n  }\n"): (typeof documents)["#graphql\n  mutation Invite($email: String!, $presentationId: String!) {\n    invite(email: $email, presentationId: $presentationId)\n  }\n"];
+export function gql(source: "#graphql\n  mutation Invite($userId: String!, $presentationId: String!, $permission: Permission!) {\n    invite(userId: $userId, presentationId: $presentationId, permission: $permission)\n  }\n"): (typeof documents)["#graphql\n  mutation Invite($userId: String!, $presentationId: String!, $permission: Permission!) {\n    invite(userId: $userId, presentationId: $presentationId, permission: $permission)\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "#graphql\n  query GetPresentationData($presentationId: String!) {\n    getPresentation(id: $presentationId) {\n      name\n      owner {\n        id\n      }\n      readers {\n        id\n      }\n      editors {\n        id\n      }\n      users {\n        id\n        name\n        email\n        profilePicUrl\n      }\n    }\n  }\n"): (typeof documents)["#graphql\n  query GetPresentationData($presentationId: String!) {\n    getPresentation(id: $presentationId) {\n      name\n      owner {\n        id\n      }\n      readers {\n        id\n      }\n      editors {\n        id\n      }\n      users {\n        id\n        name\n        email\n        profilePicUrl\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "#graphql\n  query FindUsers($query: String!, $limit: Int!) {\n    findUsers(query: $query, limit: $limit) {\n      id\n      name\n      email\n      profilePicUrl\n    }\n  }\n"): (typeof documents)["#graphql\n  query FindUsers($query: String!, $limit: Int!) {\n    findUsers(query: $query, limit: $limit) {\n      id\n      name\n      email\n      profilePicUrl\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "#graphql\n  mutation ChangeUserRole($userId: String!, $presentationId: String!, $permission: Permission!) {\n    changeUserRole(userId: $userId, presentationId: $presentationId, permission: $permission)\n  }\n"): (typeof documents)["#graphql\n  mutation ChangeUserRole($userId: String!, $presentationId: String!, $permission: Permission!) {\n    changeUserRole(userId: $userId, presentationId: $presentationId, permission: $permission)\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

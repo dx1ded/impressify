@@ -19,11 +19,12 @@ const DEBOUNCE_CHANGE_NAME_TIME = 200
 
 export const Header = memo(function Header() {
   const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
-  const { name, isLoading, presentationId } = useAppSelector(
+  const { name, presentationId, isLoading, isEditor } = useAppSelector(
     (state) => ({
       name: state.presentation.presentation.name,
-      isLoading: state.presentation.isLoading,
       presentationId: state.presentation.presentation.id,
+      isLoading: state.presentation.isLoading,
+      isEditor: state.user.isEditor,
     }),
     shallowEqual,
   )
@@ -51,6 +52,7 @@ export const Header = memo(function Header() {
                 className="rounded border border-transparent bg-transparent px-1 py-0.5 font-medium hover:border-gray-300"
                 value={name}
                 maxLength={MAX_NAME_LENGTH}
+                disabled={!isEditor}
                 onChange={(e) => debouncedChangeName(e.target.value)}
               />
             )}
@@ -66,7 +68,7 @@ export const Header = memo(function Header() {
             Slideshow
           </Button>
           <SharePresentationDialog presentationId={presentationId}>
-            <Button variant="blue" className="rounded-3xl px-6 font-semibold">
+            <Button variant="blue" className="rounded-3xl px-6 font-semibold" disabled={!isEditor}>
               Share
             </Button>
           </SharePresentationDialog>

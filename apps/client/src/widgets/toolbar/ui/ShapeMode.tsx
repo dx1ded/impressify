@@ -11,10 +11,11 @@ import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 
 export function ShapeMode({ isActive }: ModeProps) {
   const shapeProps = useAppSelector((state) => state.toolbar.shapeProps)
-  const { currentSlide, selectedId } = useAppSelector(
+  const { currentSlide, selectedId, isEditor } = useAppSelector(
     (state) => ({
       currentSlide: state.presentation.currentSlide,
       selectedId: state.presentation.selectedId,
+      isEditor: state.user.isEditor,
     }),
     shallowEqual,
   )
@@ -43,7 +44,10 @@ export function ShapeMode({ isActive }: ModeProps) {
 
   return (
     <ToolbarGroup style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
-      <ColorPicker color={shapeProps.fillColor} onChange={(value) => applyShapeChanges({ fillColor: value })}>
+      <ColorPicker
+        color={shapeProps.fillColor}
+        disabled={!isEditor}
+        onChange={(value) => applyShapeChanges({ fillColor: value })}>
         <Tooltip>
           <TooltipTrigger asChild>
             <ToolbarButton Icon={PaintBucketIcon} />
@@ -51,7 +55,10 @@ export function ShapeMode({ isActive }: ModeProps) {
           <TooltipContent>Fill color</TooltipContent>
         </Tooltip>
       </ColorPicker>
-      <ColorPicker color={shapeProps.strokeColor} onChange={(value) => applyShapeChanges({ strokeColor: value })}>
+      <ColorPicker
+        color={shapeProps.strokeColor}
+        disabled={!isEditor}
+        onChange={(value) => applyShapeChanges({ strokeColor: value })}>
         <Tooltip>
           <TooltipTrigger asChild>
             <ToolbarButton Icon={PencilIcon} />

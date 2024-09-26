@@ -11,10 +11,11 @@ import { DEFAULT_COLORS_PALETTE } from "~/shared/ui/ColorPicker"
 interface ColorPickerProps {
   children: ReactNode
   color: string
+  disabled?: boolean
   onChange?(value: string): void
 }
 
-export const ColorPicker = memo(function ColorPicker({ color, children, onChange }: ColorPickerProps) {
+export const ColorPicker = memo(function ColorPicker({ color, children, disabled, onChange }: ColorPickerProps) {
   const changeHandler = (value: string) => {
     if (onChange) onChange(value)
   }
@@ -40,7 +41,7 @@ export const ColorPicker = memo(function ColorPicker({ color, children, onChange
   )
 
   return (
-    <Select value={color} onValueChange={changeHandler}>
+    <Select value={color} disabled={disabled} onValueChange={changeHandler}>
       <SelectTrigger asChild>
         <div className="relative">
           {children}

@@ -4,6 +4,9 @@ type Presentation {
   slides: [Slide!]!
   users: [User!]!
   history: History!
+  owner: User!
+  readers: [User!]!
+  editors: [User!]!
 }
 
 type PresentationInfo {
@@ -25,6 +28,6 @@ type Query {
 type Mutation {
   createPresentation(name: String!, template: String!): Presentation
   renamePresentation(id: ID!, name: String!): Presentation
-  deletePresentation(id: ID!): Boolean
+  deletePresentation(id: ID!): Result
   duplicatePresentation(id: ID!): Presentation
 }
