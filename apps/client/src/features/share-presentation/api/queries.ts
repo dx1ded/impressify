@@ -11,9 +11,9 @@ export const GET_PRESENTATION_DATA = gql(`#graphql
     getPresentation(id: $presentationId) {
       name
       users {
-        id
         role
         props {
+          id
           name
           email
           profilePicUrl

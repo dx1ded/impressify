@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, type Relation } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, type Relation } from "typeorm"
 import { User } from "./User"
 import { Presentation } from "./Presentation"
 import { HistoryRecord } from "./HistoryRecord"
@@ -6,8 +6,8 @@ import { type PresentationUser as IPresentationUser, Role } from "../graphql/__g
 
 @Entity()
 export class PresentationUser implements IPresentationUser {
-  @PrimaryColumn()
-  id: string
+  @PrimaryGeneratedColumn()
+  id: number
 
   @ManyToOne(() => Presentation, (presentation) => presentation.users, {
     onDelete: "CASCADE",
@@ -26,7 +26,6 @@ export class PresentationUser implements IPresentationUser {
   role: Role
 
   constructor(presentation: Relation<Presentation>, props: Relation<User>, role: Role) {
-    this.id = props?.id
     this.presentation = presentation
     this.props = props
     this.role = role

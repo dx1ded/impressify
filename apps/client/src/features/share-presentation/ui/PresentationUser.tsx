@@ -35,7 +35,7 @@ export function PresentationUser({ user, isCurrentUserCreator, presentationId }:
     const target = e.target as HTMLDivElement
     const role = target.dataset.value as Role
     await changeUserRole({
-      variables: { presentationId, userId: user.id, role },
+      variables: { presentationId, userId: user.props.id, role },
       update: (cache, query) => {
         if (query.data?.changeUserRole !== Result.Success) return
         const cachedData = cache.readQuery<GetPresentationDataQuery>({
@@ -45,13 +45,13 @@ export function PresentationUser({ user, isCurrentUserCreator, presentationId }:
 
         if (cachedData?.getPresentation) {
           const updatedUsers = [...cachedData.getPresentation.users].map((_user) =>
-            _user.id === user.id ? { ..._user, role } : _user,
+            _user.props.id === user.props.id ? { ..._user, role } : _user,
           )
 
           getMap<YPresentation>()
             .get("users")
             ?.toArray()
-            .find((_user) => _user.get("id") === user.id)
+            .find((_user) => _user.get("id") === user.props.id)
             ?.set("role", role)
 
           cache.writeQuery<GetPresentationDataQuery>({
@@ -70,7 +70,7 @@ export function PresentationUser({ user, isCurrentUserCreator, presentationId }:
   }
 
   // current user is owner but this current iteration is not them
-  const isOwnerAndNotIteration = isCurrentUserCreator && user.id !== currentUser?.id
+  const isOwnerAndNotIteration = isCurrentUserCreator && user.props.id !== currentUser?.id
 
   return (
     <div className="group flex min-w-0 items-center justify-between gap-2">
@@ -78,7 +78,7 @@ export function PresentationUser({ user, isCurrentUserCreator, presentationId }:
         <img src={user.props.profilePicUrl} className="h-8 w-8 rounded-full" alt={user.props.name} />
         <div className="min-w-0">
           <Small as="p" className="mb-0.5 truncate">
-            {user.props.name} {user.id === currentUser?.id ? "(you)" : ""}
+            {user.props.name} {user.props.id === currentUser?.id ? "(you)" : ""}
           </Small>
           <p className="truncate text-xs font-normal text-gray-500">{user.props.email}</p>
         </div>

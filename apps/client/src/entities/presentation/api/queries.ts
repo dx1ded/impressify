@@ -15,7 +15,9 @@ export const FIND_USER_PRESENTATIONS = gql(`#graphql
         records {
           lastOpened
           user {
-            id
+            props {
+              id
+            }
           }
         }
       }

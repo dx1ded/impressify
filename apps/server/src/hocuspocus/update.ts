@@ -13,7 +13,7 @@ export function updateYDocument(document: Document, presentation: Presentation) 
   yMap.set("name", new Y.Text(presentation.name))
 
   const yUsers = new Y.Array<YUser>()
-  yUsers.push(presentation.users.map((user) => transformNormalizedToYUser({ id: user.id, role: user.role })))
+  yUsers.push(presentation.users.map((user) => transformNormalizedToYUser({ id: user.props.id, role: user.role })))
   yMap.set("users", yUsers)
 
   const ySlides = new Y.Array<YSlide>()

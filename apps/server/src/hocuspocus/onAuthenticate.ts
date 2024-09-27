@@ -13,7 +13,7 @@ export async function onAuthenticate({ token, documentName }: onAuthenticatePayl
 
   const presentationExists = await presentationRepository.existsBy({
     id: presentationId,
-    users: { id: context.user.id },
+    users: { props: { id: context.user.id } },
   })
   if (!presentationExists) throw new Error("Presentation doesn't exist")
 

@@ -14,6 +14,17 @@ type PresentationInfo {
   totalShapeElements: Int!
 }
 
+type PresentationUpdate {
+  type: PresentationUpdateType!,
+  presentation: Presentation!
+}
+
+enum PresentationUpdateType {
+  ADDED
+  RENAMED
+  DELETED
+}
+
 type Query {
   # @preview means you get only the first slide
   findUserPresentations(preview: Boolean!, sortBy: String!): [Presentation!]
@@ -27,4 +38,8 @@ type Mutation {
   renamePresentation(id: ID!, name: String!): Presentation
   deletePresentation(id: ID!): Result
   duplicatePresentation(id: ID!): Presentation
+}
+
+type Subscription {
+  presentationListChanged: PresentationUpdate!
 }

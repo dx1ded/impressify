@@ -1,5 +1,5 @@
 type PresentationUser {
-  id: ID!
+  id: Int!
   presentation: Presentation!
   record: HistoryRecord
   role: Role!

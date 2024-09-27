@@ -143,9 +143,21 @@ export type PresentationInfo = {
   totalUsers: Scalars['Int']['output'];
 };
 
+export type PresentationUpdate = {
+  __typename?: 'PresentationUpdate';
+  presentation: Presentation;
+  type: PresentationUpdateType;
+};
+
+export enum PresentationUpdateType {
+  Added = 'ADDED',
+  Deleted = 'DELETED',
+  Renamed = 'RENAMED'
+}
+
 export type PresentationUser = {
   __typename?: 'PresentationUser';
-  id: Scalars['ID']['output'];
+  id: Scalars['Int']['output'];
   presentation: Presentation;
   props: User;
   record?: Maybe<HistoryRecord>;
@@ -246,6 +258,11 @@ export type Slide = {
   presentation: Presentation;
   thumbnailUrl: Scalars['String']['output'];
   transition: Transition;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  presentationListChanged: PresentationUpdate;
 };
 
 export type Text = Element & {
@@ -378,6 +395,8 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   Presentation: ResolverTypeWrapper<Presentation>;
   PresentationInfo: ResolverTypeWrapper<PresentationInfo>;
+  PresentationUpdate: ResolverTypeWrapper<PresentationUpdate>;
+  PresentationUpdateType: PresentationUpdateType;
   PresentationUser: ResolverTypeWrapper<PresentationUser>;
   Query: ResolverTypeWrapper<{}>;
   Result: Result;
@@ -386,6 +405,7 @@ export type ResolversTypes = ResolversObject<{
   ShapeType: ShapeType;
   Slide: ResolverTypeWrapper<Omit<Slide, 'elements'> & { elements: Array<ResolversTypes['Element']> }>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Subscription: ResolverTypeWrapper<{}>;
   Text: ResolverTypeWrapper<Text>;
   Transition: Transition;
   User: ResolverTypeWrapper<User>;
@@ -405,11 +425,13 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   Presentation: Presentation;
   PresentationInfo: PresentationInfo;
+  PresentationUpdate: PresentationUpdate;
   PresentationUser: PresentationUser;
   Query: {};
   Shape: Shape;
   Slide: Omit<Slide, 'elements'> & { elements: Array<ResolversParentTypes['Element']> };
   String: Scalars['String']['output'];
+  Subscription: {};
   Text: Text;
   User: User;
 }>;
@@ -491,8 +513,14 @@ export type PresentationInfoResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PresentationUpdateResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationUpdate'] = ResolversParentTypes['PresentationUpdate']> = ResolversObject<{
+  presentation?: Resolver<ResolversTypes['Presentation'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['PresentationUpdateType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PresentationUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationUser'] = ResolversParentTypes['PresentationUser']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   presentation?: Resolver<ResolversTypes['Presentation'], ParentType, ContextType>;
   props?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   record?: Resolver<Maybe<ResolversTypes['HistoryRecord']>, ParentType, ContextType>;
@@ -540,6 +568,10 @@ export type SlideResolvers<ContextType = any, ParentType extends ResolversParent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  presentationListChanged?: SubscriptionResolver<ResolversTypes['PresentationUpdate'], "presentationListChanged", ParentType, ContextType>;
+}>;
+
 export type TextResolvers<ContextType = any, ParentType extends ResolversParentTypes['Text'] = ResolversParentTypes['Text']> = ResolversObject<{
   alignment?: Resolver<ResolversTypes['Alignment'], ParentType, ContextType>;
   angle?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -582,10 +614,12 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Presentation?: PresentationResolvers<ContextType>;
   PresentationInfo?: PresentationInfoResolvers<ContextType>;
+  PresentationUpdate?: PresentationUpdateResolvers<ContextType>;
   PresentationUser?: PresentationUserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Shape?: ShapeResolvers<ContextType>;
   Slide?: SlideResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   Text?: TextResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 }>;

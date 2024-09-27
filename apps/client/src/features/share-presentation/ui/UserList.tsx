@@ -24,9 +24,11 @@ export function UserList({ presentationId, data, loading }: UserListProps) {
       ) : (
         data?.users.map((user) => (
           <PresentationUser
-            key={user.id}
+            key={user.props.id}
             user={user}
-            isCurrentUserCreator={data?.users.find((_user) => _user.role === Role.Creator)?.id === currentUser?.id}
+            isCurrentUserCreator={
+              data?.users.find((_user) => _user.role === Role.Creator)?.props.id === currentUser?.id
+            }
             presentationId={presentationId}
           />
         ))

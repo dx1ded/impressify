@@ -23,11 +23,11 @@ export default {
       if (!foundUser) return Result.NotFound
 
       const presentation = await presentationRepository.findOne({
-        relations: ["users"],
+        relations: ["users", "users.props"],
         where: { id: presentationId },
       })
-      if (!presentation || presentation.users.some((user) => user.id === userId)) return Result.Error
-      if (presentation.users.find((_user) => _user.role === Role.Creator).id !== user.id) return Result.NotAllowed
+      if (!presentation || presentation.users.some((user) => user.props.id === userId)) return Result.Error
+      if (presentation.users.find((_user) => _user.role === Role.Creator).props.id !== user.id) return Result.NotAllowed
 
       presentation.users.push(new PresentationUser(presentation, foundUser, role))
 
@@ -38,13 +38,13 @@ export default {
       if (!user) return null
 
       const presentation = await presentationRepository.findOne({
-        relations: ["users"],
+        relations: ["users", "users.props"],
         where: { id: presentationId },
       })
-      if (!presentation || !presentation.users.some((user) => user.id === userId)) return Result.Error
-      if (presentation.users.find((_user) => _user.role === Role.Creator).id !== user.id) return Result.NotAllowed
+      if (!presentation || !presentation.users.some((user) => user.props.id === userId)) return Result.Error
+      if (presentation.users.find((_user) => _user.role === Role.Creator).props.id !== user.id) return Result.NotAllowed
 
-      presentation.users = presentation.users.map((_user) => (_user.id === userId ? { ..._user, role } : _user))
+      presentation.users = presentation.users.map((_user) => (_user.props.id === userId ? { ..._user, role } : _user))
 
       await presentationRepository.save(presentation)
       return Result.Success

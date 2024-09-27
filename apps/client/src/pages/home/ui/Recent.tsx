@@ -55,7 +55,7 @@ export function Recent() {
                         ...presentation,
                         history: {
                           ...presentation.history,
-                          records: presentation.history.records.filter((record) => record.user.id === userId),
+                          records: presentation.history.records.filter((record) => record.user.props.id === userId),
                         },
                       }))
                       .map((presentation) => (

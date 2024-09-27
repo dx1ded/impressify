@@ -1,3 +1,4 @@
+import { withFilter } from "graphql-subscriptions"
 import _ from "lodash"
 import { ILike, In } from "typeorm"
 import type { ApolloContext } from ".."
@@ -15,8 +16,9 @@ import { PresentationUser } from "../../entities/PresentationUser"
 import { Shape } from "../../entities/Shape"
 import { Slide } from "../../entities/Slide"
 import { Text } from "../../entities/Text"
-import { type Resolvers, Result, Role } from "../__generated__"
+import { type Resolvers, type User, Result, Role } from "../__generated__"
 import { deletePresentationFiles } from "../../helpers"
+import { EVENT } from "../pubsub"
 
 export default {
   Query: {
@@ -26,7 +28,7 @@ export default {
       const sortBy = __.sortBy as "newest" | "oldest" | "a_z" | "z_a"
       const _ids = await presentationRepository.find({
         select: { id: true },
-        where: { users: { id: user.id } },
+        where: { users: { props: { id: user.id } } },
       })
 
       return presentationRepository.find({
@@ -57,7 +59,7 @@ export default {
 
       const _ids = await presentationRepository.find({
         select: { id: true },
-        where: { users: { id: user.id } },
+        where: { users: { props: { id: user.id } } },
       })
 
       return presentationRepository.findBy({
@@ -117,17 +119,30 @@ export default {
 
       return presentationRepository.save(presentation)
     },
-    async renamePresentation(_, { id, name }, { user }) {
+    async renamePresentation(_, { id, name }, { user, pubsub }) {
       if (!user) return null
 
-      const presentation = await presentationRepository.findOneBy({ id })
+      const presentation = await presentationRepository.findOne({
+        relations: ["users", "users.props"],
+        where: { id },
+      })
       if (!presentation) return null
 
-      const presentationUser = await presentationUserRepository.findOneBy({ id: user.id, presentation: { id } })
+      const presentationUser = await presentationUserRepository.findOneBy({
+        props: { id: user.id },
+        presentation: { id },
+      })
       if (presentationUser.role === Role.Reader) return null
 
       presentation.name = name
-      return presentationRepository.save(presentation)
+      const savedPresentation = await presentationRepository.save(presentation)
+      pubsub.publish(EVENT.PRESENTATION_LIST_CHANGED, {
+        presentationListChanged: {
+          userIds: presentation.users.map((_user) => _user.props.id),
+        },
+      })
+
+      return savedPresentation
     },
     async duplicatePresentation(__, { id }, { user }) {
       if (!user) return null
@@ -197,12 +212,28 @@ export default {
     async deletePresentation(_, { id }, { user, storage }) {
       if (!user) return null
 
-      const presentationUser = await presentationUserRepository.findOneBy({ id: user.id, presentation: { id } })
+      const presentationUser = await presentationUserRepository.findOneBy({
+        props: { id: user.id },
+        presentation: { id },
+      })
       if (presentationUser.role !== Role.Creator) return Result.NotAllowed
 
       await presentationRepository.delete({ id })
       await deletePresentationFiles(storage, id)
       return Result.Success
+    },
+  },
+  Subscription: {
+    presentationListChanged: {
+      subscribe: (_, __, { user, pubsub }) => ({
+        [Symbol.asyncIterator]: withFilter(
+          () => pubsub.asyncIterator(EVENT.PRESENTATION_LIST_CHANGED),
+          async (payload: { presentationListChanged: { userIds: User["id"][] } }) => {
+            if (!user) return false
+            return payload.presentationListChanged.userIds.some((userId) => userId === user.id)
+          },
+        ),
+      }),
     },
   },
   Presentation: {

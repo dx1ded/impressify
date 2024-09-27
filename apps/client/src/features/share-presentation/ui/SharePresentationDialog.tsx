@@ -70,7 +70,10 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
       <DialogContent onClick={() => setIsMenuOpen(false)}>
         <DialogHeader className="min-w-0">
           {dataResult.loading ? (
-            <Skeleton className="h-[1.6875rem] w-72" />
+            <>
+              <Skeleton className="h-[1.6875rem] w-72" />
+              <DialogTitle hidden>Loading presentation name</DialogTitle>
+            </>
           ) : (
             <DialogTitle className="truncate leading-normal">Share &quot;{presentationData?.name}&quot;</DialogTitle>
           )}
@@ -85,7 +88,9 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
           />
           <SearchList
             presentationId={presentationId}
-            users={findUsersData?.filter((user) => !presentationData?.users.some((_user) => _user.id === user.id))}
+            users={findUsersData?.filter(
+              (user) => !presentationData?.users.some((_user) => _user.props.id === user.id),
+            )}
             isMenuOpen={isMenuOpen}
           />
         </div>

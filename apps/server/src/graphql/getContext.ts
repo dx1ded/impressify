@@ -2,6 +2,7 @@ import { type User, clerkClient } from "@clerk/clerk-sdk-node"
 import { cert, initializeApp, type ServiceAccount } from "firebase-admin/app"
 import { getStorage } from "firebase-admin/storage"
 
+import pubsub from "./pubsub"
 import { validateTokenAndGetUser } from "../helpers"
 import firebaseCredentials from "../impressify-26983-firebase-adminsdk-26c7d-c529d5e383"
 import type { ApolloContext } from "."
@@ -16,8 +17,8 @@ export async function getContext(authorization?: string): Promise<ApolloContext>
   }
 
   return {
-    clerk: clerkClient,
     storage: getStorage(firebase),
     user,
+    pubsub,
   }
 }
