@@ -77,6 +77,7 @@ initializeApp({
 const Main = lazy(() => import("~/pages/main"))
 const Home = lazy(() => import("~/pages/home"))
 const Presentation = lazy(() => import("~/pages/presentation"))
+const NotFound = lazy(() => import("~/pages/not-found"))
 
 export function App() {
   const navigate = useNavigate()
@@ -94,6 +95,7 @@ export function App() {
           <OnUserChanged>
             <Routes>
               <Route index element={<Main />} />
+              <Route path="*" element={<NotFound />} />
               <Route element={<PrivateRoutes />}>
                 <Route path="/home" element={<Home />} />
                 <Route path="/presentation/:id" element={<Presentation />} />

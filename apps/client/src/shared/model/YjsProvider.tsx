@@ -21,6 +21,7 @@ interface YjsProviderProps {
   token?: string
   children: ReactNode
   onUpdate?: (provider: HocuspocusProvider) => void
+  onClose?: () => void
   onAwarenessChange?: (users: any[]) => void
   onAuthenticated?: () => void
   setInitialAwareness?: (document: Doc) => any
@@ -51,6 +52,7 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
   name,
   children,
   onUpdate,
+  onClose,
   onAwarenessChange,
   onAuthenticated,
   setInitialAwareness,
@@ -74,6 +76,9 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
           stableOnAwarenessChange(
             data.states.filter((item) => item[AWARENESS_VALUE_FIELD]).map((item) => item[AWARENESS_VALUE_FIELD]),
           )
+      },
+      onClose() {
+        if (onClose) onClose()
       },
       onAuthenticated() {
         if (onAuthenticated) onAuthenticated()
@@ -99,6 +104,7 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
     name,
     setInitialAwareness,
     onUpdate,
+    onClose,
     onAwarenessChange,
     onAuthenticated,
     stableOnAwarenessChange,
