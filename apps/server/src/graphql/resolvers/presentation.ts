@@ -260,7 +260,9 @@ export default {
               case PresentationUpdateType.Added:
                 return userIds.includes(user.id)
               case PresentationUpdateType.Changed:
-                return presentation.users.some((_user) => _user.props.id === user.id)
+                return userIds
+                  ? userIds.includes(user.id)
+                  : presentation.users.some((_user) => _user.props.id === user.id)
               case PresentationUpdateType.Deleted:
                 return userIds.includes(user.id)
             }

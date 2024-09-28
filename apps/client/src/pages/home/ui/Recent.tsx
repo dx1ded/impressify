@@ -95,6 +95,8 @@ export function Recent() {
                           key={presentation.id}
                           presentation={presentation}
                           view={view}
+                          isEditor={presentation.users.find((_user) => _user.props.id === userId)?.role === "EDITOR"}
+                          isCreator={presentation.users.find((_user) => _user.props.id === userId)?.role === "CREATOR"}
                           DeleteAlert={DeleteAlert}
                           RenameDialog={RenameDialog}
                         />

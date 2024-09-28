@@ -14,11 +14,20 @@ import { Small } from "~/shared/ui/Typography"
 interface PresentationPreviewProps {
   presentation: FindPresentationItem
   view: ViewTypes
+  isEditor: boolean
+  isCreator: boolean
   DeleteAlert: IDeleteAlert
   RenameDialog: IRenameDialog
 }
 
-export function PresentationPreview({ presentation, view, DeleteAlert, RenameDialog }: PresentationPreviewProps) {
+export function PresentationPreview({
+  presentation,
+  view,
+  isEditor,
+  isCreator,
+  DeleteAlert,
+  RenameDialog,
+}: PresentationPreviewProps) {
   const navigate = useNavigate()
 
   const slide = presentation.slides[0]
@@ -60,22 +69,26 @@ export function PresentationPreview({ presentation, view, DeleteAlert, RenameDia
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-52 px-0 py-2">
-                <RenameDialog presentationId={presentation.id} presentationName={presentation.name}>
-                  <button
-                    type="button"
-                    className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">
-                    <Type className="h-4 w-4" />
-                    Rename
-                  </button>
-                </RenameDialog>
-                <DeleteAlert presentationId={presentation.id}>
-                  <button
-                    type="button"
-                    className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </button>
-                </DeleteAlert>
+                {(isEditor || isCreator) && (
+                  <RenameDialog presentationId={presentation.id} presentationName={presentation.name}>
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">
+                      <Type className="h-4 w-4" />
+                      Rename
+                    </button>
+                  </RenameDialog>
+                )}
+                {isCreator && (
+                  <DeleteAlert presentationId={presentation.id}>
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </DeleteAlert>
+                )}
                 <PopoverClose asChild>
                   <button
                     type="button"

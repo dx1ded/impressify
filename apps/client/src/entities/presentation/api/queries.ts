@@ -6,7 +6,10 @@ export const FIND_USER_PRESENTATIONS = gql(`#graphql
       id
       name
       users {
-        id
+        role
+        props {
+          id
+        }
       }
       slides {
         thumbnailUrl
@@ -45,7 +48,10 @@ export const PRESENTATION_LIST_UPDATED = gql(`#graphql
         id
         name
         users {
-          id
+          role
+          props {
+            id
+          }
         }
         slides {
           thumbnailUrl

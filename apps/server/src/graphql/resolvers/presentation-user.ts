@@ -32,7 +32,7 @@ export default {
 
       return Result.Success
     },
-    async changeUserRole(_, { userId, presentationId, role }, { user }) {
+    async changeUserRole(_, { userId, presentationId, role }, { user, pubsub }) {
       if (!user) return null
 
       const presentation = await presentationRepository.findOne({
@@ -45,6 +45,14 @@ export default {
       presentation.users = presentation.users.map((_user) => (_user.props.id === userId ? { ..._user, role } : _user))
 
       await presentationRepository.save(presentation)
+      pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+        presentationListUpdated: {
+          type: PresentationUpdateType.Changed,
+          presentation,
+          userIds: [userId],
+        } as PresentationUpdate,
+      })
+
       return Result.Success
     },
     async kick(_, { userId, presentationId }, { user, pubsub }) {
