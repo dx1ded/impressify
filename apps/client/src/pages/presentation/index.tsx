@@ -28,6 +28,7 @@ import { Toolbar } from "~/widgets/toolbar"
 import {
   DebouncedProvider,
   YjsProvider,
+  withTransition,
   AWARENESS_VALUE_FIELD,
   useAppSelector,
   useAppDispatch,
@@ -36,13 +37,13 @@ import {
 } from "~/shared/model"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 
-export default function PresentationPage() {
+export default withTransition(function PresentationPage() {
   return (
     <DebouncedProvider>
       <Presentation />
     </DebouncedProvider>
   )
-}
+})
 
 function Presentation() {
   const { id } = useParams<{ id: string }>()

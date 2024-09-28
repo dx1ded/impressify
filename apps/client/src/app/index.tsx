@@ -2,6 +2,7 @@ import { lazy } from "react"
 import { Provider } from "react-redux"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { initializeApp } from "firebase/app"
+import { AnimatePresence } from "framer-motion"
 import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache, split } from "@apollo/client"
 import { getMainDefinition } from "@apollo/client/utilities"
 import { setContext } from "@apollo/client/link/context"
@@ -93,14 +94,16 @@ export function App() {
           signUpForceRedirectUrl="/home"
           afterSignOutUrl="/">
           <OnUserChanged>
-            <Routes>
-              <Route index element={<Main />} />
-              <Route path="*" element={<NotFound />} />
-              <Route element={<PrivateRoutes />}>
-                <Route path="/home" element={<Home />} />
-                <Route path="/presentation/:id" element={<Presentation />} />
-              </Route>
-            </Routes>
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route index element={<Main />} />
+                <Route path="*" element={<NotFound />} />
+                <Route element={<PrivateRoutes />}>
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/presentation/:id" element={<Presentation />} />
+                </Route>
+              </Routes>
+            </AnimatePresence>
           </OnUserChanged>
         </ClerkProvider>
       </Provider>
