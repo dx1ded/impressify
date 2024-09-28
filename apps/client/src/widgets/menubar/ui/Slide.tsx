@@ -20,7 +20,7 @@ export function Slide() {
   const { currentSlide, isEditor, isLoading } = useAppSelector(
     (state) => ({
       currentSlide: state.presentation.currentSlide,
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
       isLoading: state.presentation.isLoading,
     }),
     shallowEqual,

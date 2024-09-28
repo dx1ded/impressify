@@ -31,7 +31,7 @@ import {
 export function Insert() {
   const { isEditor, isLoading } = useAppSelector(
     (state) => ({
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
       isLoading: state.presentation.isLoading,
     }),
     shallowEqual,

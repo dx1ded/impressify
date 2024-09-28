@@ -18,11 +18,11 @@ interface SlideListItemProps {
 }
 
 export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) {
-  const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
+  const connectedUsers = useAppSelector((state) => state.presentationUser.connectedUsers)
   const { currentSlide, isEditor, isLoading } = useAppSelector(
     (state) => ({
       currentSlide: state.presentation.currentSlide,
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
       isLoading: state.presentation.isLoading,
     }),
     shallowEqual,

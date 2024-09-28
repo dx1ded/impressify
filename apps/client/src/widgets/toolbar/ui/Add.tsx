@@ -9,7 +9,7 @@ import { ToolbarButton, ToolbarGroup } from "~/shared/ui/Toolbar"
 export function Add() {
   const { isEditor, isLoading } = useAppSelector(
     (state) => ({
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
       isLoading: state.presentation.isLoading,
     }),
     shallowEqual,

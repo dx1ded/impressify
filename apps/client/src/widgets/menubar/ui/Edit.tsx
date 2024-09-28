@@ -12,7 +12,7 @@ import { MenubarContent, MenubarItem, MenubarMenu, MenubarShortcut, MenubarTrigg
 export function Edit() {
   const { isEditor, isLoading } = useAppSelector(
     (state) => ({
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
       isLoading: state.presentation.isLoading,
     }),
     shallowEqual,

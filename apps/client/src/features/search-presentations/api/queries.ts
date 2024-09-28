@@ -9,7 +9,9 @@ export const SEARCH_PRESENTATIONS = gql(`#graphql
         records {
           lastOpened
           user {
-            id
+            props {
+              id
+            }
           }
         }
       }

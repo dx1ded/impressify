@@ -29,7 +29,7 @@ export function Mode() {
       selectedId: state.presentation.selectedId,
       isCreating: state.presentation.isCreating,
       isLoading: state.presentation.isLoading,
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
     }),
     shallowEqual,
   )

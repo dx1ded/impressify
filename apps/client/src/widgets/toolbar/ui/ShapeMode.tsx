@@ -15,7 +15,7 @@ export function ShapeMode({ isActive }: ModeProps) {
     (state) => ({
       currentSlide: state.presentation.currentSlide,
       selectedId: state.presentation.selectedId,
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
     }),
     shallowEqual,
   )

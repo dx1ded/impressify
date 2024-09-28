@@ -18,13 +18,13 @@ import { ResizableInput } from "~/shared/ui/ResizableInput"
 const DEBOUNCE_CHANGE_NAME_TIME = 200
 
 export const Header = memo(function Header() {
-  const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
+  const connectedUsers = useAppSelector((state) => state.presentationUser.connectedUsers)
   const { name, presentationId, isLoading, isEditor } = useAppSelector(
     (state) => ({
       name: state.presentation.presentation.name,
       presentationId: state.presentation.presentation.id,
       isLoading: state.presentation.isLoading,
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
     }),
     shallowEqual,
   )

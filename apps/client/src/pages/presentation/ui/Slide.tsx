@@ -37,7 +37,7 @@ const CONTAINER_BORDER_WIDTH = 2
 
 export const Slide = memo(function Slide() {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const connectedUsers = useAppSelector((state) => state.user.connectedUsers)
+  const connectedUsers = useAppSelector((state) => state.presentationUser.connectedUsers)
   const {
     currentSlide,
     presentationId,
@@ -60,7 +60,7 @@ export const Slide = memo(function Slide() {
       isEditing: state.presentation.isEditing,
       mode: state.toolbar.mode,
       imageHeight: state.toolbar.imageProps.height,
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
     }),
     shallowEqual,
   )

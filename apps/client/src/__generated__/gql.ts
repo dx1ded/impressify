@@ -27,7 +27,7 @@ const documents = {
     "#graphql\n  mutation DuplicatePresentation($id: ID!) {\n    duplicatePresentation(id: $id) {\n      id\n    }\n  }\n": types.DuplicatePresentationDocument,
     "#graphql\n  mutation SendHelpRequest($text: String!) {\n    sendHelpRequest(text: $text)\n  }\n": types.SendHelpRequestDocument,
     "#graphql\n  mutation RenamePresentation($presentationId: ID!, $name: String!) {\n    renamePresentation(id: $presentationId, name: $name) {\n      id\n    }\n  }\n": types.RenamePresentationDocument,
-    "#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            id\n          }\n        }\n      }\n    }\n  }\n": types.SearchPresentationsDocument,
+    "#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            props {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n": types.SearchPresentationsDocument,
     "#graphql\n  query GetSharePresentationInfo($presentationId: ID!) {\n    getPresentation(id: $presentationId) {\n      name\n      users {\n        role\n        props {\n          id\n          name\n          email\n          profilePicUrl\n        }\n      }\n    }\n  }\n": types.GetSharePresentationInfoDocument,
 };
 
@@ -104,7 +104,7 @@ export function gql(source: "#graphql\n  mutation RenamePresentation($presentati
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            id\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            id\n          }\n        }\n      }\n    }\n  }\n"];
+export function gql(source: "#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            props {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["#graphql\n  query SearchPresentations($name: String!) {\n    searchPresentations(name: $name) {\n      id\n      name\n      history {\n        records {\n          lastOpened\n          user {\n            props {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

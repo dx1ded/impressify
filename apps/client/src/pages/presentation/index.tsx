@@ -18,7 +18,8 @@ import {
   updatePresentation,
   setPresentation,
 } from "~/entities/presentation"
-import { getInitialAwareness, setConnectedUsers, setIsCreator, setIsEditor } from "~/entities/user"
+import { getInitialAwareness } from "~/entities/user"
+import { setConnectedUsers, setIsCreator, setIsEditor } from "~/entities/presentation-user"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
 import { Header } from "~/pages/presentation/ui/Header"
@@ -51,7 +52,7 @@ function Presentation() {
     (state) => ({
       currentSlide: state.presentation.currentSlide,
       userToken: state.user.token,
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
     }),
     shallowEqual,
   )

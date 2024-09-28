@@ -9,7 +9,7 @@ import { ToolbarButton, ToolbarGroup, ToolbarSeparator } from "~/shared/ui/Toolb
 export function CursorMode({ isActive }: ModeProps) {
   const { isEditor, isLoading } = useAppSelector(
     (state) => ({
-      isEditor: state.user.isEditor,
+      isEditor: state.presentationUser.isEditor,
       isLoading: state.presentation.isLoading,
     }),
     shallowEqual,
