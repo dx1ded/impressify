@@ -1,7 +1,17 @@
-import { useQuery } from "@apollo/client"
+import { useQuery, useSubscription } from "@apollo/client"
 
-import type { FindUserPresentationsQuery, FindUserPresentationsQueryVariables } from "~/__generated__/graphql"
-import { FIND_USER_PRESENTATIONS, PresentationPreview, setRecentPresentations } from "~/entities/presentation"
+import type {
+  FindUserPresentationsQuery,
+  FindUserPresentationsQueryVariables,
+  PresentationListUpdatedSubscription,
+  PresentationListUpdatedSubscriptionVariables,
+} from "~/__generated__/graphql"
+import {
+  FIND_USER_PRESENTATIONS,
+  PRESENTATION_LIST_UPDATED,
+  PresentationPreview,
+  setRecentPresentations,
+} from "~/entities/presentation"
 import { SortPresentations } from "~/features/sort-presentations"
 import { DeletePresentationAlert } from "~/features/delete-presentation"
 import { RenamePresentationDialog } from "~/features/rename-presentation"
@@ -24,6 +34,28 @@ export function Recent() {
         const result = data.findUserPresentations
         if (!result) return
         dispatch(setRecentPresentations(result))
+      },
+    },
+  )
+
+  // Presentation list subscription
+  useSubscription<PresentationListUpdatedSubscription, PresentationListUpdatedSubscriptionVariables>(
+    PRESENTATION_LIST_UPDATED,
+    {
+      onData(options) {
+        const operation = options.data.data?.presentationListUpdated
+        if (!operation) return
+        let newItems = [...items]
+        if (operation.type === "ADDED") {
+          newItems.unshift(operation.presentation)
+        } else if (operation.type === "CHANGED") {
+          newItems = newItems.map((_presentation) =>
+            _presentation.id === operation.presentation.id ? operation.presentation : _presentation,
+          )
+        } else if (operation.type === "DELETED") {
+          newItems = newItems.filter((_presentation) => _presentation.id !== operation.presentation.id)
+        }
+        dispatch(setRecentPresentations(newItems))
       },
     },
   )

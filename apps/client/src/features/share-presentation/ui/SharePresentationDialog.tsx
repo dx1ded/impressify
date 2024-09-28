@@ -5,13 +5,14 @@ import { useDebouncedCallback } from "use-debounce"
 import {
   type FindUsersQuery,
   type FindUsersQueryVariables,
-  type GetPresentationDataQuery,
-  type GetPresentationDataQueryVariables,
+  type GetSharePresentationInfoQuery,
+  type GetSharePresentationInfoQueryVariables,
   type Presentation,
 } from "~/__generated__/graphql"
-import { FIND_USERS, GET_PRESENTATION_DATA } from "~/features/share-presentation/api"
+import { GET_SHARE_PRESENTATION_INFO } from "~/features/share-presentation/api"
 import { SearchList } from "~/features/share-presentation/ui/SearchList"
 import { UserList } from "~/features/share-presentation/ui/UserList"
+import { FIND_USERS } from "~/entities/user"
 import { Button } from "~/shared/ui-kit/button"
 import { Input } from "~/shared/ui-kit/input"
 import {
@@ -37,13 +38,13 @@ interface SharePresentationDialogProps {
 export function SharePresentationDialog({ presentationId, children }: SharePresentationDialogProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const [getPresentationData, dataResult] = useLazyQuery<GetPresentationDataQuery, GetPresentationDataQueryVariables>(
-    GET_PRESENTATION_DATA,
-    {
-      fetchPolicy: "network-only",
-      variables: { presentationId },
-    },
-  )
+  const [getPresentationInfo, getPresentationInfoResult] = useLazyQuery<
+    GetSharePresentationInfoQuery,
+    GetSharePresentationInfoQueryVariables
+  >(GET_SHARE_PRESENTATION_INFO, {
+    fetchPolicy: "network-only",
+    variables: { presentationId },
+  })
   const [findUsers, findUsersResult] = useLazyQuery<FindUsersQuery, FindUsersQueryVariables>(FIND_USERS, {
     onCompleted(data) {
       setIsMenuOpen(!!data?.findUsers?.length)
@@ -51,7 +52,7 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
   })
 
   const openChangeHandler = (open: boolean) => {
-    if (open) getPresentationData()
+    if (open) getPresentationInfo()
     else setIsMenuOpen(false)
   }
 
@@ -61,7 +62,7 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
     await findUsers({ variables: { query: value, limit: USERS_LIMIT } })
   }, FIND_USERS_DEBOUNCE_TIME)
 
-  const presentationData = dataResult.data?.getPresentation
+  const presentationData = getPresentationInfoResult.data?.getPresentation
   const findUsersData = findUsersResult.data?.findUsers
 
   return (
@@ -69,7 +70,7 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent onClick={() => setIsMenuOpen(false)}>
         <DialogHeader className="min-w-0">
-          {dataResult.loading ? (
+          {getPresentationInfoResult.loading ? (
             <>
               <Skeleton className="h-[1.6875rem] w-72" />
               <DialogTitle hidden>Loading presentation name</DialogTitle>
@@ -96,7 +97,11 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
         </div>
         <div className="mb-2">
           <Text className="mb-3 font-medium">People with access</Text>
-          <UserList presentationId={presentationId} data={presentationData} loading={dataResult.loading} />
+          <UserList
+            presentationId={presentationId}
+            data={presentationData}
+            loading={getPresentationInfoResult.loading}
+          />
         </div>
         <DialogClose asChild>
           <Button size="sm" variant="blue" className="rounded-3xl">

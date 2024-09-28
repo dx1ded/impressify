@@ -2,10 +2,13 @@ import { lazy } from "react"
 import { Provider } from "react-redux"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { initializeApp } from "firebase/app"
-import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from "@apollo/client"
+import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache, split } from "@apollo/client"
+import { getMainDefinition } from "@apollo/client/utilities"
 import { setContext } from "@apollo/client/link/context"
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions"
 import { ClerkProvider } from "@clerk/clerk-react"
 import { Clerk } from "@clerk/clerk-js/headless"
+import { createClient } from "graphql-ws"
 
 import { store } from "~/app/model"
 import { PrivateRoutes } from "~/app/ui"
@@ -35,8 +38,29 @@ const authLink = setContext(async (_, { headers }) => {
   }
 })
 
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: import.meta.env.VITE_GRAPHQL_WS_URL,
+    connectionParams: async () => {
+      const clerkToken = await clerkInstance?.session?.getToken()
+      return {
+        authorization: clerkToken ? `Bearer ${clerkToken}` : "UNAUTHORIZED",
+      }
+    },
+  }),
+)
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query)
+    return definition.kind === "OperationDefinition" && definition.operation === "subscription"
+  },
+  wsLink,
+  authLink.concat(httpLink),
+)
+
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: splitLink,
   cache: new InMemoryCache(),
 })
 

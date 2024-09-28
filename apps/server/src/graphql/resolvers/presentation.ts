@@ -5,9 +5,9 @@ import type { ApolloContext } from ".."
 import {
   historyRepository,
   presentationRepository,
+  presentationUserRepository,
   slideRepository,
   userRepository,
-  presentationUserRepository,
 } from "../../database"
 import { History } from "../../entities/History"
 import { Image } from "../../entities/Image"
@@ -16,8 +16,15 @@ import { PresentationUser } from "../../entities/PresentationUser"
 import { Shape } from "../../entities/Shape"
 import { Slide } from "../../entities/Slide"
 import { Text } from "../../entities/Text"
-import { type Resolvers, type User, Result, Role } from "../__generated__"
 import { deletePresentationFiles } from "../../helpers"
+import {
+  type PresentationUpdate,
+  type Resolvers,
+  type Subscription,
+  PresentationUpdateType,
+  Result,
+  Role,
+} from "../__generated__"
 import { EVENT } from "../pubsub"
 
 export default {
@@ -136,10 +143,11 @@ export default {
 
       presentation.name = name
       const savedPresentation = await presentationRepository.save(presentation)
-      pubsub.publish(EVENT.PRESENTATION_LIST_CHANGED, {
-        presentationListChanged: {
-          userIds: presentation.users.map((_user) => _user.props.id),
-        },
+      pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+        presentationListUpdated: {
+          type: PresentationUpdateType.Changed,
+          presentation,
+        } as PresentationUpdate,
       })
 
       return savedPresentation
@@ -209,7 +217,7 @@ export default {
 
       return presentationRepository.save(newPresentation)
     },
-    async deletePresentation(_, { id }, { user, storage }) {
+    async deletePresentation(_, { id }, { user, storage, pubsub }) {
       if (!user) return null
 
       const presentationUser = await presentationUserRepository.findOneBy({
@@ -218,19 +226,44 @@ export default {
       })
       if (presentationUser.role !== Role.Creator) return Result.NotAllowed
 
-      await presentationRepository.delete({ id })
-      await deletePresentationFiles(storage, id)
+      const presentationToDelete = await presentationRepository.findOne({
+        relations: ["users", "users.props"],
+        where: { id },
+      })
+
+      // Using typeorm transactions so all operations work atomically (otherwise graphql relations are gonna be loaded AFTER presentation got deleted from the database which will lead to an error)
+      await presentationRepository.manager.transaction(async (entityManager) => {
+        await pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+          presentationListUpdated: {
+            type: PresentationUpdateType.Deleted,
+            presentation: presentationToDelete,
+            userIds: presentationToDelete.users.map((_user) => _user.props.id),
+          } as PresentationUpdate,
+        })
+
+        await entityManager.delete(Presentation, { id })
+        await deletePresentationFiles(storage, id)
+      })
+
       return Result.Success
     },
   },
   Subscription: {
-    presentationListChanged: {
+    presentationListUpdated: {
       subscribe: (_, __, { user, pubsub }) => ({
         [Symbol.asyncIterator]: withFilter(
-          () => pubsub.asyncIterator(EVENT.PRESENTATION_LIST_CHANGED),
-          async (payload: { presentationListChanged: { userIds: User["id"][] } }) => {
+          () => pubsub.asyncIterator(EVENT.PRESENTATION_UPDATED),
+          async (payload: Pick<Subscription, "presentationListUpdated">) => {
             if (!user) return false
-            return payload.presentationListChanged.userIds.some((userId) => userId === user.id)
+            const { type, presentation, userIds } = payload.presentationListUpdated
+            switch (type) {
+              case PresentationUpdateType.Added:
+                return userIds.includes(user.id)
+              case PresentationUpdateType.Changed:
+                return presentation.users.some((_user) => _user.props.id === user.id)
+              case PresentationUpdateType.Deleted:
+                return userIds.includes(user.id)
+            }
           },
         ),
       }),

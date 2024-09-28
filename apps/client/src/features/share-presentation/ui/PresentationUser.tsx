@@ -1,24 +1,19 @@
-import { useMutation } from "@apollo/client"
 import { useUser } from "@clerk/clerk-react"
 import { DropdownMenuArrow, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import type { YPresentation } from "@server/hocuspocus/types"
 import { EllipsisVerticalIcon } from "lucide-react"
 
-import {
-  type ChangeUserRoleMutation,
-  type ChangeUserRoleMutationVariables,
-  type GetPresentationDataQuery,
-  type Presentation,
-  Result,
-  Role,
-} from "~/__generated__/graphql"
-import { CHANGE_USER_ROLE, GET_PRESENTATION_DATA } from "~/features/share-presentation/api"
+import { type GetSharePresentationInfoQuery, type Presentation, Role } from "~/__generated__/graphql"
+import { useChangeUserRole, useKickUser } from "~/features/share-presentation/model"
 import { cn } from "~/shared/lib"
-import { useYjs } from "~/shared/model"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "~/shared/ui-kit/dropdown-menu"
-import { Small, Text } from "~/shared/ui/Typography"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "~/shared/ui-kit/dropdown-menu"
+import { Small } from "~/shared/ui/Typography"
 
-export type IPresentationUser = NonNullable<GetPresentationDataQuery["getPresentation"]>["users"][number]
+export type IPresentationUser = NonNullable<GetSharePresentationInfoQuery["getPresentation"]>["users"][number]
 
 interface PresentationUserProps {
   user: IPresentationUser
@@ -28,49 +23,11 @@ interface PresentationUserProps {
 
 export function PresentationUser({ user, isCurrentUserCreator, presentationId }: PresentationUserProps) {
   const { user: currentUser } = useUser()
-  const [changeUserRole] = useMutation<ChangeUserRoleMutation, ChangeUserRoleMutationVariables>(CHANGE_USER_ROLE)
-  const { getMap } = useYjs()
+  const changeUserRole = useChangeUserRole()
+  const kickUser = useKickUser()
 
-  const selectHandler = async (e: Event) => {
-    const target = e.target as HTMLDivElement
-    const role = target.dataset.value as Role
-    await changeUserRole({
-      variables: { presentationId, userId: user.props.id, role },
-      update: (cache, query) => {
-        if (query.data?.changeUserRole !== Result.Success) return
-        const cachedData = cache.readQuery<GetPresentationDataQuery>({
-          query: GET_PRESENTATION_DATA,
-          variables: { presentationId },
-        })
-
-        if (cachedData?.getPresentation) {
-          const updatedUsers = [...cachedData.getPresentation.users].map((_user) =>
-            _user.props.id === user.props.id ? { ..._user, role } : _user,
-          )
-
-          getMap<YPresentation>()
-            .get("users")
-            ?.toArray()
-            .find((_user) => _user.get("id") === user.props.id)
-            ?.set("role", role)
-
-          cache.writeQuery<GetPresentationDataQuery>({
-            query: GET_PRESENTATION_DATA,
-            data: {
-              getPresentation: {
-                ...cachedData.getPresentation,
-                users: updatedUsers,
-              },
-            },
-            variables: { presentationId },
-          })
-        }
-      },
-    })
-  }
-
-  // current user is owner but this current iteration is not them
-  const isOwnerAndNotIteration = isCurrentUserCreator && user.props.id !== currentUser?.id
+  // current user is creator but this current iteration is not them
+  const isCreator = isCurrentUserCreator && user.props.id !== currentUser?.id
 
   return (
     <div className="group flex min-w-0 items-center justify-between gap-2">
@@ -84,10 +41,10 @@ export function PresentationUser({ user, isCurrentUserCreator, presentationId }:
         </div>
       </div>
       <div className="flex items-center">
-        <Small className={cn("text-grayish font-normal", isOwnerAndNotIteration && "group-hover:mr-2")}>
+        <Small className={cn("text-grayish font-normal", isCreator && "group-hover:mr-2")}>
           {user.role === Role.Creator ? "Creator" : user.role === Role.Editor ? "Editor" : "Reader"}
         </Small>
-        {isOwnerAndNotIteration && (
+        {isCreator && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -97,18 +54,40 @@ export function PresentationUser({ user, isCurrentUserCreator, presentationId }:
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="p-2" side="right">
-              <Text className="mb-0.5 font-medium">Make as</Text>
               <DropdownMenuItem
-                className="cursor-pointer p-1 text-gray-600 hover:bg-gray-100"
-                data-value={Role.Reader}
-                onSelect={selectHandler}>
+                className="cursor-pointer px-1.5 py-1 text-gray-600 hover:bg-gray-100 "
+                disabled={user.role === Role.Reader}
+                onSelect={() =>
+                  changeUserRole({
+                    userId: user.props.id,
+                    presentationId,
+                    role: Role.Reader,
+                  })
+                }>
                 Reader
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="cursor-pointer p-1 text-gray-600 hover:bg-gray-100"
-                data-value={Role.Editor}
-                onSelect={selectHandler}>
+                className="cursor-pointer px-1.5 py-1 text-gray-600 hover:bg-gray-100"
+                disabled={user.role === Role.Editor}
+                onSelect={() =>
+                  changeUserRole({
+                    userId: user.props.id,
+                    presentationId,
+                    role: Role.Editor,
+                  })
+                }>
                 Editor
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer px-1.5 py-1 text-gray-600 hover:bg-red-600 hover:text-white"
+                onSelect={() =>
+                  kickUser({
+                    userId: user.props.id,
+                    presentationId,
+                  })
+                }>
+                Kick
               </DropdownMenuItem>
               <DropdownMenuArrow className="!text-pink-500" fill="#dee5ee" width={12} height={6} />
             </DropdownMenuContent>

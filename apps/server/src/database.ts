@@ -1,7 +1,5 @@
 import "reflect-metadata"
 import { DataSource, Repository } from "typeorm"
-import type { Client } from "pg"
-import { PostgresPubSub } from "graphql-pg-subscriptions"
 import { Element } from "./entities/Element"
 import { Slide } from "./entities/Slide"
 import { Presentation } from "./entities/Presentation"

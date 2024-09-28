@@ -6,5 +6,5 @@ type HistoryRecord {
 }
 
 type Mutation {
-  addRecord(presentationId: String!): HistoryRecord
+  addRecord(presentationId: ID!): HistoryRecord
 }

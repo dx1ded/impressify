@@ -1,12 +1,12 @@
 import { useUser } from "@clerk/clerk-react"
 
-import { type GetPresentationDataQuery, type Presentation, Role } from "~/__generated__/graphql"
+import { type GetSharePresentationInfoQuery, type Presentation, Role } from "~/__generated__/graphql"
 import { PresentationUser } from "~/features/share-presentation/ui/PresentationUser"
 import { Skeleton } from "~/shared/ui-kit/skeleton"
 
 interface UserListProps {
   presentationId: Presentation["id"]
-  data: GetPresentationDataQuery["getPresentation"]
+  data: GetSharePresentationInfoQuery["getPresentation"]
   loading: boolean
 }
 

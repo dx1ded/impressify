@@ -1,11 +1,16 @@
 import { type MutationResult, useMutation } from "@apollo/client"
+import type { YPresentation } from "@server/hocuspocus/types"
+import * as Y from "yjs"
 import { type ReactNode, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
-import type { DeletePresentationMutation, DeletePresentationMutationVariables } from "~/__generated__/graphql"
+import {
+  type DeletePresentationMutation,
+  type DeletePresentationMutationVariables,
+  Result,
+} from "~/__generated__/graphql"
 import { DELETE_PRESENTATION } from "~/features/delete-presentation/api"
-import { setRecentPresentations } from "~/entities/presentation"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import { useYjs } from "~/shared/model"
 
 interface DeletePresentationProps {
   children(deletePresentation: (id: string) => void, result: MutationResult<DeletePresentationMutation>): ReactNode
@@ -13,22 +18,25 @@ interface DeletePresentationProps {
 
 export function DeletePresentation({ children }: DeletePresentationProps) {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const recentPresentations = useAppSelector((state) => state.recentPresentations.items)
   const [sendDeletePresentation, result] = useMutation<DeletePresentationMutation, DeletePresentationMutationVariables>(
     DELETE_PRESENTATION,
   )
+  const { getMap } = useYjs()
 
   const deletePresentation = useCallback(
     async (id: string) => {
-      await sendDeletePresentation({
+      const request = await sendDeletePresentation({
         variables: { presentationId: id },
       })
 
-      dispatch(setRecentPresentations(recentPresentations.filter((presentation) => presentation.id !== id)))
-      navigate("/home")
+      if (request.data?.deletePresentation === Result.Success) {
+        const yPresentation = getMap() as YPresentation
+        // Setting `users` as an empty array so other users will be disconnected because they're not in the array
+        yPresentation.set("users", new Y.Array())
+        navigate("/home")
+      }
     },
-    [dispatch, navigate, recentPresentations, sendDeletePresentation],
+    [navigate, getMap, sendDeletePresentation],
   )
 
   return children(deletePresentation, result)

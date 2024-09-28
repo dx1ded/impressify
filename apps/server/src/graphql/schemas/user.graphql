@@ -10,9 +10,3 @@ type Query {
   # query -> name OR email
   findUsers(query: String!, offset: Int, limit: Int): [User!]
 }
-
-type Mutation {
-  invite(userId: String!, presentationId: String!, role: Role!): Result
-  changeUserRole(userId: String!, presentationId: String!, role: Role!): Result
-  sendHelpRequest(text: String!): Result
-}

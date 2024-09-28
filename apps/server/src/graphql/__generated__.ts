@@ -75,20 +75,21 @@ export type Mutation = {
   deletePresentation?: Maybe<Result>;
   duplicatePresentation?: Maybe<Presentation>;
   invite?: Maybe<Result>;
+  kick?: Maybe<Result>;
   renamePresentation?: Maybe<Presentation>;
   sendHelpRequest?: Maybe<Result>;
 };
 
 
 export type MutationAddRecordArgs = {
-  presentationId: Scalars['String']['input'];
+  presentationId: Scalars['ID']['input'];
 };
 
 
 export type MutationChangeUserRoleArgs = {
-  presentationId: Scalars['String']['input'];
+  presentationId: Scalars['ID']['input'];
   role: Role;
-  userId: Scalars['String']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -109,9 +110,15 @@ export type MutationDuplicatePresentationArgs = {
 
 
 export type MutationInviteArgs = {
-  presentationId: Scalars['String']['input'];
+  presentationId: Scalars['ID']['input'];
   role: Role;
-  userId: Scalars['String']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+
+export type MutationKickArgs = {
+  presentationId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -147,12 +154,13 @@ export type PresentationUpdate = {
   __typename?: 'PresentationUpdate';
   presentation: Presentation;
   type: PresentationUpdateType;
+  userIds?: Maybe<Array<Scalars['ID']['output']>>;
 };
 
 export enum PresentationUpdateType {
   Added = 'ADDED',
-  Deleted = 'DELETED',
-  Renamed = 'RENAMED'
+  Changed = 'CHANGED',
+  Deleted = 'DELETED'
 }
 
 export type PresentationUser = {
@@ -189,12 +197,12 @@ export type QueryFindUsersArgs = {
 
 
 export type QueryGetPresentationArgs = {
-  id: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
 };
 
 
 export type QueryGetPresentationInfoArgs = {
-  id: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
 };
 
 
@@ -262,7 +270,7 @@ export type Slide = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  presentationListChanged: PresentationUpdate;
+  presentationListUpdated: PresentationUpdate;
 };
 
 export type Text = Element & {
@@ -491,6 +499,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deletePresentation?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationDeletePresentationArgs, 'id'>>;
   duplicatePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationDuplicatePresentationArgs, 'id'>>;
   invite?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationInviteArgs, 'presentationId' | 'role' | 'userId'>>;
+  kick?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationKickArgs, 'presentationId' | 'userId'>>;
   renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
   sendHelpRequest?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationSendHelpRequestArgs, 'text'>>;
 }>;
@@ -516,6 +525,7 @@ export type PresentationInfoResolvers<ContextType = any, ParentType extends Reso
 export type PresentationUpdateResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationUpdate'] = ResolversParentTypes['PresentationUpdate']> = ResolversObject<{
   presentation?: Resolver<ResolversTypes['Presentation'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['PresentationUpdateType'], ParentType, ContextType>;
+  userIds?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -569,7 +579,7 @@ export type SlideResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  presentationListChanged?: SubscriptionResolver<ResolversTypes['PresentationUpdate'], "presentationListChanged", ParentType, ContextType>;
+  presentationListUpdated?: SubscriptionResolver<ResolversTypes['PresentationUpdate'], "presentationListUpdated", ParentType, ContextType>;
 }>;
 
 export type TextResolvers<ContextType = any, ParentType extends ResolversParentTypes['Text'] = ResolversParentTypes['Text']> = ResolversObject<{

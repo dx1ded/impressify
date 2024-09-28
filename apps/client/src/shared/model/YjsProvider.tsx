@@ -37,9 +37,7 @@ const initialState: YjsState = {
   getMap: (_fieldName) => {
     throw new Error("Provider is not initialized yet")
   },
-  updateAwareness(_newProps) {
-    throw new Error("Provider is not initialized yet")
-  },
+  updateAwareness(_newProps) {},
 }
 const YjsContext = createContext(initialState)
 
@@ -128,7 +126,7 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
 
   const updateAwareness = useCallback(
     <T,>(updatedProps: Partial<T>) => {
-      if (!provider || !provider.isSynced) throw new Error("Provider is not initialized yet")
+      if (!provider || !provider.isSynced) return
       const localState = provider.awareness?.getLocalState()
       provider.setAwarenessField(AWARENESS_VALUE_FIELD, {
         ...(localState && localState[AWARENESS_VALUE_FIELD] ? localState[AWARENESS_VALUE_FIELD] : {}),

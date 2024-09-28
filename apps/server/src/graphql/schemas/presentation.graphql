@@ -17,29 +17,31 @@ type PresentationInfo {
 type PresentationUpdate {
   type: PresentationUpdateType!,
   presentation: Presentation!
+  # Needed for correct filtration on added / deleted PresentationUpdateTypes
+  userIds: [ID!]
 }
 
 enum PresentationUpdateType {
   ADDED
-  RENAMED
+  CHANGED
   DELETED
 }
 
 type Query {
   # @preview means you get only the first slide
   findUserPresentations(preview: Boolean!, sortBy: String!): [Presentation!]
-  getPresentation(id: String!): Presentation
+  getPresentation(id: ID!): Presentation
   searchPresentations(name: String!): [Presentation!]
-  getPresentationInfo(id: String!): PresentationInfo
+  getPresentationInfo(id: ID!): PresentationInfo
 }
 
 type Mutation {
   createPresentation(name: String!, template: String!): Presentation
   renamePresentation(id: ID!, name: String!): Presentation
-  deletePresentation(id: ID!): Result
   duplicatePresentation(id: ID!): Presentation
+  deletePresentation(id: ID!): Result
 }
 
 type Subscription {
-  presentationListChanged: PresentationUpdate!
+  presentationListUpdated: PresentationUpdate!
 }

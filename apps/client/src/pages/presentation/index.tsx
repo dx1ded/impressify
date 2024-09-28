@@ -5,8 +5,8 @@ import type { YPresentation, UserAwareness } from "@server/hocuspocus/types"
 import { normalizePresentation } from "@server/hocuspocus/transform"
 import { toast } from "sonner"
 import type * as Y from "yjs"
-import { useCallback } from "react"
-import { useParams } from "react-router-dom"
+import { useCallback, useEffect } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import { shallowEqual } from "react-redux"
 
 import { type AddHistoryRecordMutation, type AddHistoryRecordMutationVariables, Role } from "~/__generated__/graphql"
@@ -31,6 +31,7 @@ import {
   useAppSelector,
   useAppDispatch,
   switchCurrentSlide,
+  clear,
 } from "~/shared/model"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 
@@ -54,7 +55,16 @@ function Presentation() {
     }),
     shallowEqual,
   )
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
+
+  // Clearing store when leaving the page
+  useEffect(
+    () => () => {
+      dispatch(clear())
+    },
+    [dispatch],
+  )
 
   // Add new history record (or modify it if present)
   const [addHistoryRecord] = useMutation<AddHistoryRecordMutation, AddHistoryRecordMutationVariables>(
@@ -72,6 +82,8 @@ function Presentation() {
       // Checking only for `id` because if this one doesn't exist then the other props neither do
       if (!id) return
       const normalizedPresentation = normalizePresentation(yPresentation)
+      // If user is not in the `users` array (either presentation got deleted or they got kicked) they get navigated to home page
+      if (!normalizedPresentation.users.some((_user) => _user.id === user?.id)) return navigate("/home")
       // Setting `currentSlide` and updating awareness
       const localState = provider.awareness?.getLocalState()
       if (localState && Object.keys(localState).length) {
@@ -126,7 +138,7 @@ function Presentation() {
         if (!isInitialLoad) toast(`You're now ${updatedIsEditor ? "an editor" : "a reader"}`)
       }
     },
-    [dispatch, slides, user?.id, currentSlide, isEditor],
+    [dispatch, navigate, slides, user?.id, currentSlide, isEditor],
   )
 
   const awarenessChangeHandler = useCallback(

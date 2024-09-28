@@ -11,3 +11,10 @@ enum Role {
   EDITOR
   READER
 }
+
+type Mutation {
+  invite(userId: ID!, presentationId: ID!, role: Role!): Result
+  changeUserRole(userId: ID!, presentationId: ID!, role: Role!): Result
+  kick(userId: ID!, presentationId: ID!): Result
+  sendHelpRequest(text: String!): Result
+}

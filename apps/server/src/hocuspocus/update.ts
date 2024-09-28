@@ -69,7 +69,6 @@ export function updateYDocument(document: Document, presentation: Presentation) 
       })
 
       ySlide.set("elements", yElements)
-
       return ySlide
     }),
   )
