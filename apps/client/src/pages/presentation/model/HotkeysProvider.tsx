@@ -5,9 +5,11 @@ import { useRedoHistory, useUndoHistory } from "~/features/apply-history"
 import { useCopyElement, usePasteElement } from "~/features/copy-paste-element"
 import { useDeleteElement } from "~/features/delete-element"
 import { useDuplicateElement } from "~/features/duplicate-element"
-import { useStableCallback } from "~/shared/model"
+import { useAppSelector, useStableCallback } from "~/shared/model"
 
 export const HotkeysProvider = memo<{ children: ReactNode }>(function HotkeyProvider({ children }) {
+  const isEditing = useAppSelector((state) => state.presentation.isEditing)
+  const isSlideshow = useAppSelector((state) => state.presentation.isSlideshow)
   const undoHistory = useStableCallback(useUndoHistory())
   const redoHistory = useStableCallback(useRedoHistory())
   const copyElement = useStableCallback(useCopyElement())
@@ -18,10 +20,12 @@ export const HotkeysProvider = memo<{ children: ReactNode }>(function HotkeyProv
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isSlideshow) return
+
       const key = e.key.toLowerCase()
       const isCtrlOrCmd = e.ctrlKey || e.metaKey
 
-      if (key === "backspace") deleteElement()
+      if (key === "backspace" && !isEditing) deleteElement()
       else if (isCtrlOrCmd && key === "z") undoHistory()
       else if (isCtrlOrCmd && key === "y") redoHistory()
       else if (isCtrlOrCmd && key === "c") copyElement()
@@ -35,7 +39,17 @@ export const HotkeysProvider = memo<{ children: ReactNode }>(function HotkeyProv
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [addSlide, copyElement, deleteElement, duplicateElement, pasteElement, redoHistory, undoHistory])
+  }, [
+    isSlideshow,
+    isEditing,
+    addSlide,
+    copyElement,
+    deleteElement,
+    duplicateElement,
+    pasteElement,
+    redoHistory,
+    undoHistory,
+  ])
 
   return children
 })

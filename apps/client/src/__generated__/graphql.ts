@@ -302,8 +302,8 @@ export enum Transition {
   Fade = 'FADE',
   Flip = 'FLIP',
   None = 'NONE',
-  SlidesFromRight = 'SLIDES_FROM_RIGHT',
-  SlideFromLeft = 'SLIDE_FROM_LEFT'
+  SlideFromLeft = 'SLIDE_FROM_LEFT',
+  SlideFromRight = 'SLIDE_FROM_RIGHT'
 }
 
 export type User = {
@@ -739,8 +739,8 @@ export enum Transition {
   Fade = 'FADE',
   Flip = 'FLIP',
   None = 'NONE',
-  SlidesFromRight = 'SLIDES_FROM_RIGHT',
-  SlideFromLeft = 'SLIDE_FROM_LEFT'
+  SlideFromLeft = 'SLIDE_FROM_LEFT',
+  SlideFromRight = 'SLIDE_FROM_RIGHT'
 }
 
 export type User = {

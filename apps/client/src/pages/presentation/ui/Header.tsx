@@ -6,6 +6,7 @@ import { useDebouncedCallback } from "use-debounce"
 
 import { MAX_NAME_LENGTH } from "~/entities/presentation"
 import { SharePresentationDialog } from "~/features/share-presentation"
+import { Slideshow } from "~/features/slideshow"
 import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
 import { Menubar } from "~/widgets/menubar"
@@ -64,9 +65,17 @@ export const Header = memo(function Header() {
       <div className="flex items-center">
         <ConnectionList className="mr-3 border-r border-gray-200 py-0.5 pr-3" users={connectedUsers} />
         <div className="flex items-center gap-2.5">
-          <Button variant="outline" className="rounded-3xl px-6 font-semibold">
-            Slideshow
-          </Button>
+          <Slideshow>
+            {(startSlideshow) => (
+              <Button
+                variant="outline"
+                className="rounded-3xl px-6 font-semibold"
+                disabled={isLoading}
+                onClick={() => startSlideshow()}>
+                Slideshow
+              </Button>
+            )}
+          </Slideshow>
           <SharePresentationDialog presentationId={presentationId}>
             <Button variant="blue" className="rounded-3xl px-6 font-semibold" disabled={!isEditor}>
               Share

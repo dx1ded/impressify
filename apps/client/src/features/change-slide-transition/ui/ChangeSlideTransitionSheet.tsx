@@ -58,7 +58,7 @@ export function ChangeSlideTransitionSheet({ children }: { children: ReactNode }
               <SelectItem value={Transition.None}>None</SelectItem>
               <SelectItem value={Transition.Fade}>Fade</SelectItem>
               <SelectItem value={Transition.SlideFromLeft}>Slide from left</SelectItem>
-              <SelectItem value={Transition.SlidesFromRight}>Slide from right</SelectItem>
+              <SelectItem value={Transition.SlideFromRight}>Slide from right</SelectItem>
               <SelectItem value={Transition.Flip}>Flip</SelectItem>
             </SelectContent>
           </Select>

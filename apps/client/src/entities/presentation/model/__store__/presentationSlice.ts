@@ -38,6 +38,7 @@ interface PresentationState {
   isCreating: boolean
   isEditing: boolean
   isSaving: boolean
+  isSlideshow: boolean
 }
 
 const initialState: PresentationState = {
@@ -61,6 +62,8 @@ const initialState: PresentationState = {
   isEditing: false,
   // Saving to the server
   isSaving: false,
+  // is slideshow turned on
+  isSlideshow: false,
 }
 
 const presentationSlice = createSlice({
@@ -87,6 +90,9 @@ const presentationSlice = createSlice({
     },
     setIsSaving: (state, { payload }: PayloadAction<boolean>) => {
       state.isSaving = payload
+    },
+    setIsSlideshow: (state, { payload }: PayloadAction<boolean>) => {
+      state.isSlideshow = payload
     },
     setName: (state, { payload }: PayloadAction<string>) => {
       state.presentation.name = payload
@@ -369,6 +375,7 @@ export const {
   setIsCreating,
   setIsEditing,
   setIsSaving,
+  setIsSlideshow,
   setName,
   setCurrentSlide,
   setBackground,

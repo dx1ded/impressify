@@ -56,7 +56,7 @@ export function SearchList({ presentationId, users, isMenuOpen }: UserListProps)
                     inviteUser({
                       user,
                       presentationId,
-                      role: Role.Reader,
+                      role: Role.Editor,
                     })
                   }>
                   Editor

@@ -33,7 +33,7 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
 
   const switchSlide = () => {
     if (index === currentSlide) return
-    if (!isEditor) {
+    if (isEditor) {
       flushWithPattern(EDIT_ELEMENT_ID)
       flush(TAKE_SCREENSHOT_ID)
       deleteWithPattern(EDIT_ELEMENT_ID)

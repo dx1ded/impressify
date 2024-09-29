@@ -14,6 +14,6 @@ enum Transition {
   NONE
   FADE
   SLIDE_FROM_LEFT
-  SLIDES_FROM_RIGHT
+  SLIDE_FROM_RIGHT
   FLIP
 }
