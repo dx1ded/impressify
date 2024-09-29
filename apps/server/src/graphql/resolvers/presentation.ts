@@ -99,6 +99,7 @@ export default {
       )
 
       return {
+        name: presentation.name,
         totalSlides,
         totalUsers,
         totalTextElements,

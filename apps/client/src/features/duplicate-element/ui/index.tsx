@@ -6,7 +6,7 @@ import { duplicateElement, generateEditElementId, TAKE_SCREENSHOT_ID } from "~/e
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 
-export function DuplicateElement({ children }: ChildrenAsCallbackWithFn) {
+export function useDuplicateElement() {
   const { selectedId, currentSlide } = useAppSelector(
     (state) => ({
       selectedId: state.presentation.selectedId,
@@ -18,10 +18,8 @@ export function DuplicateElement({ children }: ChildrenAsCallbackWithFn) {
   const { flush, call } = useDebouncedFunctions()
   const { getMap, updateAwareness } = useYjs()
 
-  const EDIT_SELECTED_ELEMENT_ID = generateEditElementId(selectedId)
-
-  const _duplicateElement = () => {
-    flush(EDIT_SELECTED_ELEMENT_ID)
+  return () => {
+    flush(generateEditElementId(selectedId))
     const newElement = dispatch(duplicateElement())
     call(TAKE_SCREENSHOT_ID)
     getMap<YPresentation>()
@@ -31,6 +29,8 @@ export function DuplicateElement({ children }: ChildrenAsCallbackWithFn) {
       ?.push([transformNormalizedToYElement(newElement)])
     updateAwareness<UserAwareness>({ selectedId: newElement.id })
   }
+}
 
-  return children(_duplicateElement)
+export function DuplicateElement({ children }: ChildrenAsCallbackWithFn) {
+  return children(useDuplicateElement())
 }

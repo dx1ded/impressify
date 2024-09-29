@@ -1,6 +1,7 @@
 import { CircleHelpIcon, KeyboardIcon } from "lucide-react"
 
 import { GetHelpDialog } from "~/features/get-help"
+import { getOS } from "~/shared/lib"
 import { useAppSelector } from "~/shared/model"
 import {
   Dialog,
@@ -16,6 +17,8 @@ import { Small } from "~/shared/ui/Typography"
 
 export function Help() {
   const isLoading = useAppSelector((state) => state.presentation.isLoading)
+
+  const modifierKey = getOS() === "macOS" ? "⌘" : "Ctrl"
 
   return (
     <MenubarMenu>
@@ -44,23 +47,27 @@ export function Help() {
             <div className="grid gap-2">
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2">
                 <Small>Undo</Small>
-                <Shortcut keys={["⌘", "Z"]} />
+                <Shortcut keys={[modifierKey, "Z"]} />
               </div>
               <div className="flex items-center justify-between border-gray-100  [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2">
                 <Small>Redo</Small>
-                <Shortcut keys={["⌘", "Y"]} />
+                <Shortcut keys={[modifierKey, "Y"]} />
               </div>
               <div className="flex items-center justify-between border-gray-100  [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2">
                 <Small>Copy</Small>
-                <Shortcut keys={["⌘", "C"]} />
+                <Shortcut keys={[modifierKey, "C"]} />
               </div>
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2">
                 <Small>Paste</Small>
-                <Shortcut keys={["⌘", "V"]} />
+                <Shortcut keys={[modifierKey, "V"]} />
               </div>
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2">
                 <Small>Delete element</Small>
-                <Shortcut keys={["Backspace"]} />
+                <Shortcut keys={["Delete"]} />
+              </div>
+              <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2">
+                <Small>Duplicate element</Small>
+                <Shortcut keys={[modifierKey, "O"]} />
               </div>
               <div className="flex items-center justify-between border-gray-100 [&:not(:last-child)]:border-b [&:not(:last-child)]:pb-2">
                 <Small>New slide</Small>

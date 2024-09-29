@@ -88,6 +88,9 @@ const presentationSlice = createSlice({
     setIsSaving: (state, { payload }: PayloadAction<boolean>) => {
       state.isSaving = payload
     },
+    setName: (state, { payload }: PayloadAction<string>) => {
+      state.presentation.name = payload
+    },
     setCurrentSlide: (state, { payload }: PayloadAction<number>) => {
       state.currentSlide = payload
     },
@@ -366,6 +369,7 @@ export const {
   setIsCreating,
   setIsEditing,
   setIsSaving,
+  setName,
   setCurrentSlide,
   setBackground,
   setTransition,

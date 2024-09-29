@@ -1,10 +1,11 @@
 import { useQuery, useSubscription } from "@apollo/client"
 
-import type {
-  FindUserPresentationsQuery,
-  FindUserPresentationsQueryVariables,
-  PresentationListUpdatedSubscription,
-  PresentationListUpdatedSubscriptionVariables,
+import {
+  type FindUserPresentationsQuery,
+  type FindUserPresentationsQueryVariables,
+  type PresentationListUpdatedSubscription,
+  type PresentationListUpdatedSubscriptionVariables,
+  PresentationUpdateType,
 } from "~/__generated__/graphql"
 import {
   FIND_USER_PRESENTATIONS,
@@ -46,13 +47,13 @@ export function Recent() {
         const operation = options.data.data?.presentationListUpdated
         if (!operation) return
         let newItems = [...items]
-        if (operation.type === "ADDED") {
+        if (operation.type === PresentationUpdateType.Added) {
           newItems.unshift(operation.presentation)
-        } else if (operation.type === "CHANGED") {
+        } else if (operation.type === PresentationUpdateType.Changed) {
           newItems = newItems.map((_presentation) =>
             _presentation.id === operation.presentation.id ? operation.presentation : _presentation,
           )
-        } else if (operation.type === "DELETED") {
+        } else if (operation.type === PresentationUpdateType.Deleted) {
           newItems = newItems.filter((_presentation) => _presentation.id !== operation.presentation.id)
         }
         dispatch(setRecentPresentations(newItems))

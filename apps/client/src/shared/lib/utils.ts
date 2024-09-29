@@ -24,6 +24,19 @@ export function isColor(str: string) {
   return str.startsWith("rgb") || str.startsWith("#")
 }
 
+export function getOS() {
+  const userAgent = navigator.userAgent.toLowerCase()
+
+  if (userAgent.includes("mac")) {
+    return "macOS"
+  }
+  if (userAgent.includes("win")) {
+    return "Windows"
+  }
+
+  return "Other"
+}
+
 // I made a custom debounce fn upon the lodash one to have a pending state
 export function debounce<T extends (...args: any[]) => any>(fn: T, wait: number): CustomDebouncedFunc<T> {
   let pending = false

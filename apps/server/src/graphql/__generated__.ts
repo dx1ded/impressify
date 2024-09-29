@@ -143,6 +143,7 @@ export type Presentation = {
 
 export type PresentationInfo = {
   __typename?: 'PresentationInfo';
+  name: Scalars['String']['output'];
   totalImageElements: Scalars['Int']['output'];
   totalShapeElements: Scalars['Int']['output'];
   totalSlides: Scalars['Int']['output'];
@@ -514,6 +515,7 @@ export type PresentationResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type PresentationInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PresentationInfo'] = ResolversParentTypes['PresentationInfo']> = ResolversObject<{
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   totalImageElements?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   totalShapeElements?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   totalSlides?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

@@ -1,41 +1,51 @@
-import { useMutation } from "@apollo/client"
+import { useMutation, useSubscription } from "@apollo/client"
 import { useUser } from "@clerk/clerk-react"
 import type { HocuspocusProvider } from "@hocuspocus/provider"
-import type { YPresentation, UserAwareness } from "@server/hocuspocus/types"
 import { normalizePresentation } from "@server/hocuspocus/transform"
+import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
+import { useCallback, useEffect } from "react"
+import { shallowEqual } from "react-redux"
+import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 import type * as Y from "yjs"
-import { useCallback, useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { shallowEqual } from "react-redux"
 
-import { type AddHistoryRecordMutation, type AddHistoryRecordMutationVariables, Role } from "~/__generated__/graphql"
+import {
+  type AddHistoryRecordMutation,
+  type AddHistoryRecordMutationVariables,
+  type PresentationListUpdatedSubscription,
+  type PresentationListUpdatedSubscriptionVariables,
+  PresentationUpdateType,
+  Role,
+} from "~/__generated__/graphql"
 import { ADD_HISTORY_RECORD } from "~/entities/history-record"
 import {
+  PRESENTATION_LIST_UPDATED,
+  setCurrentSlide,
   setIsLoading,
   setIsSaving,
-  setCurrentSlide,
-  updatePresentation,
+  setName,
   setPresentation,
+  updatePresentation,
 } from "~/entities/presentation"
-import { getInitialAwareness } from "~/entities/user"
 import { setConnectedUsers, setIsCreator, setIsEditor } from "~/entities/presentation-user"
+import { getInitialAwareness } from "~/entities/user"
+import { HotkeysProvider } from "~/pages/presentation/model"
+import { Header } from "~/pages/presentation/ui/Header"
 import { Slide } from "~/pages/presentation/ui/Slide"
 import { SlideList } from "~/pages/presentation/ui/SlideList"
-import { Header } from "~/pages/presentation/ui/Header"
-import { Toaster } from "~/shared/ui-kit/sonner"
-import { Toolbar } from "~/widgets/toolbar"
 import {
-  DebouncedProvider,
-  YjsProvider,
-  withTransition,
   AWARENESS_VALUE_FIELD,
-  useAppSelector,
-  useAppDispatch,
-  switchCurrentSlide,
   clear,
+  DebouncedProvider,
+  switchCurrentSlide,
+  useAppDispatch,
+  useAppSelector,
+  withTransition,
+  YjsProvider,
 } from "~/shared/model"
+import { Toaster } from "~/shared/ui-kit/sonner"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
+import { Toolbar } from "~/widgets/toolbar"
 
 export default withTransition(function PresentationPage() {
   return (
@@ -49,9 +59,10 @@ function Presentation() {
   const { id } = useParams<{ id: string }>()
   const { user } = useUser()
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const { currentSlide, userToken, isEditor } = useAppSelector(
+  const { currentSlide, presentationName, userToken, isEditor } = useAppSelector(
     (state) => ({
       currentSlide: state.presentation.currentSlide,
+      presentationName: state.presentation.presentation.name,
       userToken: state.user.token,
       isEditor: state.presentationUser.isEditor,
     }),
@@ -66,6 +77,22 @@ function Presentation() {
       dispatch(clear())
     },
     [dispatch],
+  )
+
+  // Using presentation subscription for changes that are done outside the yjs document (for example creator deleted presentation in /home page)
+  useSubscription<PresentationListUpdatedSubscription, PresentationListUpdatedSubscriptionVariables>(
+    PRESENTATION_LIST_UPDATED,
+    {
+      onData(options) {
+        const operation = options.data.data?.presentationListUpdated
+        if (!operation || operation.presentation.id !== id) return
+        if (operation.type === PresentationUpdateType.Changed && presentationName !== operation.presentation.name) {
+          dispatch(setName(operation.presentation.name))
+        } else if (operation.type === PresentationUpdateType.Deleted) {
+          navigate("/home")
+        }
+      },
+    },
   )
 
   // Add new history record (or modify it if present)
@@ -177,16 +204,18 @@ function Presentation() {
       onAuthenticated={addHistoryRecord}
       setInitialAwareness={setInitialAwareness}>
       <TooltipProvider>
-        <div className="flex h-screen flex-col bg-[#f8fafd] px-4">
-          <div>
-            <Header />
-            <Toolbar />
+        <HotkeysProvider>
+          <div className="flex h-screen flex-col bg-[#f8fafd] px-4">
+            <div>
+              <Header />
+              <Toolbar />
+            </div>
+            <div className="flex min-h-[56rem] flex-1 gap-4">
+              <SlideList />
+              <Slide />
+            </div>
           </div>
-          <div className="flex min-h-[56rem] flex-1 gap-4">
-            <SlideList />
-            <Slide />
-          </div>
-        </div>
+        </HotkeysProvider>
         <Toaster />
       </TooltipProvider>
     </YjsProvider>

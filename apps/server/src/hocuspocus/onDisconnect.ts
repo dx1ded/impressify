@@ -1,5 +1,5 @@
 import type { onDisconnectPayload } from "@hocuspocus/server"
-import type { WithHocuspocusContext } from "./types"
+import type { WithHocuspocusContext, YPresentation } from "./types"
 import { save } from "./save"
 import { documentRepository } from "../database"
 
@@ -11,5 +11,8 @@ export async function onDisconnect({
 }: WithHocuspocusContext<onDisconnectPayload>) {
   if (clientsCount !== 0) return
   await documentRepository.delete({ name: documentName })
-  await save(document, context.pubsub)
+  const yPresentation = document.getMap() as YPresentation
+  if (yPresentation.get("isSaving")) {
+    await save(document, context.pubsub)
+  }
 }

@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "~/shared/ui-kit/dialog"
+import { PopoverError } from "~/shared/ui/PopoverError"
 
 function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
   return function RenameDialog({
@@ -43,18 +44,20 @@ function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">
-            <Input {...register("name")} />
+            <PopoverError error={formState.errors.name}>
+              <div className="flex-1">
+                <Input {...register("name")} className="w-full" autoComplete="off" />
+              </div>
+            </PopoverError>
             <Button
               size="sm"
+              variant="blue"
               className="h-full px-7"
               // Extra callback because handleSubmit calls e.stopPropagation by default, and it doesn't close the popover
               onClick={() => handleSubmit(({ name }) => renamePresentation(presentationId, name))()}>
               Save
             </Button>
           </div>
-          {formState.errors.name && (
-            <small className="block font-medium text-red-400">{formState.errors.name.message}</small>
-          )}
         </DialogContent>
       </Dialog>
     )

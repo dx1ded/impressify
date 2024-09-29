@@ -61,7 +61,7 @@ export function SearchList({ presentationId, users, isMenuOpen }: UserListProps)
                   }>
                   Editor
                 </DropdownMenuItem>
-                <DropdownMenuArrow className="!text-pink-500" fill="#dee5ee" width={12} height={6} />
+                <DropdownMenuArrow fill="#dee5ee" width={12} height={6} />
               </DropdownMenuContent>
             </DropdownMenu>
           ))}

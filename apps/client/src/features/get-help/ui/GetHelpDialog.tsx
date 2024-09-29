@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { ReactNode } from "react"
+import { type ReactNode, useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import { GetHelp } from "~/features/get-help"
@@ -8,7 +9,6 @@ import { GetHelpValidationSchema } from "~/features/get-help/model"
 import { Button } from "~/shared/ui-kit/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -16,52 +16,47 @@ import {
   DialogTrigger,
 } from "~/shared/ui-kit/dialog"
 import { Input } from "~/shared/ui-kit/input"
+import { PopoverError } from "~/shared/ui/PopoverError"
 
 export function GetHelpDialog({ children }: { children: ReactNode }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { register, handleSubmit, formState } = useForm<z.infer<typeof GetHelpValidationSchema>>({
     resolver: zodResolver(GetHelpValidationSchema),
   })
 
   return (
-    <Dialog>
+    <Dialog open={isMenuOpen} onOpenChange={(value) => setIsMenuOpen(value)}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Ask your question</DialogTitle>
           <DialogDescription>
-            In the form below, please describe your problem and we&apos;ll respond you as soon as possible
+            In the form below, please describe your problem and we&apos;ll try to respond as soon as possible
           </DialogDescription>
         </DialogHeader>
-        <GetHelp>
-          {(sendHelpRequest, { data, loading, called }) => (
-            <>
-              <div className="flex items-center gap-2">
-                <Input {...register("text")} />
-                {data?.sendHelpRequest && called ? (
-                  <DialogClose className="h-full" asChild>
-                    <Button size="sm" className="h-full px-7">
-                      Close
-                    </Button>
-                  </DialogClose>
-                ) : (
-                  <Button
-                    size="sm"
-                    className="h-full px-7"
-                    disabled={loading}
-                    onClick={handleSubmit(({ text }) => sendHelpRequest({ variables: { text } }))}>
-                    Save
-                  </Button>
-                )}
-              </div>
-              {formState.errors.text && (
-                <small className="block font-medium text-red-400">{formState.errors.text.message}</small>
-              )}
-              {data?.sendHelpRequest && called && (
-                <small className="block font-medium text-green-400">Your request has been sent</small>
-              )}
-            </>
-          )}
-        </GetHelp>
+        <div className="flex items-center gap-2">
+          <PopoverError error={formState.errors.text}>
+            <div className="flex-1">
+              <Input {...register("text")} className="w-full" />
+            </div>
+          </PopoverError>
+          <GetHelp
+            onSuccess={() => {
+              toast("Your request has been sent")
+              setIsMenuOpen(false)
+            }}>
+            {(sendHelpRequest, { loading }) => (
+              <Button
+                size="sm"
+                variant="blue"
+                className="h-full px-7"
+                disabled={loading}
+                onClick={handleSubmit(({ text }) => sendHelpRequest({ variables: { text } }))}>
+                Send
+              </Button>
+            )}
+          </GetHelp>
+        </div>
       </DialogContent>
     </Dialog>
   )

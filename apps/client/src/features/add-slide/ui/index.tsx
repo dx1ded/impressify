@@ -6,12 +6,12 @@ import { addSlide, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presen
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useDebouncedFunctions, useYjs } from "~/shared/model"
 
-export const AddSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(function AddSlide({ children }, _) {
+export function useAddSlide() {
   const dispatch = useAppDispatch()
   const { flush, flushWithPattern } = useDebouncedFunctions()
   const { getMap, updateAwareness } = useYjs()
 
-  const _addSlide = () => {
+  return () => {
     flush(TAKE_SCREENSHOT_ID)
     flushWithPattern(EDIT_ELEMENT_ID)
     const newSlide = dispatch(addSlide())
@@ -20,6 +20,8 @@ export const AddSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(functi
       ?.push([transformNormalizedToYSlide(newSlide)])
     updateAwareness<UserAwareness>({ currentSlideId: newSlide.id })
   }
+}
 
-  return children(_addSlide)
+export const AddSlide = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(function AddSlide({ children }, _) {
+  return children(useAddSlide())
 })

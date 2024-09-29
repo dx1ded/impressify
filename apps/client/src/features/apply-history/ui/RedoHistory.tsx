@@ -6,14 +6,13 @@ import { applyHistoryStep, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entitie
 import type { HistoryActionProps } from "~/features/apply-history/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 
-export function RedoHistory({ children }: HistoryActionProps) {
-  const redoStack = useAppSelector((state) => state.history.redoStack)
+export function useRedoHistory() {
   const currentSlide = useAppSelector((state) => state.presentation.currentSlide)
   const dispatch = useAppDispatch()
   const { call, flushWithPattern } = useDebouncedFunctions()
   const { getMap } = useYjs()
 
-  const redoHistoryFn = () => {
+  return () => {
     flushWithPattern(EDIT_ELEMENT_ID)
     const newElements = dispatch(applyHistoryStep("REDO"))
     if (!newElements) return
@@ -22,6 +21,10 @@ export function RedoHistory({ children }: HistoryActionProps) {
     getMap<YPresentation>().get("slides")?.get(currentSlide)?.set("elements", yElements)
     call(TAKE_SCREENSHOT_ID)
   }
+}
 
-  return children(redoHistoryFn, redoStack.length !== 0)
+export function RedoHistory({ children }: HistoryActionProps) {
+  const redoStack = useAppSelector((state) => state.history.redoStack)
+
+  return children(useRedoHistory(), redoStack.length !== 0)
 }

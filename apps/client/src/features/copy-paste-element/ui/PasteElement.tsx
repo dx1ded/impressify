@@ -6,7 +6,7 @@ import { generateEditElementId, pasteElement, TAKE_SCREENSHOT_ID } from "~/entit
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 
-export function PasteElement({ children }: ChildrenAsCallbackWithFn) {
+export function usePasteElement() {
   const { selectedId, currentSlide } = useAppSelector(
     (state) => ({
       selectedId: state.presentation.selectedId,
@@ -18,10 +18,8 @@ export function PasteElement({ children }: ChildrenAsCallbackWithFn) {
   const { flush, call } = useDebouncedFunctions()
   const { getMap, updateAwareness } = useYjs()
 
-  const EDIT_SELECTED_ELEMENT_ID = generateEditElementId(selectedId)
-
-  const _pasteElement = () => {
-    flush(EDIT_SELECTED_ELEMENT_ID)
+  return () => {
+    flush(generateEditElementId(selectedId))
     const newElement = dispatch(pasteElement())
     if (!newElement) return
     call(TAKE_SCREENSHOT_ID)
@@ -32,6 +30,8 @@ export function PasteElement({ children }: ChildrenAsCallbackWithFn) {
       ?.push([transformNormalizedToYElement(newElement)])
     updateAwareness<UserAwareness>({ selectedId: newElement.id })
   }
+}
 
-  return children(_pasteElement)
+export function PasteElement({ children }: ChildrenAsCallbackWithFn) {
+  return children(usePasteElement())
 }

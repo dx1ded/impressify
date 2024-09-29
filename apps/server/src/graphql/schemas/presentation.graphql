@@ -7,6 +7,7 @@ type Presentation {
 }
 
 type PresentationInfo {
+  name: String!
   totalSlides: Int!
   totalUsers: Int!
   totalTextElements: Int!

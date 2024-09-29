@@ -5,7 +5,7 @@ import { generateEditElementId, deleteElement, TAKE_SCREENSHOT_ID } from "~/enti
 import type { ChildrenAsCallbackWithFn } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 
-export function DeleteElement({ children }: ChildrenAsCallbackWithFn) {
+export function useDeleteElement() {
   const { selectedId, currentSlide } = useAppSelector(
     (state) => ({
       selectedId: state.presentation.selectedId,
@@ -17,14 +17,15 @@ export function DeleteElement({ children }: ChildrenAsCallbackWithFn) {
   const { call, deleteDebounced } = useDebouncedFunctions()
   const { getMap } = useYjs()
 
-  const EDIT_SELECTED_ELEMENT_ID = generateEditElementId(selectedId)
-
-  const _deleteElement = () => {
+  return () => {
+    const EDIT_SELECTED_ELEMENT_ID = generateEditElementId(selectedId)
     deleteDebounced(EDIT_SELECTED_ELEMENT_ID)
     const deleteIndex = dispatch(deleteElement())
     call(TAKE_SCREENSHOT_ID)
     getMap<YPresentation>().get("slides")?.get(currentSlide)?.get("elements")?.delete(deleteIndex)
   }
+}
 
-  return children(_deleteElement)
+export function DeleteElement({ children }: ChildrenAsCallbackWithFn) {
+  return children(useDeleteElement())
 }
