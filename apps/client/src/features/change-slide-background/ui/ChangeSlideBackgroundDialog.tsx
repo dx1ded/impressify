@@ -40,9 +40,8 @@ export function ChangeSlideBackgroundDialog({ children }: { children: ReactNode 
   if (!slide) return
 
   const changeBackground = (bg: string) => {
-    const newBg = bg === "transparent" ? "#ffffff" : bg
-    dispatch(setBackground(newBg))
-    getMap<YPresentation>().get("slides")?.get(currentSlide).set("bg", newBg)
+    dispatch(setBackground(bg))
+    getMap<YPresentation>().get("slides")?.get(currentSlide).set("bg", bg)
     call(TAKE_SCREENSHOT_ID)
   }
 
@@ -73,7 +72,7 @@ export function ChangeSlideBackgroundDialog({ children }: { children: ReactNode 
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
             <Small className="text-grayish">Color</Small>
-            <ColorPicker color={slide.bg} onChange={(color) => changeBackground(color)}>
+            <ColorPicker color={slide.bg} hasTransparent={false} onChange={(color) => changeBackground(color)}>
               <Button variant="outline" size="sm" className="rounded-b-none">
                 <PaintBucketIcon className="h-5 w-5" />
               </Button>

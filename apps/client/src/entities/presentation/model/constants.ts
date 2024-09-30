@@ -11,10 +11,10 @@ export const DEFAULT_FONT_LIST = [
 ]
 export const DEFAULT_FONT_FAMILY = "Arial"
 
-export const DEFAULT_BG_COLOR = "rgb(255, 255, 255)"
-export const DEFAULT_TEXT_COLOR = "rgb(0, 0, 0)"
+export const DEFAULT_BG_COLOR = "#ffffff"
+export const DEFAULT_TEXT_COLOR = "#000000"
 export const DEFAULT_FILL_COLOR = "transparent"
-export const DEFAULT_STROKE_COLOR = "rgb(0, 0, 0)"
+export const DEFAULT_STROKE_COLOR = "#000000"
 export const DEFAULT_BORDER_COLOR = "transparent"
 
 export const DEFAULT_STROKE_WIDTH = 2
@@ -34,8 +34,9 @@ export const DEFAULT_SHAPE_HEIGHT = 200
 
 export const MAX_NAME_LENGTH = 128
 
-export const SLIDE_WIDTH = 1156
-export const SLIDE_HEIGHT = 760
+// 16:9 ratio - LAYOUT_16x9 (pptx)
+export const SLIDE_WIDTH = 1280
+export const SLIDE_HEIGHT = 720
 
 export const COPIED_ELEMENT_X_DIF = 50
 export const COPIED_ELEMENT_Y_DIF = 50

@@ -22,6 +22,8 @@ import {
   type ShapesConfig,
   type SlideProps,
   type TextProps,
+  SLIDE_WIDTH,
+  DEFAULT_BG_COLOR,
   DEFAULT_IMAGE_WIDTH,
   DEFAULT_SHAPE_HEIGHT,
   DEFAULT_SHAPE_WIDTH,
@@ -130,7 +132,7 @@ export const getAnchors = (element: ElementProps) => {
 export const getSlideConfig = (): SlideProps => ({
   id: nanoid(8),
   elements: [],
-  bg: "rgb(255, 255, 255)",
+  bg: DEFAULT_BG_COLOR,
   transition: Transition.None,
   thumbnailUrl:
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/erDEdIAAAAASUVORK5CYII=",
@@ -179,3 +181,8 @@ export const getShapeConfig = (props: AddShapeProps): ShapeProps => ({
     ? props.y
     : props.y - DEFAULT_SHAPE_HEIGHT / 2,
 })
+
+export function pxToInches(px: number) {
+  // We got `10` empirical way. It's the perfect value for 16:9 ratio in pptxgenjs
+  return px / (SLIDE_WIDTH / 10)
+}

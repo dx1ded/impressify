@@ -52,7 +52,7 @@ export function PresentationPreview({
       onClick={clickHandler}>
       <img
         src={slide.thumbnailUrl}
-        className={cn("h-[7rem] w-full rounded-t border-b object-cover", view === "list" && "hidden")}
+        className={cn("h-36 w-full rounded-t border-b", view === "list" && "hidden")}
         alt="Presentation thumbnail"
       />
       <div className={cn("flex flex-col gap-2 p-3 pr-1.5", view === "list" && "flex-row items-center p-5")}>

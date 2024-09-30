@@ -45,7 +45,7 @@ export class Slide implements ISlide {
   ) {
     this.id = id || nanoid(8)
     this.presentation = presentation
-    this.bg = bg || "rgb(255, 255, 255)"
+    this.bg = bg || "#ffffff"
     this.transition = transition || Transition.None
     // Plain white background
     this.thumbnailUrl =

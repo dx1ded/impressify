@@ -90,7 +90,7 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
               index === currentSlide && "border-blue-500",
             )}
             onClick={switchSlide}>
-            <img src={slide.thumbnailUrl} alt="Slide thumbnail" className="h-full w-full max-w-[10.375rem]" />
+            <img src={slide.thumbnailUrl} alt="Slide thumbnail" className="h-full w-full" />
             <ConnectionList
               size="sm"
               className="absolute bottom-1.5 right-2 translate-y-[95%] transition-transform group-hover:translate-y-0"

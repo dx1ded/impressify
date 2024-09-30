@@ -58,6 +58,7 @@ export function ShapeMode({ isActive }: ModeProps) {
       <ColorPicker
         color={shapeProps.strokeColor}
         disabled={!isEditor}
+        hasTransparent={false}
         onChange={(value) => applyShapeChanges({ strokeColor: value })}>
         <Tooltip>
           <TooltipTrigger asChild>

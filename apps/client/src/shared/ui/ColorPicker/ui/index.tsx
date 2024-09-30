@@ -12,10 +12,17 @@ interface ColorPickerProps {
   children: ReactNode
   color: string
   disabled?: boolean
+  hasTransparent?: boolean
   onChange?(value: string): void
 }
 
-export const ColorPicker = memo(function ColorPicker({ color, children, disabled, onChange }: ColorPickerProps) {
+export const ColorPicker = memo(function ColorPicker({
+  color,
+  children,
+  disabled,
+  hasTransparent = true,
+  onChange,
+}: ColorPickerProps) {
   const changeHandler = (value: string) => {
     if (onChange) onChange(value)
   }
@@ -50,11 +57,13 @@ export const ColorPicker = memo(function ColorPicker({ color, children, disabled
       </SelectTrigger>
       <SelectContent>
         <div className="mb-1 grid grid-cols-10 gap-1">{ColorItems}</div>
-        <SelectItem value="transparent" asChild>
-          <Button size="sm" variant="outline" className="h-6 w-full p-1 text-xs">
-            Transparent
-          </Button>
-        </SelectItem>
+        {hasTransparent && (
+          <SelectItem value="transparent" asChild>
+            <Button size="sm" variant="outline" className="h-6 w-full p-1 text-xs">
+              Transparent
+            </Button>
+          </SelectItem>
+        )}
       </SelectContent>
     </Select>
   )

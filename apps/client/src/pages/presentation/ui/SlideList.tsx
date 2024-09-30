@@ -47,7 +47,7 @@ export const SlideList = memo(function SlideList() {
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className="flex-shrink-0 basis-52 overflow-y-auto border-r pr-4">
+            className="basis-[14.85rem] overflow-y-auto border-r pr-4">
             {slides.map((slide, i) => (
               <SlideListItem key={slide.id} slide={slide} index={i} isDragging={isDragging} />
             ))}
