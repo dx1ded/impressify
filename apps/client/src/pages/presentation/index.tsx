@@ -122,13 +122,15 @@ function Presentation() {
           (_slide) => _slide.id === connectedUser.currentSlideId,
         )
         // When slide got deleted
-        if (!normalizedPresentation.slides.some((_slide) => _slide.id === connectedUser.currentSlideId)) {
-          // We assume `deletedSlideIndex` is never `-1`
+        if (savedCurrentSlideIndex === -1) {
           const deletedSlideIndex = slides.findIndex((_slide) => _slide.id === connectedUser.currentSlideId)
-          // We set the new `currentSlide` as previous one
-          newIndex = deletedSlideIndex - 1
-          // Using `switchCurrentSlide` so props (isCreating / selectedId, ...) reset
-          dispatch(switchCurrentSlide(newIndex))
+          // If `deletedSlideIndex` was `0` or -1 (in case user deleted a bunch of slides really fast and debounced function didn't get it) we don't do anything
+          if (deletedSlideIndex > 0) {
+            // We set the new `currentSlide` as previous one
+            newIndex = deletedSlideIndex - 1
+            // Using `switchCurrentSlide` so props (isCreating / selectedId, ...) reset
+            dispatch(switchCurrentSlide(newIndex))
+          }
         }
         // When slide got moved
         else if (savedCurrentSlideIndex !== currentSlide) {

@@ -6,6 +6,7 @@ import {
   type PresentationListUpdatedSubscription,
   type PresentationListUpdatedSubscriptionVariables,
   PresentationUpdateType,
+  Role,
 } from "~/__generated__/graphql"
 import {
   FIND_USER_PRESENTATIONS,
@@ -96,8 +97,10 @@ export function Recent() {
                           key={presentation.id}
                           presentation={presentation}
                           view={view}
-                          isEditor={presentation.users.find((_user) => _user.props.id === userId)?.role === "EDITOR"}
-                          isCreator={presentation.users.find((_user) => _user.props.id === userId)?.role === "CREATOR"}
+                          isEditor={presentation.users.find((_user) => _user.props.id === userId)?.role === Role.Editor}
+                          isCreator={
+                            presentation.users.find((_user) => _user.props.id === userId)?.role === Role.Creator
+                          }
                           DeleteAlert={DeleteAlert}
                           RenameDialog={RenameDialog}
                         />

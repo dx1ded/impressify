@@ -1,4 +1,4 @@
-import { useLazyQuery } from "@apollo/client"
+import { useQuery, useLazyQuery } from "@apollo/client"
 import { type ChangeEvent, type ReactNode, useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
 
@@ -36,25 +36,22 @@ interface SharePresentationDialogProps {
 }
 
 export function SharePresentationDialog({ presentationId, children }: SharePresentationDialogProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const [getPresentationInfo, getPresentationInfoResult] = useLazyQuery<
-    GetSharePresentationInfoQuery,
-    GetSharePresentationInfoQueryVariables
-  >(GET_SHARE_PRESENTATION_INFO, {
-    fetchPolicy: "network-only",
-    variables: { presentationId },
-  })
+  const getPresentationInfoResult = useQuery<GetSharePresentationInfoQuery, GetSharePresentationInfoQueryVariables>(
+    GET_SHARE_PRESENTATION_INFO,
+    {
+      fetchPolicy: "network-only",
+      variables: { presentationId },
+      skip: !isDialogOpen,
+    },
+  )
   const [findUsers, findUsersResult] = useLazyQuery<FindUsersQuery, FindUsersQueryVariables>(FIND_USERS, {
     onCompleted(data) {
       setIsMenuOpen(!!data?.findUsers?.length)
     },
   })
-
-  const openChangeHandler = (open: boolean) => {
-    if (open) getPresentationInfo()
-    else setIsMenuOpen(false)
-  }
 
   const inputChangeHandler = useDebouncedCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
@@ -66,7 +63,7 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
   const findUsersData = findUsersResult.data?.findUsers
 
   return (
-    <Dialog onOpenChange={openChangeHandler}>
+    <Dialog onOpenChange={(value) => setIsDialogOpen(value)}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent onClick={() => setIsMenuOpen(false)}>
         <DialogHeader className="min-w-0">

@@ -54,7 +54,7 @@ export default new Hocuspocus({
         if (!context.debouncedSave.pending()) {
           yPresentation.set("isSaving", true)
         }
-        context.debouncedSave(document, context.pubsub)
+        context.debouncedSave(document, context.storage, context.pubsub)
         await documentRepository.save({ name: documentName, data: state })
       },
     }),

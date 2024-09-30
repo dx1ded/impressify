@@ -1,4 +1,5 @@
 import { type User, clerkClient } from "@clerk/clerk-sdk-node"
+import { getStorage } from "firebase-admin/storage"
 import { debounce } from "moderndash"
 import type { HocuspocusContext } from "./types"
 import { save } from "./save"
@@ -17,6 +18,7 @@ export async function getContext(authorization?: string): Promise<HocuspocusCont
   return {
     user,
     debouncedSave: debounce(save, SAVE_DEBOUNCE_TIME),
+    storage: getStorage(),
     pubsub,
   }
 }

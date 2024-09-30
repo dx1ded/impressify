@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client"
 import { BoxIcon, ImageIcon, PanelsLeftBottomIcon, TypeIcon, UsersIcon } from "lucide-react"
-import type { ReactNode } from "react"
+import { type ReactNode, useState } from "react"
 
 import type { GetPresentationInfoQuery, GetPresentationInfoQueryVariables } from "~/__generated__/graphql"
 import { GET_PRESENTATION_INFO } from "~/entities/presentation"
@@ -16,16 +16,18 @@ import { Skeleton } from "~/shared/ui-kit/skeleton"
 import { Small } from "~/shared/ui/Typography"
 
 export function PresentationInfoDialog({ children, presentationId }: { children: ReactNode; presentationId: string }) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { data, loading } = useQuery<GetPresentationInfoQuery, GetPresentationInfoQueryVariables>(
     GET_PRESENTATION_INFO,
     {
       variables: { id: presentationId },
       fetchPolicy: "network-only",
+      skip: !isDialogOpen,
     },
   )
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={(value) => setIsDialogOpen(value)}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent forceMount>
         <DialogHeader className="min-w-0">

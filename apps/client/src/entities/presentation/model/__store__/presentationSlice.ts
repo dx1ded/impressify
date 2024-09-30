@@ -1,7 +1,7 @@
 import _ from "lodash"
 import { diff as deepDiff } from "deep-diff"
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { NormalizedYPresentation, NormalizedYElement } from "@server/hocuspocus/types"
+import type { NormalizedYPresentation } from "@server/hocuspocus/types"
 import { nanoid } from "nanoid"
 
 import type { AppDispatch, AppStore } from "~/app/model"
@@ -22,6 +22,8 @@ import {
   setImageProps,
   setShapeProps,
   addHistoryRecord,
+  setMode,
+  resetToolbarElementProps,
   NOT_SELECTED,
   COPIED_ELEMENT_X_DIF,
   COPIED_ELEMENT_Y_DIF,
@@ -169,32 +171,36 @@ export const moveSlide =
     return { deleteIndex, newIndex }
   }
 
-export const duplicateSlide = (slideId: SlideId) => (dispatch: AppDispatch, getState: () => AppStore) => {
-  const newSlides = [...getState().presentation.presentation.slides]
-  const index = newSlides.findIndex((slide) => slide.id === slideId)!
-  const slide = newSlides[index]
-  const newSlide = {
-    ...slide,
-    // It is necessary to change slide id and its elements' ids to avoid collision
-    id: nanoid(8),
-    elements: slide.elements.map((el) => ({ ...el, id: nanoid(8) })),
-  }
-  const newIndex = index + 1
-  newSlides.splice(newIndex, 0, newSlide)
-  dispatch(setSlides(newSlides))
-  dispatch(switchCurrentSlide(index + 1))
+export const duplicateSlide =
+  (slideId: SlideId, thumbnailUrl?: string) => (dispatch: AppDispatch, getState: () => AppStore) => {
+    const newSlides = [...getState().presentation.presentation.slides]
+    const index = newSlides.findIndex((slide) => slide.id === slideId)!
+    const slide = newSlides[index]
+    const newSlide = {
+      ...slide,
+      // If custom `thumbnailUrl` provided use that one
+      ...(thumbnailUrl ? { thumbnailUrl } : {}),
+      // It is necessary to change slide id and its elements' ids to avoid collision
+      id: nanoid(8),
+      elements: slide.elements.map((el) => ({ ...el, id: nanoid(8) })),
+    }
+    const newIndex = index + 1
+    newSlides.splice(newIndex, 0, newSlide)
+    dispatch(setSlides(newSlides))
+    dispatch(switchCurrentSlide(newIndex))
 
-  return { newSlide, newIndex }
-}
+    return { newSlide, newIndex }
+  }
 
 export const deleteSlide = (slideId: SlideId) => (dispatch: AppDispatch, getState: () => AppStore) => {
-  const newSlides = [...getState().presentation.presentation.slides]
+  const state = getState()
+  const newSlides = [...state.presentation.presentation.slides]
+  const { currentSlide } = state.presentation
   if (newSlides.length === 1) return
   const indexToDelete = newSlides.findIndex((slide) => slide.id === slideId)
-  let newIndex = indexToDelete
-  if (newIndex === newSlides.length - 1) newIndex--
   newSlides.splice(indexToDelete, 1)
-  dispatch(switchCurrentSlide(newIndex))
+  const newIndex = currentSlide === newSlides.length ? newSlides.length - 1 : currentSlide
+  if (newIndex !== currentSlide) dispatch(switchCurrentSlide(newIndex))
   dispatch(setSlides(newSlides))
 
   return newSlides[newIndex].id
@@ -229,7 +235,7 @@ export const addElement = (elementProps: AddElementPayload) => (dispatch: AppDis
   const state = getState()
   const slide = state.presentation.presentation.slides[state.presentation.currentSlide]
   const slideCopy = { ...slide, elements: [...slide.elements] }
-  let newElement: NormalizedYElement | undefined
+  let newElement: ElementProps | undefined
 
   if (state.toolbar.mode === "text") {
     slideCopy.elements.push((newElement = getTextConfig({ ...state.toolbar.textProps, ...elementProps })))
@@ -270,6 +276,12 @@ export const deleteElement = () => (dispatch: AppDispatch, getState: () => AppSt
   const index = slide.elements.findIndex((element) => element.id === state.presentation.selectedId)
   dispatch(addHistoryRecord({ type: "ADD", element: slide.elements[index], position: index }))
   dispatch(setElements(slide.elements.filter((element) => element.id !== state.presentation.selectedId)))
+
+  // Resetting toolbar
+  if (!state.presentation.isCreating) {
+    dispatch(setMode("cursor"))
+    dispatch(resetToolbarElementProps())
+  }
 
   return index
 }

@@ -12,8 +12,8 @@ import {
   getElement,
   addElement,
   generateEditElementId,
-  selectElement,
   editElement,
+  setSelectedId,
   resetToolbarElementProps,
   setMode,
   setThumbnail,
@@ -30,7 +30,7 @@ import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~
 import { Cursor } from "~/shared/ui/Cursor"
 import { ProportionalImage } from "~/shared/ui/ProportionalImage"
 
-const SCREENSHOT_DEBOUCE_TIME = 5000
+const SCREENSHOT_DEBOUCE_TIME = 2500
 const UPDATE_CURSOR_DEBOUNCE_TIME = 150
 
 const CONTAINER_BORDER_WIDTH = 2
@@ -76,7 +76,7 @@ export const Slide = memo(function Slide() {
   if (stageRef.current) {
     takeScreenshot = register(
       TAKE_SCREENSHOT_ID,
-      async () => {
+      () => {
         if (!stageRef.current) return
         const transformers = stageRef.current.find("Transformer")
         // Other users element selections (if there are some)
@@ -91,9 +91,8 @@ export const Slide = memo(function Slide() {
         transformers.forEach((tr) => tr.visible(true))
         selectionStrokes.forEach((el) => el.visible(true))
 
-        const uploadedImageUrl = await uploadImageToStorage(dataUrl, `${presentationId}/${slide.id}/thumbnail`)
-        dispatch(setThumbnail(uploadedImageUrl))
-        getMap<YPresentation>().get("slides")?.get(currentSlide)?.set("thumbnailUrl", uploadedImageUrl)
+        dispatch(setThumbnail(dataUrl))
+        getMap<YPresentation>().get("slides")?.get(currentSlide)?.set("thumbnailUrl", dataUrl)
       },
       SCREENSHOT_DEBOUCE_TIME,
       [slide?.id, currentSlide],
@@ -112,7 +111,7 @@ export const Slide = memo(function Slide() {
 
     // dropping selected item when click on empty part of the stage
     if (e.target instanceof StageClass && !isCreating && selectedId !== NOT_SELECTED) {
-      dispatch(selectElement(NOT_SELECTED))
+      dispatch(setSelectedId(NOT_SELECTED))
       dispatch(setMode("cursor"))
       dispatch(resetToolbarElementProps())
       updateAwareness<UserAwareness>({ selectedId: NOT_SELECTED })

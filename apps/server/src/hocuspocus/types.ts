@@ -2,6 +2,7 @@ import type { debounce } from "moderndash"
 import type * as Y from "yjs"
 import type { User } from "@clerk/clerk-sdk-node"
 import type { TypedMap } from "yjs-types"
+import type { Storage } from "firebase-admin/storage"
 import type { PubSub } from "graphql-subscriptions"
 import type { save } from "./save"
 import type { Presentation } from "../entities/Presentation"
@@ -14,6 +15,7 @@ import type { Shape } from "../entities/Shape"
 export interface HocuspocusContext {
   user: User | null
   debouncedSave: ReturnType<typeof debounce<typeof save>>
+  storage: Storage
   pubsub: PubSub
 }
 

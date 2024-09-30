@@ -28,7 +28,7 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
     shallowEqual,
   )
   const dispatch = useAppDispatch()
-  const { flush, flushWithPattern, deleteWithPattern, deleteDebounced } = useDebouncedFunctions()
+  const { flush, flushWithPattern, deleteWithPattern } = useDebouncedFunctions()
   const { updateAwareness } = useYjs()
 
   const switchSlide = () => {
@@ -37,7 +37,6 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
       flushWithPattern(EDIT_ELEMENT_ID)
       flush(TAKE_SCREENSHOT_ID)
       deleteWithPattern(EDIT_ELEMENT_ID)
-      deleteDebounced(TAKE_SCREENSHOT_ID)
     }
     dispatch(switchCurrentSlide(index))
     updateAwareness<UserAwareness>({ currentSlideId: slide.id })
@@ -45,7 +44,6 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
 
   return (
     <Draggable
-      key={slide.id}
       draggableId={slide.id}
       index={index}
       isDragDisabled={!isEditor || isLoading}

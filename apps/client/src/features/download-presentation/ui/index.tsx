@@ -1,16 +1,15 @@
 import PptxGenJS from "pptxgenjs"
 
 import { Alignment, ShapeType } from "~/__generated__/graphql"
-import { TAKE_SCREENSHOT_ID, pxToInches } from "~/entities/presentation"
+import { type SlideProps, pxToInches, TAKE_SCREENSHOT_ID, EDIT_ELEMENT_ID } from "~/entities/presentation"
 import { type ChildrenAsCallbackWithFn, isColor } from "~/shared/lib"
-import { useAppSelector, useDebouncedFunctions } from "~/shared/model"
+import { useDebouncedFunctions } from "~/shared/model"
 
-export function DownloadPresentation({ children }: ChildrenAsCallbackWithFn) {
-  const slides = useAppSelector((state) => state.presentation.presentation.slides)
-  const presentationName = useAppSelector((state) => state.presentation.presentation.name)
-  const { flush } = useDebouncedFunctions()
+export function DownloadPresentation({ children }: ChildrenAsCallbackWithFn<[string, SlideProps[]]>) {
+  const { flush, flushWithPattern } = useDebouncedFunctions()
 
-  const download = async () => {
+  const _download = async (presentationName: string, slides: SlideProps[]) => {
+    flushWithPattern(EDIT_ELEMENT_ID)
     flush(TAKE_SCREENSHOT_ID)
 
     const pptx = new PptxGenJS()
@@ -90,5 +89,5 @@ export function DownloadPresentation({ children }: ChildrenAsCallbackWithFn) {
     document.body.removeChild(a)
   }
 
-  return children(download)
+  return children(_download)
 }

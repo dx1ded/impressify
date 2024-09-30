@@ -13,6 +13,6 @@ export async function onDisconnect({
   await documentRepository.delete({ name: documentName })
   const yPresentation = document.getMap() as YPresentation
   if (yPresentation.get("isSaving")) {
-    await save(document, context.pubsub)
+    await save(document, context.storage, context.pubsub)
   }
 }

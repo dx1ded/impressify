@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { ApolloServer } from "@apollo/server"
+import { cert, initializeApp, type ServiceAccount } from "firebase-admin/app"
 import { useServer } from "graphql-ws/lib/use/ws"
 import fastifyApollo, { fastifyApolloDrainPlugin } from "@as-integrations/fastify"
 import Fastify from "fastify"
@@ -9,6 +10,7 @@ import { WebSocketServer } from "ws"
 
 import { app } from "./app"
 import { type ApolloContext, schema, getContext } from "./graphql"
+import firebaseCredentials from "./impressify-26983-firebase-adminsdk-26c7d-c529d5e383"
 
 const host = process.env.HOST ?? "localhost"
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
@@ -21,6 +23,9 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
     logger: false,
     bodyLimit: FASTIFY_BODY_LIMIT,
   })
+
+  // Initializing firebase app
+  initializeApp({ credential: cert(firebaseCredentials as ServiceAccount) })
 
   const wsServer = new WebSocketServer({
     port: wssPort,

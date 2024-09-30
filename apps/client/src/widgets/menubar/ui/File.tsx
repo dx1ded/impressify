@@ -2,7 +2,7 @@ import { DownloadIcon, Files, Info, PencilLine, SquarePlus, Trash2, UserPlus } f
 import { shallowEqual } from "react-redux"
 
 import { DEFAULT_NAME, PresentationInfoDialog } from "~/entities/presentation"
-import { DownloadPresentation } from "~/features/download-presentation/ui"
+import { DownloadPresentation } from "~/features/download-presentation"
 import { DuplicatePresentation } from "~/features/duplicate-presentation"
 import { CreatePresentation } from "~/features/create-presentation"
 import { DeletePresentationAlert } from "~/features/delete-presentation"
@@ -93,7 +93,7 @@ export function File() {
         </SharePresentationDialog>
         <DownloadPresentation>
           {(downloadPresentation) => (
-            <MenubarItem disabled={isLoading} onSelect={() => downloadPresentation()}>
+            <MenubarItem disabled={isLoading} onSelect={() => downloadPresentation(presentationName, slides)}>
               <DownloadIcon className="mr-2 h-5 w-5" />
               Download
             </MenubarItem>

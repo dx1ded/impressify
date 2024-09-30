@@ -20,6 +20,10 @@ export function ptToPx(pt: number) {
   return pt * 1.333
 }
 
+export function isDataUrl(str: string) {
+  return str.startsWith("data:image/")
+}
+
 export function pxToPt(px: number) {
   return px / 1.333
 }

@@ -35,8 +35,8 @@ export const DEFAULT_SHAPE_HEIGHT = 200
 export const MAX_NAME_LENGTH = 128
 
 // 16:9 ratio - LAYOUT_16x9 (pptx)
-export const SLIDE_WIDTH = 1280
-export const SLIDE_HEIGHT = 720
+export const SLIDE_WIDTH = 1440
+export const SLIDE_HEIGHT = 810
 
 export const COPIED_ELEMENT_X_DIF = 50
 export const COPIED_ELEMENT_Y_DIF = 50

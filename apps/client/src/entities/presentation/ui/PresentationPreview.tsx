@@ -69,6 +69,7 @@ export function PresentationPreview({
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-52 px-0 py-2">
+                {/* Didn't make `isEditor` true if user is creator because it would be too complex .filter function */}
                 {(isEditor || isCreator) && (
                   <RenameDialog presentationId={presentation.id} presentationName={presentation.name}>
                     <button
