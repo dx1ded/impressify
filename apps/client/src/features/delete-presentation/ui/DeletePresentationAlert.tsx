@@ -21,13 +21,19 @@ function Wrapper(deletePresentation: FeatureCallback<[string]>) {
     presentationId,
     // `beforeHandler` is a function which gets called before delete button handler
     beforeHandler,
+    onClose,
   }: {
     children: ReactNode
     presentationId: string
     beforeHandler?: () => void
+    onClose?: () => void
   }) {
+    const openChangeHandler = (open: boolean) => {
+      if (!open && onClose) onClose()
+    }
+
     return (
-      <AlertDialog>
+      <AlertDialog onOpenChange={openChangeHandler}>
         <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

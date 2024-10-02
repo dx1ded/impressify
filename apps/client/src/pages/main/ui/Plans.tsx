@@ -12,7 +12,7 @@ export function Plans() {
   const { setActiveTab } = useHeader()
 
   const { ref } = useInView({
-    threshold: 1,
+    threshold: 0.5,
     onChange(inView) {
       if (!inView) return
       setActiveTab("pricing")

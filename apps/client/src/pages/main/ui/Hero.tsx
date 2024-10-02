@@ -2,20 +2,28 @@ import { SignInButton } from "@clerk/clerk-react"
 import { useInView } from "react-intersection-observer"
 
 import { Button } from "~/shared/ui-kit/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/shared/ui-kit/dialog"
 import { Container } from "~/shared/ui/Container"
 import { Heading, Lead } from "~/shared/ui/Typography"
+import { useHeader } from "~/widgets/header"
 import HeroPersonImage from "~/assets/hero-person.png"
 import PlayVideoIcon from "~/assets/play-video-icon.svg"
 import DatabaseIcon from "~/assets/database-icon.svg"
 import CheckIcon from "~/assets/check-icon.svg"
 import MessageIcon from "~/assets/message-icon.svg"
-import { useHeader } from "~/widgets/header"
 
 export function Hero() {
   const { setActiveTab } = useHeader()
 
   const { ref } = useInView({
-    threshold: 1,
+    threshold: 0.5,
     onChange(inView) {
       if (!inView) return
       setActiveTab("home")
@@ -51,10 +59,28 @@ export function Hero() {
                 Try for free
               </Button>
             </SignInButton>
-            <button type="button" className="flex items-center gap-3">
-              <img src={PlayVideoIcon} className="h-10 w-10" alt="" aria-hidden />
-              View Demo
-            </button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button type="button" className="flex items-center gap-3">
+                  <img src={PlayVideoIcon} className="h-10 w-10" alt="" aria-hidden />
+                  View Demo
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[57.5rem]">
+                <DialogHeader>
+                  <DialogTitle hidden>Video about Impressify</DialogTitle>
+                  <DialogDescription hidden>Watch a video about what Impressify is</DialogDescription>
+                </DialogHeader>
+                <iframe
+                  className="aspect-video w-full"
+                  src="https://www.youtube.com/embed/nz43Vuy9_dE?si=0ByIiprljcCqH3jv"
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
         <div className="relative max-w-[25rem]">

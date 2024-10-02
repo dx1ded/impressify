@@ -43,7 +43,6 @@ import {
   withTransition,
   YjsProvider,
 } from "~/shared/model"
-import { Toaster } from "~/shared/ui-kit/sonner"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 import { Toolbar } from "~/widgets/toolbar"
 
@@ -222,7 +221,6 @@ function Presentation() {
             </div>
           </div>
         </HotkeysProvider>
-        <Toaster />
       </TooltipProvider>
     </YjsProvider>
   )

@@ -18,7 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/shared/ui-kit/dialog"
-import { Toaster } from "~/shared/ui-kit/sonner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
 import { ColorPicker } from "~/shared/ui/ColorPicker"
 import { Small } from "~/shared/ui/Typography"
@@ -57,7 +56,6 @@ export function ChangeSlideBackgroundDialog({ children }: { children: ReactNode 
 
   return (
     <Dialog>
-      <Toaster />
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>{children}</DialogTrigger>

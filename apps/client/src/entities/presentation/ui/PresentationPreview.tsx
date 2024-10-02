@@ -1,6 +1,6 @@
 import { PopoverClose } from "@radix-ui/react-popover"
 import { AppWindow, EllipsisVertical, PanelRightIcon, Trash2, Type, Users } from "lucide-react"
-import type { MouseEvent } from "react"
+import { type MouseEvent, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { type FindPresentationItem, formatDate } from "~/entities/presentation"
@@ -29,6 +29,7 @@ export function PresentationPreview({
   RenameDialog,
 }: PresentationPreviewProps) {
   const navigate = useNavigate()
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const slide = presentation.slides[0]
   const record = presentation.history.records[0]
@@ -62,7 +63,7 @@ export function PresentationPreview({
           {presentation.users.length > 1 && <Users className="text-primary h-4 w-4" />}
           {record && <p className="text-grayish text-xs font-medium">Opened {formatDate(record.lastOpened)}</p>}
           <div className="ml-auto [&>*]:pointer-events-auto">
-            <Popover>
+            <Popover open={isPopoverOpen} onOpenChange={(open) => setIsPopoverOpen(open)}>
               <PopoverTrigger asChild>
                 <button type="button" className={cn("flex h-4 w-4 items-center", view === "list" && "h-5 w-5")}>
                   <EllipsisVertical className="h-full w-full" />
@@ -71,7 +72,10 @@ export function PresentationPreview({
               <PopoverContent className="w-52 px-0 py-2">
                 {/* Didn't make `isEditor` true if user is creator because it would be too complex .filter function */}
                 {(isEditor || isCreator) && (
-                  <RenameDialog presentationId={presentation.id} presentationName={presentation.name}>
+                  <RenameDialog
+                    presentationId={presentation.id}
+                    presentationName={presentation.name}
+                    onClose={() => setIsPopoverOpen(false)}>
                     <button
                       type="button"
                       className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">
@@ -81,7 +85,7 @@ export function PresentationPreview({
                   </RenameDialog>
                 )}
                 {isCreator && (
-                  <DeleteAlert presentationId={presentation.id}>
+                  <DeleteAlert presentationId={presentation.id} onClose={() => setIsPopoverOpen(false)}>
                     <button
                       type="button"
                       className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100">
@@ -96,7 +100,7 @@ export function PresentationPreview({
                     className="flex w-full items-center gap-3 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gray-100"
                     onClick={() => window.open(`/presentation/${presentation.id}`, "_blank")}>
                     <AppWindow className="h-4 w-4" />
-                    Open in new window
+                    New window
                   </button>
                 </PopoverClose>
               </PopoverContent>

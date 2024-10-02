@@ -47,6 +47,7 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
       skip: !isDialogOpen,
     },
   )
+
   const [findUsers, findUsersResult] = useLazyQuery<FindUsersQuery, FindUsersQueryVariables>(FIND_USERS, {
     onCompleted(data) {
       setIsMenuOpen(!!data?.findUsers?.length)
@@ -55,8 +56,25 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
 
   const inputChangeHandler = useDebouncedCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
-    if (!value) return setIsMenuOpen(false)
-    await findUsers({ variables: { query: value, limit: USERS_LIMIT } })
+    if (value.length < 1) return setIsMenuOpen(false)
+
+    if (findUsersResult.data) {
+      // Use `fetchMore` to preserve the existing results and append new ones
+      await findUsersResult.fetchMore({
+        variables: { query: value, limit: USERS_LIMIT },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return previousResult
+          return {
+            findUsers: [...(fetchMoreResult?.findUsers || [])],
+          }
+        },
+      })
+    } else {
+      // If it's the first search, run the query normally
+      await findUsers({ variables: { query: value, limit: USERS_LIMIT } })
+    }
+
+    setIsMenuOpen(true)
   }, FIND_USERS_DEBOUNCE_TIME)
 
   const presentationData = getPresentationInfoResult.data?.getPresentation

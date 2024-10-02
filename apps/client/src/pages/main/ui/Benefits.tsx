@@ -1,16 +1,16 @@
 import { useInView } from "react-intersection-observer"
 
+import { useHeader } from "~/widgets/header"
 import { Checkmark } from "~/shared/ui/Checkmark"
 import { Container } from "~/shared/ui/Container"
 import { Heading, Lead } from "~/shared/ui/Typography"
 import LaptopPicture from "~/assets/laptop-picture.png"
-import { useHeader } from "~/widgets/header"
 
 export function Benefits() {
   const { setActiveTab } = useHeader()
 
   const { ref } = useInView({
-    threshold: 1,
+    threshold: 0.5,
     onChange(inView) {
       if (!inView) return
       setActiveTab("benefits")

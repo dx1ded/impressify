@@ -4,16 +4,16 @@ import { useInView } from "react-intersection-observer"
 import { Button } from "~/shared/ui-kit/button"
 import { Container } from "~/shared/ui/Container"
 import { Heading, Lead, Subheading } from "~/shared/ui/Typography"
+import { useHeader } from "~/widgets/header"
 import CollaborationIllustration from "~/assets/collaboration-illustration.svg"
 import StorageIllustration from "~/assets/storage-illustration.svg"
 import PerformanceIllustration from "~/assets/performance-illustration.svg"
-import { useHeader } from "~/widgets/header"
 
 export function Features() {
   const { setActiveTab } = useHeader()
 
   const { ref } = useInView({
-    threshold: 1,
+    threshold: 0.5,
     onChange(inView) {
       if (!inView) return
       setActiveTab("features")

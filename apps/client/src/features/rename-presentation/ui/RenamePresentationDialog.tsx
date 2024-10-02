@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ReactNode } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 import { RenamePresentation } from "~/features/rename-presentation"
@@ -23,18 +24,30 @@ function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
     children,
     presentationId,
     presentationName,
+    onClose,
   }: {
     children: ReactNode
     presentationId: string
     presentationName: string
+    onClose?: () => void
   }) {
     const { register, handleSubmit, formState } = useForm<z.infer<typeof PresentationNameSchema>>({
       resolver: zodResolver(PresentationNameSchema),
       values: { name: presentationName },
     })
 
+    const clickHandler = () => {
+      handleSubmit(({ name }) => renamePresentation(presentationId, name))()
+      toast("Name has been changed")
+      if (onClose) onClose()
+    }
+
+    const openChangeHandler = (open: boolean) => {
+      if (!open && onClose) onClose()
+    }
+
     return (
-      <Dialog>
+      <Dialog onOpenChange={openChangeHandler}>
         <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -49,12 +62,7 @@ function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
                 <Input {...register("name")} className="w-full" autoComplete="off" />
               </div>
             </PopoverError>
-            <Button
-              size="sm"
-              variant="blue"
-              className="h-full px-7"
-              // Extra callback because handleSubmit calls e.stopPropagation by default, and it doesn't close the popover
-              onClick={() => handleSubmit(({ name }) => renamePresentation(presentationId, name))()}>
+            <Button size="sm" variant="blue" className="h-full px-7" onClick={clickHandler}>
               Save
             </Button>
           </div>
