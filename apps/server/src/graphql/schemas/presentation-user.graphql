@@ -1,0 +1,21 @@
+type PresentationUser {
+  id: Int!
+  presentation: Presentation!
+  record: HistoryRecord
+  invitedAt: Date!
+  role: Role!
+  props: User!
+}
+
+enum Role {
+  CREATOR
+  EDITOR
+  READER
+}
+
+type Mutation {
+  invite(userId: ID!, presentationId: ID!, role: Role!): Result
+  changeUserRole(userId: ID!, presentationId: ID!, role: Role!): Result
+  kick(userId: ID!, presentationId: ID!): Result
+  sendHelpRequest(text: String!): Result
+}

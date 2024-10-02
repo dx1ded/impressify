@@ -1,11 +1,12 @@
 type User {
   id: ID!
   name: String!
+  email: String!
   profilePicUrl: String!
-  presentations: [Presentation!]!
-  records: [HistoryRecord!]!
 }
 
 type Query {
   user(id: ID!): User
+  # query -> name OR email
+  findUsers(query: String!, offset: Int, limit: Int): [User!]
 }

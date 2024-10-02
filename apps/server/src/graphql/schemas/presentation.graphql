@@ -2,19 +2,48 @@ type Presentation {
   id: ID!
   name: String!
   slides: [Slide!]!
-  users: [User!]!
+  users: [PresentationUser!]!
   history: History!
+  template: Template
+}
+
+type PresentationInfo {
+  name: String!
+  totalSlides: Int!
+  totalUsers: Int!
+  totalTextElements: Int!
+  totalImageElements: Int!
+  totalShapeElements: Int!
+}
+
+type PresentationUpdate {
+  type: PresentationUpdateType!,
+  presentation: Presentation!
+  # Needed for correct filtration on added / deleted PresentationUpdateTypes
+  userIds: [ID!]
+}
+
+enum PresentationUpdateType {
+  ADDED
+  CHANGED
+  DELETED
 }
 
 type Query {
   # @preview means you get only the first slide
-  findUserPresentations(preview: Boolean!, sortBy: String!): [Presentation!]
-  getPresentation(id: String!): Presentation
+  findUserPresentations(preview: Boolean!, sortBy: SortParam!): [Presentation!]
+  getPresentation(id: ID!): Presentation
   searchPresentations(name: String!): [Presentation!]
+  getPresentationInfo(id: ID!): PresentationInfo
 }
 
 type Mutation {
-  createPresentation(name: String!, template: String!): Presentation
-  renamePresentation(id: ID!, name: String!): Presentation
-  deletePresentation(id: ID!): Boolean
+  createPresentation(name: String!, templateId: Int): Presentation
+  renamePresentation(id: ID!, name: String!): Result
+  duplicatePresentation(id: ID!): Presentation
+  deletePresentation(id: ID!): Result
+}
+
+type Subscription {
+  presentationListUpdated: PresentationUpdate!
 }

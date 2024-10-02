@@ -3,8 +3,17 @@ import { type ComponentPropsWithoutRef, useRef } from "react"
 
 import { cn } from "~/shared/lib"
 
-export function Counter({ defaultValue, className, ...props }: ComponentPropsWithoutRef<"input">) {
+interface CounterProps extends Omit<ComponentPropsWithoutRef<"input">, "onChange"> {
+  onChange(value: number): void
+}
+
+export function Counter({ className, onChange, disabled, ...props }: CounterProps) {
   const counterRef = useRef<HTMLInputElement>(null)
+
+  const handleInputChange = () => {
+    if (!counterRef.current) return
+    onChange(+counterRef.current.value)
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -12,7 +21,11 @@ export function Counter({ defaultValue, className, ...props }: ComponentPropsWit
         type="button"
         className="text-md h-4 w-4"
         aria-label="Decrease counter"
-        onClick={() => counterRef.current?.stepDown.call(counterRef.current)}>
+        disabled={disabled}
+        onClick={() => {
+          counterRef.current?.stepDown.call(counterRef.current)
+          handleInputChange()
+        }}>
         <MinusIcon className="h-full w-full" />
       </button>
       <input
@@ -22,14 +35,19 @@ export function Counter({ defaultValue, className, ...props }: ComponentPropsWit
           "h-6 flex-1 rounded border border-gray-400 bg-transparent text-center text-xs font-semibold",
           className,
         )}
-        defaultValue={defaultValue}
+        disabled={disabled}
+        onInput={handleInputChange}
         {...props}
       />
       <button
         type="button"
         className="text-md h-4 w-4"
         aria-label="Increase counter"
-        onClick={() => counterRef.current?.stepUp.call(counterRef.current)}>
+        disabled={disabled}
+        onClick={() => {
+          counterRef.current?.stepUp.call(counterRef.current)
+          handleInputChange()
+        }}>
         <PlusIcon className="h-full w-full" />
       </button>
     </div>

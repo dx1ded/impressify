@@ -15,7 +15,7 @@ export function SearchItem({ id, name, lastOpened }: SearchItemProps) {
     <Link
       to={`/presentation/${id}`}
       className="flex items-center gap-2 p-3 hover:bg-gray-50 [&:not(:last-child)]:border-b">
-      <PanelRightIcon className="text-primary h-3 w-3 flex-shrink-0" />
+      <PanelRightIcon className="text-primary h-3.5 w-3.5 flex-shrink-0" />
       <Small className="truncate">{name}</Small>
       <span className="text-grayish ml-auto inline-block flex-shrink-0 text-xs font-medium">
         Opened {formatDate(lastOpened)}

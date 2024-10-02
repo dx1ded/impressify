@@ -5,19 +5,20 @@ import { Plans } from "~/pages/main/ui/Plans"
 import { Support } from "~/pages/main/ui/Support"
 import { Footer } from "~/widgets/footer"
 import { Header, HeaderProvider } from "~/widgets/header"
+import { withTransition } from "~/shared/model"
 
-export default function Main() {
+function Main() {
   return (
     <HeaderProvider>
-      <div>
-        <Header />
-        <Hero />
-        <Support />
-        <Features />
-        <Benefits />
-        <Plans />
-        <Footer />
-      </div>
+      <Header />
+      <Hero />
+      <Support />
+      <Features />
+      <Benefits />
+      <Plans />
+      <Footer />
     </HeaderProvider>
   )
 }
+
+export default withTransition(Main)

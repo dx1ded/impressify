@@ -1,4 +1,3 @@
 export * from "./constants"
-export * from "./slice"
-export * from "./fragments"
-export * from "./queries"
+export * from "./config"
+export * from "./__store__"

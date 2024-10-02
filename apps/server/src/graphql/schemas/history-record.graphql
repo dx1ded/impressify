@@ -1,10 +1,10 @@
 type HistoryRecord {
   id: Int!
-  user: User!
+  user: PresentationUser!
   history: History!
   lastOpened: Date!
 }
 
 type Mutation {
-  addRecord(presentationId: String!): HistoryRecord
+  addRecord(presentationId: ID!): HistoryRecord
 }

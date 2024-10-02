@@ -1,41 +1,66 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, type Relation, TableInheritance } from "typeorm"
+import { nanoid } from "nanoid"
+import { type Relation, Column, Entity, ManyToOne, PrimaryColumn, TableInheritance } from "typeorm"
 import { Slide } from "./Slide"
 import { Element as IElement } from "../graphql/__generated__"
 
+export type ElementConstructorProps = Omit<Element, "id"> & { id?: string }
+
 @Entity()
-@TableInheritance({ column: { type: "varchar", name: "type" } })
+@TableInheritance({ column: { type: "varchar", name: "__type__" } })
 export class Element implements IElement {
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryColumn()
+  id: string
 
-  @Column()
-  layer: number
+  @Column("float")
+  x: number
 
-  @Column()
-  x1: number
+  @Column("float")
+  y: number
 
-  @Column()
-  y1: number
+  @Column("float")
+  width: number
 
-  @Column()
-  x2: number
+  @Column("float")
+  height: number
 
-  @Column()
-  y2: number
-
-  @Column()
+  @Column("float")
   angle: number
+
+  @Column("float")
+  scaleX: number
+
+  @Column("float")
+  scaleY: number
+
+  @Column()
+  position: number
 
   @ManyToOne(() => Slide, (slide) => slide.elements, { onDelete: "CASCADE" })
   slide: Relation<Slide>
 
-  constructor({ layer, x1, y1, x2, y2, angle, slide }: Omit<Element, "id"> = {} as Omit<Element, "id">) {
-    this.layer = layer
-    this.x1 = x1
-    this.y1 = y1
-    this.x2 = x2
-    this.y2 = y2
+  constructor(
+    {
+      id,
+      x,
+      y,
+      width,
+      height,
+      angle,
+      scaleX,
+      scaleY,
+      position,
+      slide,
+    }: ElementConstructorProps = {} as ElementConstructorProps,
+  ) {
+    this.id = id || nanoid(8)
+    this.x = x
+    this.y = y
+    this.width = width
+    this.height = height
     this.angle = angle
+    this.scaleX = scaleX
+    this.scaleY = scaleY
+    this.position = position
     this.slide = slide
   }
 }

@@ -1,34 +1,42 @@
-import { useMutation } from "@apollo/client"
-import { useCallback } from "react"
+import { type MutationResult, useMutation } from "@apollo/client"
+import { type ReactNode, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
 import type { CreatePresentationMutation, CreatePresentationMutationVariables } from "~/__generated__/graphql"
+import { CREATE_PRESENTATION } from "~/features/create-presentation/api"
 import { DEFAULT_NAME } from "~/entities/presentation"
-import { CREATE_PRESENTATION } from "~/features/create-presentation/model"
-import type { ChildrenAsCallback } from "~/shared/lib"
+import { useAppDispatch, clear } from "~/shared/model"
 
-export function CreatePresentation({ children }: ChildrenAsCallback<[string]>) {
+interface CreatePresentationProps {
+  children(
+    createPresentation: (templateId?: number) => void,
+    result: MutationResult<CreatePresentationMutation>,
+  ): ReactNode
+}
+
+export function CreatePresentation({ children }: CreatePresentationProps) {
   const navigate = useNavigate()
-  const [sendCreatePresentation, { loading }] = useMutation<
-    CreatePresentationMutation,
-    CreatePresentationMutationVariables
-  >(CREATE_PRESENTATION)
+  const dispatch = useAppDispatch()
+  const [sendCreatePresentation, result] = useMutation<CreatePresentationMutation, CreatePresentationMutationVariables>(
+    CREATE_PRESENTATION,
+  )
 
   const createPresentation = useCallback(
-    async (template: string) => {
+    async (templateId?: number) => {
       const result = await sendCreatePresentation({
         variables: {
           name: DEFAULT_NAME,
-          template,
+          templateId,
         },
       })
 
       const data = result.data?.createPresentation
       if (!data) return
+      dispatch(clear())
       navigate(`/presentation/${data.id}`)
     },
-    [navigate, sendCreatePresentation],
+    [navigate, dispatch, sendCreatePresentation],
   )
 
-  return children(createPresentation, loading)
+  return children(createPresentation, result)
 }

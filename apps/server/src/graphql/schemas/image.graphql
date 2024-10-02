@@ -1,12 +1,14 @@
 type Image implements Element {
-  id: Int!
-  layer: Int!
-  x1: Int!
-  y1: Int!
-  x2: Int!
-  y2: Int!
-  angle: Int!
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
+  angle: Float!
+  scaleX: Float!
+  scaleY: Float!
   slide: Slide!
+  position: Int!
 
   imageUrl: String!
 }

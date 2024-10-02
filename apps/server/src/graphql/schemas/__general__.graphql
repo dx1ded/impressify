@@ -1,0 +1,13 @@
+enum Result {
+  NOT_FOUND
+  NOT_ALLOWED
+  ERROR
+  SUCCESS
+}
+
+enum SortParam {
+  NEWEST
+  OLDEST
+  A_Z
+  Z_A
+}

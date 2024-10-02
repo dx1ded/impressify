@@ -1,0 +1,22 @@
+{
+  "sourceRoot": "__libs__/codegen/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "graphql-codegen --config __libs__/codegen/codegen.ts"
+        ]
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "graphql-codegen --config __libs__/codegen/codegen.ts --watch"
+        ]
+      }
+    }
+  }
+}

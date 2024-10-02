@@ -1,8 +1,20 @@
-import { useQuery } from "@apollo/client"
-import { SortPresentations } from "features/sort-presentations"
+import { useQuery, useSubscription } from "@apollo/client"
 
-import type { FindUserPresentationsQuery, FindUserPresentationsQueryVariables } from "~/__generated__/graphql"
-import { FIND_USER_PRESENTATIONS, PresentationPreview, setRecentPresentations } from "~/entities/presentation"
+import {
+  type FindUserPresentationsQuery,
+  type FindUserPresentationsQueryVariables,
+  type PresentationListUpdatedSubscription,
+  type PresentationListUpdatedSubscriptionVariables,
+  PresentationUpdateType,
+  Role,
+} from "~/__generated__/graphql"
+import {
+  FIND_USER_PRESENTATIONS,
+  PRESENTATION_LIST_UPDATED,
+  PresentationPreview,
+  setRecentPresentations,
+} from "~/entities/presentation"
+import { SortPresentations } from "~/features/sort-presentations"
 import { DeletePresentationAlert } from "~/features/delete-presentation"
 import { RenamePresentationDialog } from "~/features/rename-presentation"
 import { cn } from "~/shared/lib"
@@ -12,8 +24,8 @@ import { Container } from "~/shared/ui/Container"
 import { Text } from "~/shared/ui/Typography"
 
 export function Recent() {
-  const { recentPresentations, view, sort } = useAppSelector((state) => state.presentation)
-  const { userId } = useAppSelector((state) => state.user)
+  const { items, view, sort } = useAppSelector((state) => state.recentPresentations)
+  const userId = useAppSelector((state) => state.user.id)
   const dispatch = useAppDispatch()
   const { loading } = useQuery<FindUserPresentationsQuery, FindUserPresentationsQueryVariables>(
     FIND_USER_PRESENTATIONS,
@@ -24,6 +36,28 @@ export function Recent() {
         const result = data.findUserPresentations
         if (!result) return
         dispatch(setRecentPresentations(result))
+      },
+    },
+  )
+
+  // Presentation list subscription
+  useSubscription<PresentationListUpdatedSubscription, PresentationListUpdatedSubscriptionVariables>(
+    PRESENTATION_LIST_UPDATED,
+    {
+      onData(options) {
+        const operation = options.data.data?.presentationListUpdated
+        if (!operation) return
+        let newItems = [...items]
+        if (operation.type === PresentationUpdateType.Added) {
+          newItems.unshift(operation.presentation)
+        } else if (operation.type === PresentationUpdateType.Changed) {
+          newItems = newItems.map((_presentation) =>
+            _presentation.id === operation.presentation.id ? operation.presentation : _presentation,
+          )
+        } else if (operation.type === PresentationUpdateType.Deleted) {
+          newItems = newItems.filter((_presentation) => _presentation.id !== operation.presentation.id)
+        }
+        dispatch(setRecentPresentations(newItems))
       },
     },
   )
@@ -49,13 +83,13 @@ export function Recent() {
               {(DeleteAlert) => (
                 <RenamePresentationDialog>
                   {(RenameDialog) =>
-                    recentPresentations
+                    items
                       // Map to get only records for current user (so presentation.history.records[0] is going to be the needed record)
                       .map((presentation) => ({
                         ...presentation,
                         history: {
                           ...presentation.history,
-                          records: presentation.history.records.filter((record) => record.user.id === userId),
+                          records: presentation.history.records.filter((record) => record.user.props.id === userId),
                         },
                       }))
                       .map((presentation) => (
@@ -63,6 +97,10 @@ export function Recent() {
                           key={presentation.id}
                           presentation={presentation}
                           view={view}
+                          isEditor={presentation.users.find((_user) => _user.props.id === userId)?.role === Role.Editor}
+                          isCreator={
+                            presentation.users.find((_user) => _user.props.id === userId)?.role === Role.Creator
+                          }
                           DeleteAlert={DeleteAlert}
                           RenameDialog={RenameDialog}
                         />

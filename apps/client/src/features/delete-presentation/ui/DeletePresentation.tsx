@@ -1,33 +1,44 @@
-import { useMutation } from "@apollo/client"
-import { useCallback } from "react"
+import { type MutationResult, useMutation } from "@apollo/client"
+import type { YPresentation } from "@server/hocuspocus/types"
+import * as Y from "yjs"
+import { type ReactNode, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
-import type { DeletePresentationMutation, DeletePresentationMutationVariables } from "~/__generated__/graphql"
-import { setRecentPresentations } from "~/entities/presentation"
-import { DELETE_PRESENTATION } from "~/features/delete-presentation/model"
-import type { ChildrenAsCallback } from "~/shared/lib"
-import { useAppDispatch, useAppSelector } from "~/shared/model"
+import {
+  type DeletePresentationMutation,
+  type DeletePresentationMutationVariables,
+  Result,
+} from "~/__generated__/graphql"
+import { DELETE_PRESENTATION } from "~/features/delete-presentation/api"
+import { useYjs } from "~/shared/model"
 
-export function DeletePresentation({ children }: ChildrenAsCallback<[string]>) {
+interface DeletePresentationProps {
+  children(deletePresentation: (id: string) => void, result: MutationResult<DeletePresentationMutation>): ReactNode
+}
+
+export function DeletePresentation({ children }: DeletePresentationProps) {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { recentPresentations } = useAppSelector((state) => state.presentation)
-  const [sendDeletePresentation, { loading }] = useMutation<
-    DeletePresentationMutation,
-    DeletePresentationMutationVariables
-  >(DELETE_PRESENTATION)
+  const [sendDeletePresentation, result] = useMutation<DeletePresentationMutation, DeletePresentationMutationVariables>(
+    DELETE_PRESENTATION,
+  )
+  const { provider, getMap } = useYjs()
 
   const deletePresentation = useCallback(
     async (id: string) => {
-      await sendDeletePresentation({
+      const request = await sendDeletePresentation({
         variables: { presentationId: id },
       })
 
-      dispatch(setRecentPresentations(recentPresentations.filter((presentation) => presentation.id !== id)))
-      navigate("/home")
+      // This happens only on presentation page where provider is initialized
+      if (provider && request.data?.deletePresentation === Result.Success) {
+        const yPresentation = getMap() as YPresentation
+        // Setting `users` as an empty array so other users will be disconnected because they're not in the array
+        yPresentation.set("users", new Y.Array())
+        navigate("/home")
+      }
     },
-    [dispatch, navigate, recentPresentations, sendDeletePresentation],
+    [navigate, provider, getMap, sendDeletePresentation],
   )
 
-  return children(deletePresentation, loading)
+  return children(deletePresentation, result)
 }

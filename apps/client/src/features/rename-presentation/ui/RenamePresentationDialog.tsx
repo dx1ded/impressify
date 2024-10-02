@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { PopoverClose } from "@radix-ui/react-popover"
 import type { ReactNode } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -17,6 +16,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "~/shared/ui-kit/dialog"
+import { PopoverError } from "~/shared/ui/PopoverError"
 
 function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
   return function RenameDialog({
@@ -43,21 +43,21 @@ function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
               Make changes to your presentation here. Click save when you&apos;re done.
             </DialogDescription>
           </DialogHeader>
-          <div className="!mt-4 flex items-center gap-2">
-            <Input {...register("name")} />
-            <PopoverClose asChild>
-              <Button
-                size="sm"
-                className="h-full px-7"
-                // Extra callback because handleSubmit calls e.stopPropagation by default, and it doesn't close the popover
-                onClick={() => handleSubmit((data) => renamePresentation(presentationId, data.name))()}>
-                Save
-              </Button>
-            </PopoverClose>
+          <div className="flex items-center gap-2">
+            <PopoverError error={formState.errors.name}>
+              <div className="flex-1">
+                <Input {...register("name")} className="w-full" autoComplete="off" />
+              </div>
+            </PopoverError>
+            <Button
+              size="sm"
+              variant="blue"
+              className="h-full px-7"
+              // Extra callback because handleSubmit calls e.stopPropagation by default, and it doesn't close the popover
+              onClick={() => handleSubmit(({ name }) => renamePresentation(presentationId, name))()}>
+              Save
+            </Button>
           </div>
-          {formState.errors.name && (
-            <small className="!mt-3 block font-medium text-red-400">{formState.errors.name.message}</small>
-          )}
         </DialogContent>
       </Dialog>
     )
@@ -66,6 +66,6 @@ function Wrapper(renamePresentation: FeatureCallback<[string, string]>) {
 
 export type IRenameDialog = ReturnType<typeof Wrapper>
 
-export function RenamePresentationDialog({ children }: { children: (alert: IRenameDialog) => ReactNode }) {
+export function RenamePresentationDialog({ children }: { children: (dialog: IRenameDialog) => ReactNode }) {
   return <RenamePresentation>{(renamePresentation) => children(Wrapper(renamePresentation))}</RenamePresentation>
 }

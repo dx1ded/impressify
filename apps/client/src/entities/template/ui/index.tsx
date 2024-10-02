@@ -1,14 +1,15 @@
 import { Small } from "~/shared/ui/Typography"
 
 interface TemplateProps {
-  thumbnailUrl: string
+  id?: number
   name: string
-  createPresentation(template: string): void | Promise<void>
+  thumbnailUrl: string
+  createPresentation(templateId?: number): void | Promise<void>
 }
 
-export function Template({ thumbnailUrl, name, createPresentation }: TemplateProps) {
+export function Template({ id, name, thumbnailUrl, createPresentation }: TemplateProps) {
   return (
-    <button type="button" className="text-left" onClick={() => createPresentation(name)}>
+    <button type="button" className="text-left" onClick={() => createPresentation(id)}>
       <img src={thumbnailUrl} className="mb-2 rounded-lg" alt="Template thumbnail" />
       <Small as="span">{name}</Small>
     </button>

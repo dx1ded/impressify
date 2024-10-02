@@ -1,0 +1,11 @@
+type Template {
+  id: Int!
+  name: String!
+  defaultBg: String!
+  defaultThumbnailUrl: String!
+  presentation: Presentation!
+}
+
+type Query {
+  findTemplates(offset: Int, limit: Int): [Template!]
+}

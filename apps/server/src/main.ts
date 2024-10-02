@@ -1,41 +1,45 @@
 import "dotenv/config"
-import { createServer, type Server } from "node:http"
-import Fastify from "fastify"
-import { WebSocketServer } from "ws"
-import { useServer } from "graphql-ws/lib/use/ws"
-import { PubSub } from "graphql-subscriptions"
-import cors from "@fastify/cors"
 import { ApolloServer } from "@apollo/server"
-import { createClerkClient } from "@clerk/backend"
-import fastifyApollo, { type ApolloFastifyContextFunction, fastifyApolloDrainPlugin } from "@as-integrations/fastify"
+import { cert, initializeApp, type ServiceAccount } from "firebase-admin/app"
+import { useServer } from "graphql-ws/lib/use/ws"
+import fastifyApollo, { fastifyApolloDrainPlugin } from "@as-integrations/fastify"
+import Fastify from "fastify"
+import cors from "@fastify/cors"
+import ws from "@fastify/websocket"
+import { WebSocketServer } from "ws"
 
 import { app } from "./app"
-import { schema, type ApolloContext } from "./graphql"
+import { type ApolloContext, schema, getContext } from "./graphql"
+import firebaseCredentials from "./impressify-26983-firebase-adminsdk-26c7d-c529d5e383"
 
 const host = process.env.HOST ?? "localhost"
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
+const wssPort = process.env.WSS_PORT ? Number(process.env.WSS_PORT) : 3001
+// 8 MiB limit
+const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
 
 ;(async function () {
-  let httpServer: Server
   const fastify = Fastify({
     logger: false,
-    serverFactory: (handler) => {
-      httpServer = createServer((req, res) => {
-        handler(req, res)
-      })
-
-      return httpServer
-    },
+    bodyLimit: FASTIFY_BODY_LIMIT,
   })
+
+  // Initializing firebase app
+  initializeApp({ credential: cert(firebaseCredentials as ServiceAccount) })
 
   const wsServer = new WebSocketServer({
-    server: httpServer,
-    path: "/graphql",
+    port: wssPort,
+    path: "/graphql/subscriptions",
   })
 
-  const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET })
+  const serverCleanup = useServer(
+    { schema, context: (ctx) => getContext(ctx.connectionParams?.authorization as string | undefined) },
+    wsServer,
+  )
+
   const apollo = new ApolloServer<ApolloContext>({
     schema,
+    // Plugin to shutdown the HTTP / Fastify server
     plugins: [
       // Plugin to shutdown the HTTP / Fastify server
       fastifyApolloDrainPlugin(fastify),
@@ -44,7 +48,7 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000
         async serverWillStart() {
           return {
             async drainServer() {
-              await useServer({ schema }, wsServer).dispose()
+              await serverCleanup.dispose()
             },
           }
         },
@@ -52,20 +56,17 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000
     ],
   })
 
-  const contextFn: ApolloFastifyContextFunction<ApolloContext> = async (request) => ({
-    clerk,
-    user: request.headers.authorization ? await clerk.users.getUser(request.headers.authorization) : undefined,
-    pubsub: new PubSub(),
-  })
-
   await apollo.start()
 
   fastify.register(cors)
-  fastify.register(fastifyApollo(apollo), { context: contextFn })
+  fastify.register(ws)
+  fastify.register(fastifyApollo(apollo), {
+    context: (request) => getContext(request.headers.authorization),
+  })
   fastify.register(app)
   fastify.listen({ port, host }, (err) => {
     if (err) {
-      fastify.log.error(err)
+      console.error(err)
       process.exit(1)
     } else {
       console.log(`Server ready at http://${host}:${port}`)

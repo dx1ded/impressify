@@ -2,6 +2,18 @@ type Slide {
   id: ID!
   elements: [Element!]!
   presentation: Presentation!
+  bg: String!
+  transition: Transition!
   thumbnailUrl: String!
   createdAt: Date!
+  # index in an array of slides
+  position: Int!
+}
+
+enum Transition {
+  NONE
+  FADE
+  SLIDE_FROM_LEFT
+  SLIDE_FROM_RIGHT
+  FLIP
 }

@@ -1,11 +1,16 @@
 import { Column, ChildEntity } from "typeorm"
-import { Element } from "./Element"
-import { Text as IText } from "../graphql/__generated__"
+import { Element, type ElementConstructorProps } from "./Element"
+import { Alignment, Text as IText } from "../graphql/__generated__"
+
+type TextConstructorProps = ElementConstructorProps & Text
 
 @ChildEntity()
 export class Text extends Element implements IText {
   @Column()
   text: string
+
+  @Column()
+  textColor: string
 
   @Column()
   fillColor: string
@@ -14,11 +19,11 @@ export class Text extends Element implements IText {
   borderColor: string
 
   @Column()
-  textColor: string
-
-  @Column()
   fontFamily: string
 
+  /**
+   * in pt
+   */
   @Column()
   fontSize: number
 
@@ -31,23 +36,27 @@ export class Text extends Element implements IText {
   @Column()
   underlined: boolean
 
-  @Column()
-  alignment: "left" | "center" | "right"
+  @Column({ type: "enum", enum: Alignment })
+  alignment: Alignment
 
-  @Column()
+  @Column("float")
   lineHeight: number
 
   constructor(
     {
-      layer,
-      x1,
-      y1,
-      x2,
-      y2,
+      id,
+      x,
+      y,
+      width,
+      height,
       angle,
+      scaleX,
+      scaleY,
+      position,
+      text,
+      textColor,
       fillColor,
       borderColor,
-      textColor,
       fontFamily,
       fontSize,
       bold,
@@ -56,20 +65,24 @@ export class Text extends Element implements IText {
       alignment,
       lineHeight,
       slide,
-    }: Omit<Element, "id"> & Text = {} as Omit<Element, "id"> & Text,
+    }: TextConstructorProps = {} as TextConstructorProps,
   ) {
     super({
-      layer,
-      x1,
-      y1,
-      x2,
-      y2,
+      id,
+      x,
+      y,
+      width,
+      height,
       angle,
+      scaleX,
+      scaleY,
+      position,
       slide,
     })
+    this.text = text
+    this.textColor = textColor
     this.fillColor = fillColor
     this.borderColor = borderColor
-    this.textColor = textColor
     this.fontFamily = fontFamily
     this.fontSize = fontSize
     this.bold = bold

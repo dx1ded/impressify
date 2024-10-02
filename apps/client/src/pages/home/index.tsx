@@ -1,8 +1,9 @@
 import { Header } from "~/pages/home/ui/Header"
 import { CreateNew } from "~/pages/home/ui/CreateNew"
 import { Recent } from "~/pages/home/ui/Recent"
+import { withTransition } from "~/shared/model"
 
-export default function Home() {
+function Home() {
   return (
     <div>
       <Header />
@@ -11,3 +12,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default withTransition(Home)

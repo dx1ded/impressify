@@ -1,4 +1,3 @@
-import { PopoverClose } from "@radix-ui/react-popover"
 import type { ReactNode } from "react"
 
 import { DeletePresentation } from "~/features/delete-presentation"
@@ -14,9 +13,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/shared/ui-kit/alert-dialog"
+import { buttonVariants } from "~/shared/ui-kit/button"
 
 function Wrapper(deletePresentation: FeatureCallback<[string]>) {
-  return function DeleteAlert({ children, presentationId }: { children: ReactNode; presentationId: string }) {
+  return function DeleteAlert({
+    children,
+    presentationId,
+    // `beforeHandler` is a function which gets called before delete button handler
+    beforeHandler,
+  }: {
+    children: ReactNode
+    presentationId: string
+    beforeHandler?: () => void
+  }) {
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -24,17 +33,20 @@ function Wrapper(deletePresentation: FeatureCallback<[string]>) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your presentation and remove your data from our
+              This action cannot be undone. This will permanently delete your presentation and remove the data from our
               servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <PopoverClose asChild>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-            </PopoverClose>
-            <PopoverClose asChild>
-              <AlertDialogAction onClick={() => deletePresentation(presentationId)}>Delete</AlertDialogAction>
-            </PopoverClose>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={buttonVariants({ variant: "blue" })}
+              onClick={() => {
+                if (beforeHandler) beforeHandler()
+                deletePresentation(presentationId)
+              }}>
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

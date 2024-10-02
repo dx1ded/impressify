@@ -46,18 +46,6 @@
           "buildTarget": "server:build:production"
         }
       }
-    },
-    "serve-graphql-types": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "graphql-codegen --watch"
-      }
-    },
-    "build-graphql-types": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "graphql-codegen"
-      }
     }
   }
 }

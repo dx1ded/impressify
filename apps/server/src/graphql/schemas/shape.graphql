@@ -1,17 +1,28 @@
 type Shape implements Element {
-  id: Int!
-  layer: Int!
-  x1: Int!
-  y1: Int!
-  x2: Int!
-  y2: Int!
-  angle: Int!
+  id: ID!
+  x: Float!
+  y: Float!
+  width: Float!
+  height: Float!
+  angle: Float!
+  scaleX: Float!
+  scaleY: Float!
   slide: Slide!
+  position: Int!
 
+  type: ShapeType!
   fillColor: String!
   strokeColor: String!
   strokeWidth: Int!
-  # "1/1", "1/2", etc, OR null (meaning no aspectRatio)
-  aspectRatio: String
-  points: [[Int!]!]!
+  # if true - 200x200 (for example), if false - any numbers (for example, 12x521)
+  proportional: Boolean!
+}
+
+enum ShapeType {
+  RECTANGLE
+  SQUARE
+  LINE
+  CIRCLE
+  ARROW
+  STAR
 }
