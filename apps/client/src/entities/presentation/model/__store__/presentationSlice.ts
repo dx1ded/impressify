@@ -49,6 +49,7 @@ const initialState: PresentationState = {
     name: "",
     slides: [],
     users: [],
+    template: undefined,
   },
   copiedElement: null,
   // currentSlide is an index
@@ -150,8 +151,9 @@ const presentationSlice = createSlice({
 })
 
 export const addSlide = () => (dispatch: AppDispatch, getState: () => AppStore) => {
-  const newSlide = getSlideConfig()
-  const newSlides = [...getState().presentation.presentation.slides, newSlide]
+  const { presentation } = getState().presentation
+  const newSlide = getSlideConfig(presentation.template)
+  const newSlides = [...presentation.slides, newSlide]
   dispatch(setSlides(newSlides))
   dispatch(switchCurrentSlide(newSlides.length - 1))
   return newSlide
@@ -272,10 +274,13 @@ export const editElement =
 
 export const deleteElement = () => (dispatch: AppDispatch, getState: () => AppStore) => {
   const state = getState()
+  const { selectedId } = state.presentation
+  if (selectedId === NOT_SELECTED) return
   const slide = state.presentation.presentation.slides[state.presentation.currentSlide]
-  const index = slide.elements.findIndex((element) => element.id === state.presentation.selectedId)
+  const index = slide.elements.findIndex((element) => element.id === selectedId)
+  if (index === -1) return
   dispatch(addHistoryRecord({ type: "ADD", element: slide.elements[index], position: index }))
-  dispatch(setElements(slide.elements.filter((element) => element.id !== state.presentation.selectedId)))
+  dispatch(setElements(slide.elements.filter((element) => element.id !== selectedId)))
 
   // Resetting toolbar
   if (!state.presentation.isCreating) {

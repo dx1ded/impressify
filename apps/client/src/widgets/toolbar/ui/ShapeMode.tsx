@@ -32,13 +32,13 @@ export function ShapeMode({ isActive }: ModeProps) {
       ?.get(currentSlide)
       ?.get("elements")
       ?.toArray()
-      .find((_element) => _element.get("id") === selectedId)!
+      .find((_element) => _element.get("id") === selectedId)
 
     Object.keys(props).forEach((key) => {
       const typedKey = key as keyof ShapeProps
       const typedValue = props[typedKey]
       if (!typedValue) return
-      element.set(typedKey, typedValue)
+      element?.set(typedKey, typedValue)
     })
   }
 

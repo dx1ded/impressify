@@ -1,54 +1,46 @@
-import { Template } from "~/entities/template"
+import { useQuery } from "@apollo/client"
+
+import type { FindTemplatesQuery, FindTemplatesQueryVariables } from "~/__generated__/graphql"
+import { Template, FIND_TEMPLATES } from "~/entities/template"
 import { CreatePresentation } from "~/features/create-presentation"
+import { Skeleton } from "~/shared/ui-kit/skeleton"
 import { Loader } from "~/shared/ui/Loader"
 
-const mock = [
-  {
-    thumbnailUrl: "https://ssl.gstatic.com/docs/templates/thumbnails/slides-blank-googlecolors.png",
-    name: "Blank presentation",
-  },
-  {
-    thumbnailUrl:
-      "https://ssl.gstatic.com/docs/templates/thumbnails/1E6hdH0vSvl4KN-Qw-iY2PZ7Z7tbDtu8RCQdcPAgp4SY_400.png",
-    name: "Your big idea",
-  },
-  {
-    thumbnailUrl:
-      "https://ssl.gstatic.com/docs/templates/thumbnails/1WjVCubPisUNIvoZD0A2k1TPUlZ9lDu4vLq59TZVzR5c_400.png",
-    name: "Photo album",
-  },
-  {
-    thumbnailUrl:
-      "https://ssl.gstatic.com/docs/templates/thumbnails/10YVLN43w0YaMLEVXw7OtGGmSwJudiwuUc9KqFbVeEP0_400.png",
-    name: "Wedding",
-  },
-  {
-    thumbnailUrl:
-      "https://ssl.gstatic.com/docs/templates/thumbnails/1k6R5IbsAxOL3Q6QUE2UDBBvIhRHK5pk0w3nPnLznb1k_400.png",
-    name: "Portfolio",
-  },
-  {
-    thumbnailUrl:
-      "https://ssl.gstatic.com/docs/templates/thumbnails/1Fs7asoafAErq1gmelmNAfyeocErbVAndJ5Cv6DUtPmo_400_2.png",
-    name: "Lookbook",
-  },
-]
-
 export function Templates() {
+  const { data, loading } = useQuery<FindTemplatesQuery, FindTemplatesQueryVariables>(FIND_TEMPLATES)
+
   return (
     <div className="grid grid-cols-6 gap-4">
       <CreatePresentation>
-        {(createPresentation, { loading }) => (
+        {(createPresentation, { loading: createPresentationLoading }) => (
           <>
-            {loading && <Loader />}
-            {mock.map((template, i) => (
-              <Template
-                key={i}
-                thumbnailUrl={template.thumbnailUrl}
-                name={template.name}
-                createPresentation={createPresentation}
-              />
-            ))}
+            {/* Loader on the full page */}
+            {createPresentationLoading && <Loader />}
+            {/* Blank presentation */}
+            <Template
+              name="Blank presentation"
+              thumbnailUrl="https://ssl.gstatic.com/docs/templates/thumbnails/slides-blank-googlecolors.png"
+              createPresentation={createPresentation}
+            />
+            {loading ? (
+              <>
+                <Skeleton className="h-[7.375rem] bg-gray-200" />
+                <Skeleton className="h-[7.375rem] bg-gray-200" />
+                <Skeleton className="h-[7.375rem] bg-gray-200" />
+                <Skeleton className="h-[7.375rem] bg-gray-200" />
+                <Skeleton className="h-[7.375rem] bg-gray-200" />
+              </>
+            ) : (
+              data?.findTemplates?.map((template, i) => (
+                <Template
+                  key={i}
+                  id={template.id}
+                  name={template.name}
+                  thumbnailUrl={template.presentation.slides[0].thumbnailUrl}
+                  createPresentation={createPresentation}
+                />
+              ))
+            )}
           </>
         )}
       </CreatePresentation>

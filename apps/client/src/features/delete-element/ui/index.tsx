@@ -21,6 +21,7 @@ export function useDeleteElement() {
     const EDIT_SELECTED_ELEMENT_ID = generateEditElementId(selectedId)
     deleteDebounced(EDIT_SELECTED_ELEMENT_ID)
     const deleteIndex = dispatch(deleteElement())
+    if (!deleteIndex) return
     call(TAKE_SCREENSHOT_ID)
     getMap<YPresentation>().get("slides")?.get(currentSlide)?.get("elements")?.delete(deleteIndex)
   }

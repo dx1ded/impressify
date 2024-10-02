@@ -1,6 +1,7 @@
 import { withFilter } from "graphql-subscriptions"
 import _ from "lodash"
-import { ILike, In } from "typeorm"
+import { nanoid } from "nanoid"
+import { Brackets, ILike, In } from "typeorm"
 import type { ApolloContext } from ".."
 import {
   historyRepository,
@@ -8,6 +9,7 @@ import {
   presentationUserRepository,
   slideRepository,
   userRepository,
+  templateRepository,
 } from "../../database"
 import { History } from "../../entities/History"
 import { Image } from "../../entities/Image"
@@ -24,38 +26,51 @@ import {
   PresentationUpdateType,
   Result,
   Role,
+  SortParam,
 } from "../__generated__"
 import { EVENT } from "../pubsub"
 
 export default {
   Query: {
-    async findUserPresentations(_, __, { user }) {
+    async findUserPresentations(_, { sortBy }, { user }) {
       if (!user) return null
 
-      const sortBy = __.sortBy as "newest" | "oldest" | "a_z" | "z_a"
-      const _ids = await presentationRepository.find({
-        select: { id: true },
-        where: { users: { props: { id: user.id } } },
-      })
+      // return presentationRepository.find({
+      //   where: { users: { props: { id: user.id } } },
+      //   order: {
+      //     ...(sortBy === SortParam.Newest || sortBy === SortParam.Oldest
+      //       ? {
+      //           history: {
+      //             records: {
+      //               lastOpened: sortBy === SortParam.Newest ? "DESC" : "ASC",
+      //             },
+      //           },
+      //         }
+      //       : sortBy === SortParam.AZ || sortBy === SortParam.ZA
+      //         ? {
+      //             name: sortBy === SortParam.AZ ? "ASC" : "DESC",
+      //           }
+      //         : {}),
+      //   },
+      // })
 
-      return presentationRepository.find({
-        where: { id: In(_ids.map(({ id }) => id)) },
-        order: {
-          ...(sortBy === "newest" || sortBy === "oldest"
-            ? {
-                history: {
-                  records: {
-                    lastOpened: sortBy === "newest" ? "DESC" : "ASC",
-                  },
-                },
-              }
-            : sortBy === "a_z" || sortBy === "z_a"
-              ? {
-                  name: sortBy === "a_z" ? "ASC" : "DESC",
-                }
-              : {}),
-        },
-      })
+      return (
+        presentationRepository
+          .createQueryBuilder("presentation")
+          .innerJoin("presentation.users", "presentationUser")
+          .leftJoinAndSelect("presentation.history", "history")
+          .leftJoinAndSelect("history.records", "hr")
+          .leftJoinAndSelect("hr.user", "hrUser")
+          .where("presentationUser.propsId = :userId", { userId: user.id })
+          // .andWhere("hrUser.id = presentationUser.id OR hrUser.id IS NULL")
+          .orderBy(
+            sortBy === SortParam.Newest || sortBy === SortParam.Oldest
+              ? `COALESCE(hr.lastOpened, presentationUser.invitedAt)`
+              : "presentation.name",
+            sortBy === SortParam.Newest || sortBy === SortParam.AZ ? "DESC" : "ASC", // Newest and AZ order in descending, others in ascending
+          )
+          .getMany()
+      )
     },
     getPresentation(_, { id }, { user }) {
       if (!user) return null
@@ -109,18 +124,34 @@ export default {
     },
   },
   Mutation: {
-    async createPresentation(_, { name }, { user }) {
+    async createPresentation(_, { name, templateId }, { user }) {
       if (!user) return null
 
-      const currentUser = await userRepository.findOneBy({ id: user.id })
-      const presentation = new Presentation(name)
+      const template = await templateRepository.findOne({
+        relations: ["presentation", "presentation.slides", "presentation.slides.elements"],
+        where: { id: templateId === undefined ? -1 : templateId },
+      })
+      const presentation = new Presentation(name, template)
 
+      const currentUser = await userRepository.findOneBy({ id: user.id })
       presentation.users = [new PresentationUser(presentation, currentUser, Role.Creator)]
 
       const slide = new Slide({ presentation })
       const history = new History(presentation)
 
-      slide.elements = []
+      if (!template) {
+        slide.elements = []
+      } else {
+        slide.elements = template.presentation.slides[0].elements.map((element) => {
+          if (element instanceof Text) {
+            return new Text({ ...element, slide, id: nanoid() })
+          }
+          if (element instanceof Image) {
+            return new Image({ ...element, slide, id: nanoid() })
+          }
+          return new Shape({ ...element, slide, id: nanoid() })
+        })
+      }
       history.records = []
       presentation.slides = [slide]
       presentation.history = history
@@ -157,7 +188,7 @@ export default {
       if (!user) return null
 
       const presentation = await presentationRepository.findOne({
-        relations: ["slides", "slides.elements"],
+        relations: ["slides", "slides.elements", "template"],
         where: { id },
       })
 
@@ -165,7 +196,7 @@ export default {
       const newPresentation = new Presentation(presentation.name)
 
       const currentUser = await userRepository.findOneBy({ id: user.id })
-      newPresentation.users = [new PresentationUser(presentation, currentUser, Role.Creator)]
+      newPresentation.users = [new PresentationUser(newPresentation, currentUser, Role.Creator)]
 
       const history = new History(newPresentation)
       history.records = []
@@ -181,9 +212,12 @@ export default {
 
         newSlide.elements = slide.elements.map((element) => {
           const commonProps = {
-            ..._.pick(element, ["id", "x", "y", "width", "height", "angle", "scaleX", "scaleY", "position"]),
+            ..._.pick(element, ["x", "y", "width", "height", "angle", "scaleX", "scaleY", "position"]),
             slide: newSlide,
+            // Generating a new unique id
+            id: nanoid(),
           }
+
           if (element instanceof Text) {
             return new Text({
               ...commonProps,
@@ -215,6 +249,11 @@ export default {
         })
         return newSlide
       })
+
+      // Setting a template manually (not through the `Presentation` constructor because when creating a slide it will use template props, not the other that I also pass in
+      if (presentation.template) {
+        newPresentation.template = presentation.template
+      }
 
       return presentationRepository.save(newPresentation)
     },

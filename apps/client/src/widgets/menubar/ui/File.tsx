@@ -1,7 +1,7 @@
 import { DownloadIcon, Files, Info, PencilLine, SquarePlus, Trash2, UserPlus } from "lucide-react"
 import { shallowEqual } from "react-redux"
 
-import { DEFAULT_NAME, PresentationInfoDialog } from "~/entities/presentation"
+import { PresentationInfoDialog } from "~/entities/presentation"
 import { DownloadPresentation } from "~/features/download-presentation"
 import { DuplicatePresentation } from "~/features/duplicate-presentation"
 import { CreatePresentation } from "~/features/create-presentation"
@@ -55,7 +55,7 @@ export function File() {
                   onSelect={() => {
                     flushAll()
                     deleteAll()
-                    createPresentation(DEFAULT_NAME)
+                    createPresentation()
                   }}>
                   Presentation
                 </MenubarItem>

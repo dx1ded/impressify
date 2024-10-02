@@ -12,8 +12,8 @@ export function useAddSlide() {
   const { getMap, updateAwareness } = useYjs()
 
   return () => {
-    flush(TAKE_SCREENSHOT_ID)
     flushWithPattern(EDIT_ELEMENT_ID)
+    flush(TAKE_SCREENSHOT_ID)
     const newSlide = dispatch(addSlide())
     getMap<YPresentation>()
       .get("slides")

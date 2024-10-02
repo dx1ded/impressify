@@ -1,4 +1,13 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, type Relation } from "typeorm"
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  type Relation,
+} from "typeorm"
 import { User } from "./User"
 import { Presentation } from "./Presentation"
 import { HistoryRecord } from "./HistoryRecord"
@@ -18,6 +27,9 @@ export class PresentationUser implements IPresentationUser {
   @OneToOne(() => HistoryRecord, (record) => record.user, { cascade: true })
   @JoinColumn()
   record: Relation<HistoryRecord>
+
+  @CreateDateColumn()
+  invitedAt: Date
 
   @ManyToOne(() => User)
   props: Relation<User>

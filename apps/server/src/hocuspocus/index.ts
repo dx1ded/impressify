@@ -25,7 +25,7 @@ export default new Hocuspocus({
 
         const presentationId = documentName.replace("presentation/", "")
         const presentation = await presentationRepository.findOne({
-          relations: ["slides", "slides.elements", "users", "users.props"],
+          relations: ["slides", "slides.elements", "users", "users.props", "template"],
           where: { id: presentationId },
           order: {
             slides: {

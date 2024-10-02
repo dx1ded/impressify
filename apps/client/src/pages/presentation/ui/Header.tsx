@@ -4,13 +4,13 @@ import { memo } from "react"
 import { shallowEqual } from "react-redux"
 import { useDebouncedCallback } from "use-debounce"
 
-import { MAX_NAME_LENGTH } from "~/entities/presentation"
+import { MAX_NAME_LENGTH, NOT_SELECTED, setSelectedId } from "~/entities/presentation"
 import { SharePresentationDialog } from "~/features/share-presentation"
 import { Slideshow } from "~/features/slideshow"
 import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
 import { SavingIcon } from "~/pages/presentation/ui/SavingIcon"
 import { Menubar } from "~/widgets/menubar"
-import { useAppSelector, useYjs } from "~/shared/model"
+import { useAppDispatch, useAppSelector, useYjs } from "~/shared/model"
 import { Button } from "~/shared/ui-kit/button"
 import { Skeleton } from "~/shared/ui-kit/skeleton"
 import { Logo } from "~/shared/ui/Logo"
@@ -29,6 +29,7 @@ export const Header = memo(function Header() {
     }),
     shallowEqual,
   )
+  const dispatch = useAppDispatch()
   const { getMap } = useYjs()
 
   const debouncedChangeName = useDebouncedCallback((newName: string) => {
@@ -55,6 +56,7 @@ export const Header = memo(function Header() {
                 maxLength={MAX_NAME_LENGTH}
                 disabled={!isEditor}
                 onChange={(e) => debouncedChangeName(e.target.value)}
+                onFocus={() => dispatch(setSelectedId(NOT_SELECTED))}
               />
             )}
             <SavingIcon />

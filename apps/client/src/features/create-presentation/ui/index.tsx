@@ -9,7 +9,7 @@ import { useAppDispatch, clear } from "~/shared/model"
 
 interface CreatePresentationProps {
   children(
-    createPresentation: (template: string) => void,
+    createPresentation: (templateId?: number) => void,
     result: MutationResult<CreatePresentationMutation>,
   ): ReactNode
 }
@@ -22,11 +22,11 @@ export function CreatePresentation({ children }: CreatePresentationProps) {
   )
 
   const createPresentation = useCallback(
-    async (template: string) => {
+    async (templateId?: number) => {
       const result = await sendCreatePresentation({
         variables: {
           name: DEFAULT_NAME,
-          template,
+          templateId,
         },
       })
 

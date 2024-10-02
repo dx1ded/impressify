@@ -83,6 +83,12 @@ export function normalizePresentation(yPresentation: YPresentation): NormalizedY
         id: user.get("id"),
         role: user.get("role"),
       })),
+    template: yPresentation.get("template")
+      ? {
+          defaultBg: yPresentation.get("template").get("defaultBg"),
+          defaultThumbnailUrl: yPresentation.get("template").get("defaultThumbnailUrl"),
+        }
+      : undefined,
     slides: yPresentation.get("slides").map(
       (ySlide): NormalizedYSlide => ({
         id: ySlide.get("id"),

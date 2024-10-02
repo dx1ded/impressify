@@ -1,3 +1,4 @@
+import type { NormalizedYTemplate } from "@server/hocuspocus/types"
 import dayjs from "dayjs"
 import type { ImageConfig } from "konva/lib/shapes/Image"
 import { nanoid } from "nanoid"
@@ -129,12 +130,13 @@ export const getAnchors = (element: ElementProps) => {
   ]
 }
 
-export const getSlideConfig = (): SlideProps => ({
+export const getSlideConfig = (template?: NormalizedYTemplate): SlideProps => ({
   id: nanoid(8),
   elements: [],
-  bg: DEFAULT_BG_COLOR,
+  bg: template?.defaultBg || DEFAULT_BG_COLOR,
   transition: Transition.None,
   thumbnailUrl:
+    template?.defaultThumbnailUrl ||
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/erDEdIAAAAASUVORK5CYII=",
 })
 

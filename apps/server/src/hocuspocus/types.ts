@@ -24,6 +24,7 @@ export type WithHocuspocusContext<T> = Omit<T, "context"> & { context: Hocuspocu
 export type NormalizedYPresentation = Pick<Presentation, "id" | "name"> & {
   slides: NormalizedYSlide[]
   users: NormalizedYUser[]
+  template?: NormalizedYTemplate
 }
 
 export type NormalizedYSlide = Omit<Slide, "presentation" | "elements" | "position" | "createdAt"> & {
@@ -45,11 +46,17 @@ export type NormalizedYUser = Pick<PresentationUser, "role"> & {
   id: User["id"]
 }
 
+export type NormalizedYTemplate = {
+  defaultBg: string
+  defaultThumbnailUrl: string
+}
+
 export type YPresentation = TypedMap<
   Pick<Presentation, "id"> & {
     name: Y.Text
     slides: Y.Array<YSlide>
     users: Y.Array<YUser>
+    template?: YTemplate
     isSaving: boolean
   }
 >
@@ -82,6 +89,7 @@ export type YShape = TypedMap<
 >
 
 export type YUser = TypedMap<NormalizedYUser>
+export type YTemplate = TypedMap<NormalizedYTemplate>
 
 export type UserAwareness = {
   id: string

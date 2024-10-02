@@ -1,6 +1,6 @@
 import * as Y from "yjs"
 import type { Document } from "@hocuspocus/server"
-import type { YPresentation, YSlide, YElement, YUser } from "./types"
+import type { YPresentation, YSlide, YElement, YUser, YTemplate } from "./types"
 import { transformNormalizedToYUser } from "./transform"
 import type { Presentation } from "../entities/Presentation"
 import { Text } from "../entities/Text"
@@ -15,6 +15,13 @@ export function updateYDocument(document: Document, presentation: Presentation) 
   const yUsers = new Y.Array<YUser>()
   yUsers.push(presentation.users.map((user) => transformNormalizedToYUser({ id: user.props.id, role: user.role })))
   yMap.set("users", yUsers)
+
+  if (presentation.template) {
+    const yTemplate = new Y.Map() as YTemplate
+    yTemplate.set("defaultBg", presentation.template.defaultBg)
+    yTemplate.set("defaultThumbnailUrl", presentation.template.defaultThumbnailUrl)
+    yMap.set("template", yTemplate)
+  }
 
   const ySlides = new Y.Array<YSlide>()
   ySlides.push(

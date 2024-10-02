@@ -1,7 +1,7 @@
 import { gql } from "~/__generated__"
 
 export const FIND_USER_PRESENTATIONS = gql(`#graphql
-  query FindUserPresentations($preview: Boolean!, $sortBy: String!) {
+  query FindUserPresentations($preview: Boolean!, $sortBy: SortParam!) {
     findUserPresentations(preview: $preview, sortBy: $sortBy) {
       id
       name

@@ -1,18 +1,19 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
+import { SortParam } from "~/__generated__/graphql"
 import type { FindPresentationItem } from "~/entities/presentation"
-import type { SortTypes, ViewTypes } from "~/features/sort-presentations"
+import type { ViewTypes } from "~/features/sort-presentations"
 
 interface RecentPresentationsState {
   items: FindPresentationItem[]
   view: ViewTypes
-  sort: SortTypes
+  sort: SortParam
 }
 
 const initialState: RecentPresentationsState = {
   items: [],
   view: "grid",
-  sort: "newest",
+  sort: SortParam.Newest,
 }
 
 const recentPresentationsSlice = createSlice({
@@ -25,7 +26,7 @@ const recentPresentationsSlice = createSlice({
     setView: (state, { payload }: PayloadAction<ViewTypes>) => {
       state.view = payload
     },
-    setSort: (state, { payload }: PayloadAction<SortTypes>) => {
+    setSort: (state, { payload }: PayloadAction<SortParam>) => {
       state.sort = payload
     },
   },

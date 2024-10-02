@@ -4,6 +4,7 @@ type Presentation {
   slides: [Slide!]!
   users: [PresentationUser!]!
   history: History!
+  template: Template
 }
 
 type PresentationInfo {
@@ -30,14 +31,14 @@ enum PresentationUpdateType {
 
 type Query {
   # @preview means you get only the first slide
-  findUserPresentations(preview: Boolean!, sortBy: String!): [Presentation!]
+  findUserPresentations(preview: Boolean!, sortBy: SortParam!): [Presentation!]
   getPresentation(id: ID!): Presentation
   searchPresentations(name: String!): [Presentation!]
   getPresentationInfo(id: ID!): PresentationInfo
 }
 
 type Mutation {
-  createPresentation(name: String!, template: String!): Presentation
+  createPresentation(name: String!, templateId: Int): Presentation
   renamePresentation(id: ID!, name: String!): Presentation
   duplicatePresentation(id: ID!): Presentation
   deletePresentation(id: ID!): Result

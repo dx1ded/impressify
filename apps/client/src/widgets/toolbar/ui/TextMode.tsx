@@ -58,13 +58,13 @@ export function TextMode({ isActive }: ModeProps) {
       ?.get(currentSlide)
       ?.get("elements")
       ?.toArray()
-      .find((_element) => _element.get("id") === selectedId)!
+      .find((_element) => _element.get("id") === selectedId)
 
     Object.keys(props).forEach((key) => {
       const typedKey = key as keyof TextProps
       const typedValue = props[typedKey]
       if (typedValue === undefined) return
-      element.set(typedKey, typedValue)
+      element?.set(typedKey, typedValue)
     })
   }
 

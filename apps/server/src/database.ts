@@ -11,6 +11,7 @@ import { Image } from "./entities/Image"
 import { Shape } from "./entities/Shape"
 import { User } from "./entities/User"
 import { Document } from "./entities/Document"
+import { Template } from "./entities/Template"
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -31,6 +32,7 @@ export const historyRecordRepository = AppDataSource.getRepository(HistoryRecord
 export const slideRepository = AppDataSource.getRepository(Slide)
 export const elementRepository = AppDataSource.getRepository(Element) as Repository<Text | Image | Shape>
 export const documentRepository = AppDataSource.getRepository(Document)
+export const templateRepository = AppDataSource.getRepository(Template)
 export const textRepository = AppDataSource.getRepository(Text)
 export const imageRepository = AppDataSource.getRepository(Image)
 export const shapeRepository = AppDataSource.getRepository(Shape)

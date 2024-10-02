@@ -1,8 +1,9 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, type Relation } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn, type Relation } from "typeorm"
 import { nanoid } from "nanoid"
 import { PresentationUser } from "./PresentationUser"
 import { Slide } from "./Slide"
 import { History } from "./History"
+import { Template } from "./Template"
 import { Presentation as IPresentation } from "../graphql/__generated__"
 
 @Entity()
@@ -23,8 +24,14 @@ export class Presentation implements IPresentation {
   @JoinColumn()
   history: Relation<History>
 
-  constructor(name: string) {
+  @ManyToOne(() => Template, { nullable: true })
+  template: Relation<Template>
+
+  constructor(name: string, template?: Relation<Template>) {
     this.id = nanoid(6)
     this.name = name
+    if (template) {
+      this.template = template
+    }
   }
 }

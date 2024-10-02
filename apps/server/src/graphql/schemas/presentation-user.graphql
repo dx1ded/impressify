@@ -2,6 +2,7 @@ type PresentationUser {
   id: Int!
   presentation: Presentation!
   record: HistoryRecord
+  invitedAt: Date!
   role: Role!
   props: User!
 }

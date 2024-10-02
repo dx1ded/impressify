@@ -4,3 +4,10 @@ enum Result {
   ERROR
   SUCCESS
 }
+
+enum SortParam {
+  NEWEST
+  OLDEST
+  A_Z
+  Z_A
+}

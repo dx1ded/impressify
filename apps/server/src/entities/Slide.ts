@@ -1,10 +1,10 @@
 import { nanoid } from "nanoid"
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryColumn, type Relation } from "typeorm"
 import { Element } from "./Element"
-import { Image } from "./Image"
 import { Presentation } from "./Presentation"
-import { Shape } from "./Shape"
 import { Text } from "./Text"
+import { Shape } from "./Shape"
+import { Image } from "./Image"
 import { Slide as ISlide, Transition } from "../graphql/__generated__"
 
 type SlideConstructorType = { presentation: Relation<Presentation> } & Partial<
@@ -41,16 +41,33 @@ export class Slide implements ISlide {
   createdAt: Date
 
   constructor(
-    { id, presentation, bg, transition, thumbnailUrl, position }: SlideConstructorType = {} as SlideConstructorType,
+    {
+      id = nanoid(8),
+      presentation,
+      bg = "#ffffff",
+      transition = Transition.None,
+      thumbnailUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/erDEdIAAAAASUVORK5CYII=",
+      position = 0,
+    }: SlideConstructorType = {} as SlideConstructorType,
   ) {
-    this.id = id || nanoid(8)
+    this.id = id
     this.presentation = presentation
-    this.bg = bg || "#ffffff"
-    this.transition = transition || Transition.None
-    // Plain white background
-    this.thumbnailUrl =
-      thumbnailUrl ||
-      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/erDEdIAAAAASUVORK5CYII="
-    this.position = position || 0
+    this.position = position
+
+    const template = presentation?.template
+
+    if (template) {
+      const { slides } = template.presentation
+      const _slide = slides[0] // Assuming there's always at least one slide
+
+      this.bg = _slide.bg
+      this.transition = _slide.transition
+      this.thumbnailUrl = _slide.thumbnailUrl
+    } else {
+      // Use default or passed-in values if no template
+      this.bg = bg
+      this.transition = transition
+      this.thumbnailUrl = thumbnailUrl
+    }
   }
 }
