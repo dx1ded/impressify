@@ -21,7 +21,10 @@ export function useDuplicateElement() {
   return () => {
     flush(generateEditElementId(selectedId))
     const newElement = dispatch(duplicateElement())
+
+    if (!newElement) return
     call(TAKE_SCREENSHOT_ID)
+
     getMap<YPresentation>()
       .get("slides")
       ?.get(currentSlide)

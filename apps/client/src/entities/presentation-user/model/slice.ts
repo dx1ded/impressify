@@ -3,13 +3,13 @@ import type { UserAwareness } from "@server/hocuspocus/types"
 
 import { clear } from "~/shared/model"
 
-interface UserState {
+interface PresentationUserState {
   connectedUsers: UserAwareness[]
   isEditor: boolean
   isCreator: boolean
 }
 
-const initialState: UserState = {
+const initialState: PresentationUserState = {
   // Users that are connected to presentation (including yourself)
   connectedUsers: [],
   // Is user editor (if not they can't modify presentation)
@@ -18,7 +18,7 @@ const initialState: UserState = {
   isCreator: false,
 }
 
-const userSlice = createSlice({
+const presentationUserSlice = createSlice({
   name: "presentationUser",
   initialState,
   reducers: {
@@ -41,5 +41,5 @@ const userSlice = createSlice({
   },
 })
 
-export const { setConnectedUsers, setIsEditor, setIsCreator } = userSlice.actions
-export const presentationUserReducer = userSlice.reducer
+export const { setConnectedUsers, setIsEditor, setIsCreator } = presentationUserSlice.actions
+export const presentationUserReducer = presentationUserSlice.reducer

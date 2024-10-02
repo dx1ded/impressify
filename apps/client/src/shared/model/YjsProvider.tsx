@@ -1,4 +1,5 @@
 import { HocuspocusProvider } from "@hocuspocus/provider"
+import { useLocation } from "react-router-dom"
 import type { Doc } from "yjs"
 import {
   type ReactNode,
@@ -57,6 +58,7 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
   onAuthenticated,
   setInitialAwareness,
 }) {
+  const location = useLocation()
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
   const isInitialized = useRef(false)
 
@@ -109,17 +111,18 @@ export const YjsProvider = memo<YjsProviderProps>(function YjsProvider({
     onAuthenticated,
     stableOnAwarenessChange,
     stableOnUpdate,
+    location.pathname,
   ])
 
   useEffect(
     () => () => {
-      if (provider) {
+      if (provider && provider.isConnected) {
         provider.destroy()
         isInitialized.current = false
         setProvider(null)
       }
     },
-    [provider],
+    [provider, location.pathname],
   )
 
   const getMap = useCallback(

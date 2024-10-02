@@ -16,7 +16,13 @@ import { Fragment } from "react"
 import { shallowEqual } from "react-redux"
 
 import { Alignment } from "~/__generated__/graphql"
-import { type TextProps, updateTextProps, DEFAULT_FONT_LIST, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import {
+  type TextProps,
+  updateTextProps,
+  DEFAULT_FONT_LIST,
+  TAKE_SCREENSHOT_ID,
+  NOT_SELECTED,
+} from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 import {
@@ -51,6 +57,8 @@ export function TextMode({ isActive }: ModeProps) {
 
   const applyTextChanges = (props: Partial<TextProps>) => {
     dispatch(updateTextProps(props))
+
+    if (selectedId === NOT_SELECTED) return
     call(TAKE_SCREENSHOT_ID)
 
     const element = getMap<YPresentation>()

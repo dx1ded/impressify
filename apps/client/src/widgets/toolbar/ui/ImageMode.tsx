@@ -4,7 +4,7 @@ import type { ChangeEvent } from "react"
 import { shallowEqual } from "react-redux"
 import { toast } from "sonner"
 
-import { updateImageProps, TAKE_SCREENSHOT_ID, MAX_IMAGE_SIZE } from "~/entities/presentation"
+import { updateImageProps, TAKE_SCREENSHOT_ID, MAX_IMAGE_SIZE, NOT_SELECTED } from "~/entities/presentation"
 import { Toaster } from "~/shared/ui-kit/sonner"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { convertFileToDataUrl, uploadImageToStorage } from "~/shared/lib"
@@ -35,7 +35,10 @@ export function ImageMode({ isActive }: ModeProps) {
     const uploadedImageUrl = await uploadImageToStorage(dataUrl, `${presentationId}/${currentSlide}/${selectedId}`)
 
     dispatch(updateImageProps({ imageUrl: uploadedImageUrl }))
+
+    if (selectedId === NOT_SELECTED) return
     call(TAKE_SCREENSHOT_ID)
+
     getMap<YPresentation>()
       .get("slides")
       ?.get(currentSlide)

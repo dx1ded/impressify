@@ -315,6 +315,7 @@ export const duplicateElement = () => (dispatch: AppDispatch, getState: () => Ap
   const state = getState()
   const slide = state.presentation.presentation.slides[state.presentation.currentSlide]
   const element = slide.elements.find((element) => element.id === state.presentation.selectedId)!
+  if (!element) return
   const newElement = {
     ...element,
     // Again, we should always update ids to avoid collision

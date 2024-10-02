@@ -76,7 +76,7 @@ export type Mutation = {
   duplicatePresentation?: Maybe<Presentation>;
   invite?: Maybe<Result>;
   kick?: Maybe<Result>;
-  renamePresentation?: Maybe<Presentation>;
+  renamePresentation?: Maybe<Result>;
   sendHelpRequest?: Maybe<Result>;
 };
 
@@ -529,7 +529,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   duplicatePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationDuplicatePresentationArgs, 'id'>>;
   invite?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationInviteArgs, 'presentationId' | 'role' | 'userId'>>;
   kick?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationKickArgs, 'presentationId' | 'userId'>>;
-  renamePresentation?: Resolver<Maybe<ResolversTypes['Presentation']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
+  renamePresentation?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationRenamePresentationArgs, 'id' | 'name'>>;
   sendHelpRequest?: Resolver<Maybe<ResolversTypes['Result']>, ParentType, ContextType, RequireFields<MutationSendHelpRequestArgs, 'text'>>;
 }>;
 

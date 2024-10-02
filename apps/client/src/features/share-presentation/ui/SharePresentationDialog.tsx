@@ -90,6 +90,7 @@ export function SharePresentationDialog({ presentationId, children }: SharePrese
               (user) => !presentationData?.users.some((_user) => _user.props.id === user.id),
             )}
             isMenuOpen={isMenuOpen}
+            setIsMenuOpen={setIsMenuOpen}
           />
         </div>
         <div className="mb-2">

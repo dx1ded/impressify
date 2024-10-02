@@ -1,5 +1,6 @@
 import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu"
 import { AnimatePresence, motion } from "framer-motion"
+import type { Dispatch, SetStateAction } from "react"
 
 import { type FindUsersQuery, type Presentation, Role } from "~/__generated__/graphql"
 import { useInviteUser } from "~/features/share-presentation/model"
@@ -10,9 +11,10 @@ interface UserListProps {
   presentationId: Presentation["id"]
   users: FindUsersQuery["findUsers"]
   isMenuOpen: boolean
+  setIsMenuOpen: Dispatch<SetStateAction<boolean>>
 }
 
-export function SearchList({ presentationId, users, isMenuOpen }: UserListProps) {
+export function SearchList({ presentationId, users, isMenuOpen, setIsMenuOpen }: UserListProps) {
   const inviteUser = useInviteUser()
 
   return (
@@ -41,24 +43,26 @@ export function SearchList({ presentationId, users, isMenuOpen }: UserListProps)
                 <Text className="mb-0.5 font-medium">Make as</Text>
                 <DropdownMenuItem
                   className="cursor-pointer p-1 text-gray-600 hover:bg-gray-100"
-                  onSelect={() =>
+                  onSelect={() => {
                     inviteUser({
                       user,
                       presentationId,
                       role: Role.Reader,
                     })
-                  }>
+                    setIsMenuOpen(false)
+                  }}>
                   Reader
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="cursor-pointer p-1 text-gray-600 hover:bg-gray-100"
-                  onSelect={() =>
+                  onSelect={() => {
                     inviteUser({
                       user,
                       presentationId,
                       role: Role.Editor,
                     })
-                  }>
+                    setIsMenuOpen(false)
+                  }}>
                   Editor
                 </DropdownMenuItem>
                 <DropdownMenuArrow fill="#dee5ee" width={12} height={6} />

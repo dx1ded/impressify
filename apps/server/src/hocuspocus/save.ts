@@ -23,6 +23,19 @@ export async function save(document: Y.Doc, storage: Storage, pubsub: PubSub) {
   })
   if (!presentation) return
 
+  // Publishing updates to subscription (if applicable)
+  if (
+    presentation.name !== normalizedPresentation.name ||
+    presentation.slides[0].thumbnailUrl !== normalizedPresentation.slides[0].thumbnailUrl
+  ) {
+    await pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+      presentationListUpdated: {
+        type: PresentationUpdateType.Changed,
+        presentation,
+      } as PresentationUpdate,
+    })
+  }
+
   presentation.name = normalizedPresentation.name
   presentation.slides = await Promise.all(
     normalizedPresentation.slides.map(async ({ elements, ...normalizedSlide }, slideIndex) => {
@@ -54,25 +67,8 @@ export async function save(document: Y.Doc, storage: Storage, pubsub: PubSub) {
     }),
   )
 
-  // Checking if presentation still exists because it may have been deleted while executing the function
-  const presentationStillExists = await presentationRepository.existsBy({ id: presentation.id })
-  if (presentationStillExists) {
-    // Publishing updates to users (if applicable)
-    if (
-      presentation.name !== yPresentation.get("name").toJSON() ||
-      presentation.slides[0].thumbnailUrl !== yPresentation.get("slides").get(0).get("thumbnailUrl")
-    ) {
-      await pubsub.publish(EVENT.PRESENTATION_UPDATED, {
-        presentationListUpdated: {
-          type: PresentationUpdateType.Changed,
-          presentation,
-        } as PresentationUpdate,
-      })
-    }
-
-    // Saving presentation
-    await presentationRepository.save(presentation)
-  }
+  // Saving presentation
+  await presentationRepository.save(presentation)
 
   yPresentation.set("isSaving", false)
 }

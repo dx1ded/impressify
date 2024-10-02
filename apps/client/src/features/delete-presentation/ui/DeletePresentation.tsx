@@ -21,7 +21,7 @@ export function DeletePresentation({ children }: DeletePresentationProps) {
   const [sendDeletePresentation, result] = useMutation<DeletePresentationMutation, DeletePresentationMutationVariables>(
     DELETE_PRESENTATION,
   )
-  const { getMap } = useYjs()
+  const { provider, getMap } = useYjs()
 
   const deletePresentation = useCallback(
     async (id: string) => {
@@ -29,14 +29,15 @@ export function DeletePresentation({ children }: DeletePresentationProps) {
         variables: { presentationId: id },
       })
 
-      if (request.data?.deletePresentation === Result.Success) {
+      // This happens only on presentation page where provider is initialized
+      if (provider && request.data?.deletePresentation === Result.Success) {
         const yPresentation = getMap() as YPresentation
         // Setting `users` as an empty array so other users will be disconnected because they're not in the array
         yPresentation.set("users", new Y.Array())
         navigate("/home")
       }
     },
-    [navigate, getMap, sendDeletePresentation],
+    [navigate, provider, getMap, sendDeletePresentation],
   )
 
   return children(deletePresentation, result)

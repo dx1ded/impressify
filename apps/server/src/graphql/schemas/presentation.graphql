@@ -39,7 +39,7 @@ type Query {
 
 type Mutation {
   createPresentation(name: String!, templateId: Int): Presentation
-  renamePresentation(id: ID!, name: String!): Presentation
+  renamePresentation(id: ID!, name: String!): Result
   duplicatePresentation(id: ID!): Presentation
   deletePresentation(id: ID!): Result
 }

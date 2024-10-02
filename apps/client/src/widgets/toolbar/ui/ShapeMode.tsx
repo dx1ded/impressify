@@ -2,7 +2,7 @@ import type { YPresentation } from "@server/hocuspocus/types"
 import { PaintBucketIcon, PencilIcon } from "lucide-react"
 import { shallowEqual } from "react-redux"
 
-import { type ShapeProps, updateShapeProps, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import { type ShapeProps, updateShapeProps, TAKE_SCREENSHOT_ID, NOT_SELECTED } from "~/entities/presentation"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/ui-kit/tooltip"
@@ -25,6 +25,8 @@ export function ShapeMode({ isActive }: ModeProps) {
 
   const applyShapeChanges = (props: Partial<ShapeProps>) => {
     dispatch(updateShapeProps(props))
+
+    if (selectedId === NOT_SELECTED) return
     call(TAKE_SCREENSHOT_ID)
 
     const element = getMap<YPresentation>()

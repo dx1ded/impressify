@@ -5,7 +5,7 @@ import { normalizePresentation } from "@server/hocuspocus/transform"
 import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
 import { useCallback, useEffect } from "react"
 import { shallowEqual } from "react-redux"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 import type * as Y from "yjs"
 
@@ -57,6 +57,7 @@ export default withTransition(function PresentationPage() {
 
 function Presentation() {
   const { id } = useParams<{ id: string }>()
+  const location = useLocation()
   const { user } = useUser()
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const { currentSlide, presentationName, userToken, isEditor } = useAppSelector(
@@ -76,7 +77,7 @@ function Presentation() {
     () => () => {
       dispatch(clear())
     },
-    [dispatch],
+    [dispatch, location.pathname],
   )
 
   // Using presentation subscription for changes that are done outside the yjs document (for example creator deleted presentation in /home page)
@@ -124,12 +125,15 @@ function Presentation() {
         // When slide got deleted
         if (savedCurrentSlideIndex === -1) {
           const deletedSlideIndex = slides.findIndex((_slide) => _slide.id === connectedUser.currentSlideId)
-          // If `deletedSlideIndex` was `0` or -1 (in case user deleted a bunch of slides really fast and debounced function didn't get it) we don't do anything
+          // If `deletedSlideIndex` was `0` or `-1` (in case user deleted a bunch of slides really fast and debounced function didn't get it) we don't do anything
           if (deletedSlideIndex > 0) {
             // We set the new `currentSlide` as previous one
             newIndex = deletedSlideIndex - 1
             // Using `switchCurrentSlide` so props (isCreating / selectedId, ...) reset
             dispatch(switchCurrentSlide(newIndex))
+          } else {
+            // If slide got deleted AND `deletedSlideIndex` is `0` we only set `newIndex` so awareness gets updated (no need to switch local slide because it's already in `0`)
+            newIndex = 0
           }
         }
         // When slide got moved

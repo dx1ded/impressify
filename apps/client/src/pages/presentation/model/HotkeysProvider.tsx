@@ -27,12 +27,12 @@ export const HotkeysProvider = memo<{ children: ReactNode }>(function HotkeyProv
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isSlideshow || !isEditor) return
+      if (isEditing || isSlideshow || !isEditor) return
 
       const key = e.key.toLowerCase()
       const isCtrlOrCmd = e.ctrlKey || e.metaKey
 
-      if (key === "backspace" && !isEditing) deleteElement()
+      if (key === "backspace") deleteElement()
       else if (isCtrlOrCmd && key === "z") undoHistory()
       else if (isCtrlOrCmd && key === "y") redoHistory()
       else if (isCtrlOrCmd && key === "c") copyElement()

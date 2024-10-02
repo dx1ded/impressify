@@ -22,7 +22,7 @@ export default {
       presentation.users.push(new PresentationUser(presentation, foundUser, role))
 
       await presentationRepository.save(presentation)
-      pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+      await pubsub.publish(EVENT.PRESENTATION_UPDATED, {
         presentationListUpdated: {
           type: PresentationUpdateType.Added,
           presentation,
@@ -45,7 +45,7 @@ export default {
       presentation.users = presentation.users.map((_user) => (_user.props.id === userId ? { ..._user, role } : _user))
 
       await presentationRepository.save(presentation)
-      pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+      await pubsub.publish(EVENT.PRESENTATION_UPDATED, {
         presentationListUpdated: {
           type: PresentationUpdateType.Changed,
           presentation,
@@ -75,7 +75,7 @@ export default {
       )
 
       await presentationRepository.save(presentation)
-      pubsub.publish(EVENT.PRESENTATION_UPDATED, {
+      await pubsub.publish(EVENT.PRESENTATION_UPDATED, {
         presentationListUpdated: {
           type: PresentationUpdateType.Deleted,
           presentation,

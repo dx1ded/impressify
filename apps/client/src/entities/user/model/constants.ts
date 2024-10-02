@@ -1,1 +1,1 @@
-export const DEFAULT_USER_NAME = "No Name"
+export const DEFAULT_USER_NAME = "null null"

@@ -1,7 +1,7 @@
 import { withFilter } from "graphql-subscriptions"
 import _ from "lodash"
 import { nanoid } from "nanoid"
-import { Brackets, ILike, In } from "typeorm"
+import { ILike } from "typeorm"
 import type { ApolloContext } from ".."
 import {
   historyRepository,
@@ -35,42 +35,23 @@ export default {
     async findUserPresentations(_, { sortBy }, { user }) {
       if (!user) return null
 
-      // return presentationRepository.find({
-      //   where: { users: { props: { id: user.id } } },
-      //   order: {
-      //     ...(sortBy === SortParam.Newest || sortBy === SortParam.Oldest
-      //       ? {
-      //           history: {
-      //             records: {
-      //               lastOpened: sortBy === SortParam.Newest ? "DESC" : "ASC",
-      //             },
-      //           },
-      //         }
-      //       : sortBy === SortParam.AZ || sortBy === SortParam.ZA
-      //         ? {
-      //             name: sortBy === SortParam.AZ ? "ASC" : "DESC",
-      //           }
-      //         : {}),
-      //   },
-      // })
-
-      return (
-        presentationRepository
-          .createQueryBuilder("presentation")
-          .innerJoin("presentation.users", "presentationUser")
-          .leftJoinAndSelect("presentation.history", "history")
-          .leftJoinAndSelect("history.records", "hr")
-          .leftJoinAndSelect("hr.user", "hrUser")
-          .where("presentationUser.propsId = :userId", { userId: user.id })
-          // .andWhere("hrUser.id = presentationUser.id OR hrUser.id IS NULL")
-          .orderBy(
-            sortBy === SortParam.Newest || sortBy === SortParam.Oldest
-              ? `COALESCE(hr.lastOpened, presentationUser.invitedAt)`
-              : "presentation.name",
-            sortBy === SortParam.Newest || sortBy === SortParam.AZ ? "DESC" : "ASC", // Newest and AZ order in descending, others in ascending
-          )
-          .getMany()
-      )
+      return presentationRepository
+        .createQueryBuilder("presentation")
+        .leftJoinAndSelect("presentation.history", "history")
+        .leftJoinAndSelect("history.records", "hr")
+        .leftJoinAndSelect(
+          "presentation.users",
+          "presentationUser",
+          "presentationUser.recordId = hr.id OR presentationUser.recordId IS NULL",
+        )
+        .where("presentationUser.propsId = :userId", { userId: user.id })
+        .orderBy(
+          sortBy === SortParam.Newest || sortBy === SortParam.Oldest
+            ? `COALESCE(hr.lastOpened, presentationUser.invitedAt)`
+            : "presentation.name",
+          sortBy === SortParam.Newest || sortBy === SortParam.AZ ? "DESC" : "ASC", // Newest and AZ order in descending, others in ascending
+        )
+        .getMany()
     },
     getPresentation(_, { id }, { user }) {
       if (!user) return null
@@ -79,13 +60,8 @@ export default {
     async searchPresentations(_, { name }, { user }) {
       if (!user) return null
 
-      const _ids = await presentationRepository.find({
-        select: { id: true },
-        where: { users: { props: { id: user.id } } },
-      })
-
       return presentationRepository.findBy({
-        id: In(_ids.map(({ id }) => id)),
+        users: { props: { id: user.id } },
         name: ILike(`${name}%`),
       })
     },
@@ -130,6 +106,16 @@ export default {
       const template = await templateRepository.findOne({
         relations: ["presentation", "presentation.slides", "presentation.slides.elements"],
         where: { id: templateId === undefined ? -1 : templateId },
+        order: {
+          presentation: {
+            slides: {
+              position: "ASC",
+              elements: {
+                position: "ASC",
+              },
+            },
+          },
+        },
       })
       const presentation = new Presentation(name, template)
 
@@ -165,16 +151,16 @@ export default {
         relations: ["users", "users.props"],
         where: { id },
       })
-      if (!presentation) return null
+      if (!presentation) return Result.NotFound
 
       const presentationUser = await presentationUserRepository.findOneBy({
         props: { id: user.id },
         presentation: { id },
       })
-      if (presentationUser.role === Role.Reader) return null
+      if (presentationUser.role === Role.Reader) return Result.NotAllowed
 
       presentation.name = name
-      const savedPresentation = await presentationRepository.save(presentation)
+      await presentationRepository.save(presentation)
       pubsub.publish(EVENT.PRESENTATION_UPDATED, {
         presentationListUpdated: {
           type: PresentationUpdateType.Changed,
@@ -182,7 +168,7 @@ export default {
         } as PresentationUpdate,
       })
 
-      return savedPresentation
+      return Result.Success
     },
     async duplicatePresentation(__, { id }, { user }) {
       if (!user) return null
@@ -190,6 +176,14 @@ export default {
       const presentation = await presentationRepository.findOne({
         relations: ["slides", "slides.elements", "template"],
         where: { id },
+        order: {
+          slides: {
+            position: "ASC",
+            elements: {
+              position: "ASC",
+            },
+          },
+        },
       })
 
       if (!presentation) return null
@@ -202,20 +196,22 @@ export default {
       history.records = []
       newPresentation.history = history
 
-      newPresentation.slides = presentation.slides.map((slide) => {
+      newPresentation.slides = presentation.slides.map((slide, slideIndex) => {
         const newSlide = new Slide({
           presentation: newPresentation,
           bg: slide.bg,
           transition: slide.transition,
           thumbnailUrl: slide.thumbnailUrl,
+          position: slideIndex,
         })
 
-        newSlide.elements = slide.elements.map((element) => {
+        newSlide.elements = slide.elements.map((element, elementIndex) => {
           const commonProps = {
             ..._.pick(element, ["x", "y", "width", "height", "angle", "scaleX", "scaleY", "position"]),
             slide: newSlide,
             // Generating a new unique id
             id: nanoid(),
+            position: elementIndex,
           }
 
           if (element instanceof Text) {
