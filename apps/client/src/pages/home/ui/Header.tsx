@@ -8,7 +8,9 @@ export function Header() {
   return (
     <header className="py-3">
       <Container className="grid grid-cols-3 items-center gap-5">
-        <Logo size={2.5} />
+        <div>
+          <Logo size={2.5} />
+        </div>
         <SearchPresentations />
         <div className="flex items-center justify-end">
           <UserButton

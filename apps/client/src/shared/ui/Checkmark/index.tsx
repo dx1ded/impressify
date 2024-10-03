@@ -1,24 +1,10 @@
 import { Check } from "lucide-react"
 
-interface CheckmarkProps {
-  /**
-   * width in rem
-   */
-  width?: number
-  /**
-   * height in rem
-   */
-  height?: number
-}
+import { cn } from "~/shared/lib"
 
-export function Checkmark({ width, height }: CheckmarkProps) {
+export function Checkmark({ className }: { className?: string }) {
   return (
-    <div
-      className="bg-primary flex items-center justify-center rounded-full"
-      style={{
-        width: width ? `${width}rem` : "1rem",
-        height: height ? `${height}rem` : "1rem",
-      }}>
+    <div className={cn("bg-primary flex h-8 w-8 items-center justify-center rounded-full", className)}>
       <Check width="50%" height="50%" className="text-white" />
     </div>
   )

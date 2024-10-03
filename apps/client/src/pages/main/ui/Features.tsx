@@ -21,11 +21,11 @@ export function Features() {
   })
 
   return (
-    <section ref={ref} className="bg-white py-24" id="features">
+    <section ref={ref} className="max-xs:py-10 bg-white py-24 max-xl:py-16 max-md:py-12" id="features">
       <Container>
-        <div className="mb-16 flex items-center justify-between">
-          <Heading className="basis-80">Our Features you can get</Heading>
-          <Lead className="text-grayish basis-[28.75rem]">
+        <div className="max-xs:mb-10 mb-16 flex items-center justify-between gap-4 max-md:mb-12 max-md:flex-col">
+          <Heading className="basis-80 max-md:basis-auto max-md:text-center">Our Features you can get</Heading>
+          <Lead className="text-grayish basis-[28.75rem] max-md:max-w-[30rem] max-md:basis-auto max-md:text-center">
             We offer a variety of interesting features that you can help increase yor productivity at work and manage
             your projrct esaly
           </Lead>
@@ -35,19 +35,19 @@ export function Features() {
             </Button>
           </SignUpButton>
         </div>
-        <div className="grid grid-cols-3 gap-10">
+        <div className="max-xs:grid-cols-1 grid grid-cols-3 gap-10 max-md:gap-4 max-sm:grid-cols-2">
           <div>
-            <img src={CollaborationIllustration} className="mb-8 w-full" alt="Collaboration" />
+            <img src={CollaborationIllustration} className="mb-8 w-full max-md:mb-6" alt="Collaboration" />
             <Subheading>Collaboration Teams</Subheading>
             <Lead className="text-grayish">Here you can handle projects together with team virtually</Lead>
           </div>
           <div>
-            <img src={StorageIllustration} className="mb-8 w-full" alt="Storage" />
+            <img src={StorageIllustration} className="mb-8 w-full max-md:mb-6" alt="Storage" />
             <Subheading>Cloud Storage</Subheading>
             <Lead className="text-grayish">No need to worry about storage because we provide storage up to 2 TB</Lead>
           </div>
           <div>
-            <img src={PerformanceIllustration} className="mb-8 w-full" alt="Perfomance" />
+            <img src={PerformanceIllustration} className="mb-8 w-full max-md:mb-6" alt="Perfomance" />
             <Subheading>Performance</Subheading>
             <Lead className="text-grayish">
               We always try to optimize our application and make the performance better

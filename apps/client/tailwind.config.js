@@ -81,6 +81,17 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      flex: {
+        "2": "2 1 0%",
+      },
+      screens: {
+        "max-xl": { max: "80em" }, // 1280px
+        "max-lg": { max: "64em" }, // 1024px
+        "max-md": { max: "48em" }, // 768px
+        "max-sm": { max: "36em" }, // 576px
+        "max-xs": { max: "26.25em" }, // 420px
+        "max-2xs": { max: "23.4375em" }, // 375px
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
