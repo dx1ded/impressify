@@ -57,9 +57,9 @@ export function Support() {
           </div>
         </div>
         <div className="grid flex-shrink-0 gap-8 max-xl:gap-6">
-          <div className="flex items-start gap-5">
-            <div className="text-primary flex h-16 w-16 flex-shrink-0 items-center justify-center bg-white shadow-lg max-xl:h-14 max-xl:w-14 max-lg:h-12 max-lg:w-12">
-              <LineChart className="h-8 w-8 max-xl:h-6 max-xl:w-6" />
+          <div className="flex items-start gap-5 max-sm:gap-3">
+            <div className="text-primary flex h-16 w-16 flex-shrink-0 items-center justify-center bg-white shadow-lg max-xl:h-14 max-xl:w-14 max-lg:h-12 max-lg:w-12 max-sm:h-10 max-sm:w-10">
+              <LineChart className="h-8 w-8 max-xl:h-6 max-xl:w-6 max-md:h-5 max-md:w-5" />
             </div>
             <div>
               <Subheading>Publishing</Subheading>
@@ -69,9 +69,9 @@ export function Support() {
               </Lead>
             </div>
           </div>
-          <div className="flex items-start gap-5">
-            <div className="text-primary flex h-16 w-16 flex-shrink-0 items-center justify-center bg-white shadow-lg max-xl:h-14 max-xl:w-14 max-lg:h-12 max-lg:w-12">
-              <PieChart className="h-8 w-8 max-xl:h-6 max-xl:w-6" />
+          <div className="flex items-start gap-5 max-sm:gap-3">
+            <div className="text-primary flex h-16 w-16 flex-shrink-0 items-center justify-center bg-white shadow-lg max-xl:h-14 max-xl:w-14 max-lg:h-12 max-lg:w-12 max-sm:h-10 max-sm:w-10">
+              <PieChart className="h-8 w-8 max-xl:h-6 max-xl:w-6 max-md:h-5 max-md:w-5" />
             </div>
             <div>
               <Subheading>Analytics</Subheading>
@@ -80,9 +80,9 @@ export function Support() {
               </Lead>
             </div>
           </div>
-          <div className="flex items-start gap-5">
-            <div className="text-primary flex h-16 w-16 flex-shrink-0 items-center justify-center bg-white shadow-lg max-xl:h-14 max-xl:w-14 max-lg:h-12 max-lg:w-12">
-              <Command className="h-8 w-8 max-xl:h-6 max-xl:w-6" />
+          <div className="flex items-start gap-5 max-sm:gap-3">
+            <div className="text-primary flex h-16 w-16 flex-shrink-0 items-center justify-center bg-white shadow-lg max-xl:h-14 max-xl:w-14 max-lg:h-12 max-lg:w-12 max-sm:h-10 max-sm:w-10">
+              <Command className="h-8 w-8 max-xl:h-6 max-xl:w-6 max-md:h-5 max-md:w-5" />
             </div>
             <div>
               <Subheading>Engagement</Subheading>

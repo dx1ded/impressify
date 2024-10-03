@@ -24,9 +24,9 @@ export function Benefits() {
       style={{ background: "linear-gradient(180deg, rgba(255,255,255,1), rgba(254,223,212,1) 100%)" }}
       id="benefits">
       <Container className="flex justify-between gap-8 max-md:items-center">
-        <div className="basis-[28rem]">
-          <Heading className="mb-12 max-lg:mb-8">What Benefits Will You Get</Heading>
-          <div className="grid gap-6">
+        <div className="basis-[28rem] max-sm:basis-full">
+          <Heading className="mb-12 max-lg:mb-8 max-sm:text-center">What Benefits Will You Get</Heading>
+          <div className="grid gap-6 max-sm:justify-center">
             <div className="flex items-center gap-5 max-lg:gap-4">
               <Checkmark className="h-8 w-8 max-md:h-6 max-md:w-6" />
               <Lead className="font-medium">Easy Collaboration With Team</Lead>

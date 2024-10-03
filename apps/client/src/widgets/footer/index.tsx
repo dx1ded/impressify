@@ -5,7 +5,7 @@ import { Small } from "~/shared/ui/Typography"
 export function Footer() {
   return (
     <footer className="bg-secondary-foreground py-4 text-white max-lg:py-3">
-      <Container className="flex items-center justify-between max-sm:flex-col max-sm:gap-4">
+      <Container className="flex items-center justify-between max-sm:flex-col max-sm:gap-5">
         <Logo className="max-lg:!h-9 max-lg:!w-9" />
         <nav>
           <ul className="flex list-none flex-wrap items-center justify-center gap-9 max-md:gap-6 max-sm:gap-y-3">

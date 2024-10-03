@@ -33,7 +33,7 @@ export function Hero() {
   return (
     <main
       ref={ref}
-      className="max-2xs:h-[38rem] flex h-[64rem] items-center max-xl:h-[56rem] max-lg:h-[50rem] max-md:h-[42rem] max-sm:h-[36rem]"
+      className="max-2xs:h-[38rem] flex h-[64rem] items-center max-xl:h-[50rem] max-lg:h-[46rem] max-md:h-[36rem] max-sm:h-[32rem]"
       style={{
         background: "linear-gradient(175deg, rgba(254,209,194,1) 0%, rgba(255,255,255,1) 93%)",
       }}
@@ -91,7 +91,7 @@ export function Hero() {
         </div>
         <div className="relative max-w-[25rem] max-xl:max-w-[23rem] max-lg:max-w-[20rem] max-md:hidden">
           <img src={HeroPersonImage} className="w-full" alt="Person showing like" />
-          <img src={DatabaseIcon} className="absolute -right-10 top-8 h-20 w-20" alt="" aria-hidden />
+          <img src={DatabaseIcon} className="absolute -right-8 top-8 h-20 w-20" alt="" aria-hidden />
           <img src={CheckIcon} className="absolute -left-12 top-32 h-20 w-20" alt="" aria-hidden />
           <img src={MessageIcon} className="absolute -bottom-12 right-8 h-20 w-20" alt="" aria-hidden />
         </div>

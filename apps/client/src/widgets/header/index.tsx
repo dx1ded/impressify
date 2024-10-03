@@ -81,7 +81,7 @@ export function Header() {
         />
         <div
           className={cn(
-            "flex-2 flex h-full items-center justify-between gap-6 transition-transform max-md:fixed max-md:left-0 max-md:top-0 max-md:z-40 max-md:w-64 max-md:flex-col max-md:gap-6 max-md:overflow-y-scroll max-md:bg-white max-md:p-3",
+            "flex-2 flex h-full items-center justify-between gap-10 transition-transform max-md:fixed max-md:left-0 max-md:top-0 max-md:z-40 max-md:w-64 max-md:flex-col max-md:overflow-y-scroll max-md:bg-white max-md:p-3",
             isMenuOpen ? "max-md:translate-x-0" : "max-md:-translate-x-full",
           )}>
           {/* Burger close button */}

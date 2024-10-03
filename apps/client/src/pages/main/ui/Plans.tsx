@@ -40,14 +40,14 @@ export function Plans() {
             </TabsList>
           </div>
           <div className="grid grid-cols-3 gap-9 max-xl:gap-6 max-lg:grid-cols-2 max-lg:gap-4 max-sm:grid-cols-1">
-            <div className="flex flex-col items-center rounded-3xl bg-white px-5 py-9 text-center shadow-lg max-xl:px-3 max-xl:py-6">
+            <div className="flex flex-col items-center rounded-3xl bg-white px-5 py-9 text-center shadow-lg max-xl:px-3 max-xl:pb-3 max-xl:pt-6">
               <Subheading>Free</Subheading>
               <Lead className="text-grayish mx-auto mb-8 max-w-52">Have a go and test your superpowers</Lead>
               <p className="before:text-grayish relative mb-7 inline-block text-5xl font-semibold before:absolute before:left-0 before:top-0 before:-translate-x-full before:-translate-y-1/2 before:text-xl before:content-['$'] max-xl:mb-5">
                 0
               </p>
-              <div className="mt-auto w-full rounded-xl bg-[#F9FAFB] px-8 py-6 text-left max-xl:px-6 max-md:px-4">
-                <div className="mb-9 grid gap-6">
+              <div className="mt-auto w-full rounded-xl bg-[#F9FAFB] px-8 py-6 text-left max-xl:px-5 max-xl:py-4 max-md:px-4">
+                <div className="mb-9 grid gap-6 max-xl:mb-6 max-xl:gap-4">
                   <div className="flex items-center gap-4">
                     <Checkmark className="h-6 w-6" />
                     <Lead className="font-semibold">2 Users</Lead>
@@ -78,7 +78,7 @@ export function Plans() {
                 </SignUpButton>
               </div>
             </div>
-            <div className="bg-primary flex flex-col items-center rounded-3xl px-5 py-9 text-center shadow-lg max-xl:px-3 max-xl:py-6">
+            <div className="bg-primary flex flex-col items-center rounded-3xl px-5 py-9 text-center shadow-lg max-xl:px-3 max-xl:pb-3 max-xl:pt-6">
               <Subheading className="text-white">Pro</Subheading>
               <Lead className="mx-auto mb-8 max-w-52 text-white">Experiment the power of infinite possibilities</Lead>
               <TabsContent asChild value="monthly">
@@ -91,8 +91,8 @@ export function Plans() {
                   8
                 </p>
               </TabsContent>
-              <div className="mt-auto w-full rounded-xl bg-white px-8 py-6 text-left max-xl:px-6 max-md:px-4">
-                <div className="mb-9 grid gap-6">
+              <div className="mt-auto w-full rounded-xl bg-white px-8 py-6 text-left max-xl:px-5 max-xl:py-4 max-md:px-4">
+                <div className="mb-9 grid gap-6 max-xl:mb-6 max-xl:gap-4">
                   <div className="flex items-center gap-4">
                     <Checkmark className="h-6 w-6" />
                     <Lead className="font-semibold">4 Users</Lead>
@@ -119,7 +119,7 @@ export function Plans() {
                 </SignUpButton>
               </div>
             </div>
-            <div className="flex flex-col items-center rounded-3xl bg-white px-5 py-9 text-center shadow-lg max-xl:px-3 max-xl:py-6">
+            <div className="flex flex-col items-center rounded-3xl bg-white px-5 py-9 text-center shadow-lg max-xl:px-3 max-xl:pb-3 max-xl:pt-6">
               <Subheading>Business</Subheading>
               <Lead className="text-grayish mx-auto mb-8 max-w-52">Unveil new superpowers and join the League</Lead>
               <TabsContent asChild value="monthly">
@@ -132,8 +132,8 @@ export function Plans() {
                   16
                 </p>
               </TabsContent>
-              <div className="mt-auto w-full rounded-xl bg-[#F9FAFB] px-8 py-6 text-left max-xl:px-6 max-md:px-4">
-                <div className="mb-9 grid gap-6">
+              <div className="mt-auto w-full rounded-xl bg-[#F9FAFB] px-8 py-6 text-left max-xl:px-5 max-xl:py-4 max-md:px-4">
+                <div className="mb-9 grid gap-6 max-xl:mb-6 max-xl:gap-4">
                   <div className="flex items-center gap-4">
                     <Checkmark className="h-6 w-6" />
                     <Lead className="font-semibold">All the features of pro plan</Lead>
