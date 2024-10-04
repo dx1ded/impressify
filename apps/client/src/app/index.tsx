@@ -14,6 +14,7 @@ import { createClient } from "graphql-ws"
 import { store } from "~/app/model"
 import { PrivateRoutes } from "~/app/ui"
 import { OnUserChanged } from "~/entities/user"
+import { Toaster } from "~/shared/ui-kit/sonner"
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -94,6 +95,7 @@ export function App() {
           signUpForceRedirectUrl="/home"
           afterSignOutUrl="/">
           <OnUserChanged>
+            <Toaster />
             <AnimatePresence mode="wait">
               <Routes>
                 <Route index element={<Main />} />

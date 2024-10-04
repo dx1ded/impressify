@@ -12,7 +12,6 @@ import {
 } from "~/entities/presentation"
 import { type ChildrenAsCallbackWithFn, convertFileToDataUrl, getNormalizedImageHeight } from "~/shared/lib"
 import { useAppDispatch, useAppSelector } from "~/shared/model"
-import { Toaster } from "~/shared/ui-kit/sonner"
 
 // forwardRef is used because it may be used in Tooltip which passed forwardRef and then throws an error it's absent
 export const InsertImage = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(function InsertImage({ children }, _) {
@@ -45,10 +44,5 @@ export const InsertImage = forwardRef<HTMLElement, ChildrenAsCallbackWithFn>(fun
     }
   }
 
-  return (
-    <>
-      <Toaster />
-      {children(insertImage)}
-    </>
-  )
+  return children(insertImage)
 })

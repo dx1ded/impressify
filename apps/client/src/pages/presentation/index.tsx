@@ -43,7 +43,6 @@ import {
   withTransition,
   YjsProvider,
 } from "~/shared/model"
-import { Toaster } from "~/shared/ui-kit/sonner"
 import { TooltipProvider } from "~/shared/ui-kit/tooltip"
 import { Toolbar } from "~/widgets/toolbar"
 
@@ -58,6 +57,7 @@ export default withTransition(function PresentationPage() {
 function Presentation() {
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
+  const navigate = useNavigate()
   const { user } = useUser()
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const { currentSlide, presentationName, userToken, isEditor } = useAppSelector(
@@ -69,7 +69,6 @@ function Presentation() {
     }),
     shallowEqual,
   )
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
   // Clearing store when leaving the page
@@ -205,13 +204,13 @@ function Presentation() {
       name={`presentation/${id}`}
       token={userToken}
       onUpdate={updateHandler}
-      onClose={() => navigate("/not-found")}
+      onAuthenticationFailed={() => navigate("/not-found")}
       onAwarenessChange={awarenessChangeHandler}
       onAuthenticated={addHistoryRecord}
       setInitialAwareness={setInitialAwareness}>
       <TooltipProvider>
         <HotkeysProvider>
-          <div className="flex h-screen flex-col bg-[#f8fafd] px-4">
+          <div className="flex min-h-screen flex-col bg-[#f8fafd] px-4">
             <div>
               <Header />
               <Toolbar />
@@ -222,7 +221,6 @@ function Presentation() {
             </div>
           </div>
         </HotkeysProvider>
-        <Toaster />
       </TooltipProvider>
     </YjsProvider>
   )

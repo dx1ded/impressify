@@ -37,7 +37,7 @@ export function PresentationInfoDialog({ children, presentationId }: { children:
               <Skeleton className="h-[1.125rem] w-96" />
             </>
           ) : (
-            <DialogTitle className="truncate">{data?.getPresentationInfo?.name}</DialogTitle>
+            <DialogTitle className="truncate">&quot;{data?.getPresentationInfo?.name}&quot;</DialogTitle>
           )}
           <DialogDescription hidden>Information about the presentation</DialogDescription>
         </DialogHeader>

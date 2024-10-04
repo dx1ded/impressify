@@ -69,14 +69,20 @@ export function Recent() {
           <Text className="font-semibold">Recent presentations</Text>
           <SortPresentations />
         </div>
-        <div className={cn("grid gap-4", view === "grid" ? "grid-cols-5" : "grid-cols-1")}>
+        <div
+          className={cn(
+            "grid gap-4",
+            view === "grid"
+              ? "max-xs:grid-cols-1 grid-cols-5 max-lg:grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2"
+              : "grid-cols-1",
+          )}>
           {loading ? (
             <>
-              <Skeleton className={cn(view === "grid" ? "h-[11.125rem]" : "h-[3.875rem]")} />
-              <Skeleton className={cn(view === "grid" ? "h-[11.125rem]" : "h-[3.875rem]")} />
-              <Skeleton className={cn(view === "grid" ? "h-[11.125rem]" : "h-[3.875rem]")} />
-              <Skeleton className={cn(view === "grid" ? "h-[11.125rem]" : "h-[3.875rem]")} />
-              <Skeleton className={cn(view === "grid" ? "h-[11.125rem]" : "h-[3.875rem]")} />
+              <Skeleton className={cn(view === "grid" ? "h-[12.125rem]" : "h-[3.875rem]")} />
+              <Skeleton className={cn(view === "grid" ? "h-[12.125rem]" : "h-[3.875rem]")} />
+              <Skeleton className={cn(view === "grid" ? "h-[12.125rem]" : "h-[3.875rem]")} />
+              <Skeleton className={cn(view === "grid" ? "h-[12.125rem]" : "h-[3.875rem]")} />
+              <Skeleton className={cn(view === "grid" ? "h-[12.125rem]" : "h-[3.875rem]")} />
             </>
           ) : (
             <DeletePresentationAlert>

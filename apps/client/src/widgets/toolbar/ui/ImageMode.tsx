@@ -5,7 +5,6 @@ import { shallowEqual } from "react-redux"
 import { toast } from "sonner"
 
 import { updateImageProps, TAKE_SCREENSHOT_ID, MAX_IMAGE_SIZE, NOT_SELECTED } from "~/entities/presentation"
-import { Toaster } from "~/shared/ui-kit/sonner"
 import type { ModeProps } from "~/widgets/toolbar/lib"
 import { convertFileToDataUrl, uploadImageToStorage } from "~/shared/lib"
 import { useAppDispatch, useAppSelector, useDebouncedFunctions, useYjs } from "~/shared/model"
@@ -50,7 +49,6 @@ export function ImageMode({ isActive }: ModeProps) {
 
   return (
     <ToolbarGroup style={{ display: isActive ? "flex" : "none" }} aria-hidden={isActive}>
-      <Toaster />
       <Tooltip>
         <TooltipTrigger asChild>
           <div>

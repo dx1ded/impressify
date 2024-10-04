@@ -93,7 +93,6 @@ export function TextMode({ isActive }: ModeProps) {
         <ColorPicker
           color={textProps.borderColor}
           disabled={!isEditor}
-          hasTransparent={false}
           onChange={(value) => applyTextChanges({ borderColor: value })}>
           <Tooltip>
             <TooltipTrigger asChild>
