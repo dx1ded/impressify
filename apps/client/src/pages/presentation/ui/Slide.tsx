@@ -1,6 +1,6 @@
 import type { UserAwareness, YPresentation } from "@server/hocuspocus/types"
 import { transformNormalizedToYElement } from "@server/hocuspocus/transform"
-import { memo, useMemo, useRef } from "react"
+import { memo, useEffect, useMemo, useRef } from "react"
 import { Layer, Rect, Stage } from "react-konva"
 import { shallowEqual } from "react-redux"
 import type { KonvaEventObject } from "konva/lib/Node"
@@ -33,8 +33,6 @@ import { ProportionalImage } from "~/shared/ui/ProportionalImage"
 const SCREENSHOT_DEBOUCE_TIME = 2500
 const UPDATE_CURSOR_DEBOUNCE_TIME = 150
 
-const CONTAINER_BORDER_WIDTH = 2
-
 export const Slide = memo(function Slide() {
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const connectedUsers = useAppSelector((state) => state.presentationUser.connectedUsers)
@@ -65,9 +63,41 @@ export const Slide = memo(function Slide() {
     shallowEqual,
   )
   const dispatch = useAppDispatch()
+  const containerRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<StageClass>(null)
   const { register, flush } = useDebouncedFunctions()
   const { getMap, updateAwareness } = useYjs()
+
+  // Responsive stage
+  useEffect(() => {
+    const fitStageIntoParentContainer = () => {
+      const container = containerRef.current
+      const stage = stageRef.current
+      if (!container || !stage) return
+
+      // Get the container size (the container should automatically resize)
+      const containerWidth = container.offsetWidth
+
+      // but we also make the full scene visible
+      // so we need to scale all objects on canvas
+      const scale = containerWidth / SLIDE_WIDTH
+
+      stage.width(SLIDE_WIDTH * scale)
+      stage.height(SLIDE_HEIGHT * scale)
+      stage.scale({ x: scale, y: scale })
+    }
+
+    // Run it initially to fit the stage to its container
+    fitStageIntoParentContainer()
+
+    // Recalculate scale on window resize
+    window.addEventListener("resize", fitStageIntoParentContainer)
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", fitStageIntoParentContainer)
+    }
+  }, [])
 
   const slide = slides[currentSlide]
 
@@ -122,8 +152,9 @@ export const Slide = memo(function Slide() {
       flush(generateEditElementId(selectedId))
       const newEl = dispatch(
         addElement({
-          x: pointerPosition.x,
-          y: pointerPosition.y,
+          // Adjusting x and y based on stage scale
+          x: pointerPosition.x / stage.scaleX(),
+          y: pointerPosition.y / stage.scaleY(),
           // Height will be ignored for Text and Shape but used for Image only
           height: imageHeight,
         }),
@@ -153,8 +184,9 @@ export const Slide = memo(function Slide() {
   const mouseMoveHandlerDebounced = useDebouncedCallback((e: KonvaEventObject<MouseEvent>) => {
     updateAwareness<UserAwareness>({
       cursor: {
-        x: e.evt.layerX,
-        y: e.evt.layerY,
+        // Adjusting x and y based on stage scale
+        x: e.evt.layerX / e.currentTarget.scaleX(),
+        y: e.evt.layerY / e.currentTarget.scaleY(),
         isOutsideBoundaries: false,
       },
     })
@@ -164,8 +196,9 @@ export const Slide = memo(function Slide() {
     mouseMoveHandlerDebounced.cancel()
     updateAwareness<UserAwareness>({
       cursor: {
-        x: e.evt.layerX,
-        y: e.evt.layerY,
+        // Adjusting x and y based on stage scale
+        x: e.evt.layerX / e.currentTarget.scaleX(),
+        y: e.evt.layerY / e.currentTarget.scaleY(),
         isOutsideBoundaries: true,
       },
     })
@@ -185,13 +218,8 @@ export const Slide = memo(function Slide() {
   )
 
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <div
-        className="relative border"
-        style={{
-          width: `${SLIDE_WIDTH + CONTAINER_BORDER_WIDTH}px`,
-          height: `${SLIDE_HEIGHT + CONTAINER_BORDER_WIDTH}px`,
-        }}>
+    <div className="flex min-w-0 flex-1 items-center justify-center">
+      <div ref={containerRef} className="relative w-full min-w-0 shadow-xl" style={{ maxWidth: SLIDE_WIDTH }}>
         {connectedUsersExcludingYourself.map(
           (connectedUser) =>
             connectedUser.currentSlideId === slides[currentSlide]?.id &&
@@ -201,8 +229,9 @@ export const Slide = memo(function Slide() {
                 key={connectedUser.id}
                 name={connectedUser.name}
                 color={connectedUser.color}
-                x={connectedUser.cursor.x}
-                y={connectedUser.cursor.y}
+                // Adjusting x and y based on stage scale
+                x={connectedUser.cursor.x * (stageRef.current?.scaleX() || 1)}
+                y={connectedUser.cursor.y * (stageRef.current?.scaleY() || 1)}
                 isVisible={!connectedUser.cursor.isOutsideBoundaries}
               />
             ),

@@ -20,7 +20,7 @@ interface LogoProps {
 
 export function Logo({ className, textClassName, size = 3, noText = false, url = DEFAULT_URL }: LogoProps) {
   return (
-    <Link to={url} className="inline-flex items-center gap-2 font-medium">
+    <Link to={url} className="inline-flex flex-shrink-0 items-center gap-2 font-medium">
       <img
         className={cn(className)}
         style={{ width: `${size}rem`, height: `${size}rem` }}

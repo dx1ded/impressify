@@ -15,7 +15,7 @@ export function SlideshowSlide({ slide }: SlideshowSlideProps) {
     <motion.img
       key={slide.id}
       src={slide.thumbnailUrl}
-      className="h-full select-none"
+      className="select-none object-contain"
       alt="Slide"
       style={{ aspectRatio: ASPECT_RATIO }}
       transition={{ duration: DEFAULT_DURATION }}

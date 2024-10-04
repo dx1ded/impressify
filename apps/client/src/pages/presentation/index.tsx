@@ -57,6 +57,7 @@ export default withTransition(function PresentationPage() {
 function Presentation() {
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
+  const navigate = useNavigate()
   const { user } = useUser()
   const slides = useAppSelector((state) => state.presentation.presentation.slides)
   const { currentSlide, presentationName, userToken, isEditor } = useAppSelector(
@@ -68,7 +69,6 @@ function Presentation() {
     }),
     shallowEqual,
   )
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
   // Clearing store when leaving the page
@@ -210,7 +210,7 @@ function Presentation() {
       setInitialAwareness={setInitialAwareness}>
       <TooltipProvider>
         <HotkeysProvider>
-          <div className="flex h-screen flex-col bg-[#f8fafd] px-4">
+          <div className="flex min-h-screen flex-col bg-[#f8fafd] px-4">
             <div>
               <Header />
               <Toolbar />

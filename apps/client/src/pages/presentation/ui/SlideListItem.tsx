@@ -54,7 +54,7 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
           {...provided.dragHandleProps}
           {...provided.draggableProps}
           // mb-4 is used instead of container gap + for every element to avoid the issue related to gaps with react-beautiful-dnd
-          className="group mb-4 flex h-28 w-full flex-shrink-0 gap-2">
+          className="group mb-4 flex h-28 w-full flex-shrink-0 gap-2 max-lg:h-24">
           <div className="flex h-full flex-col items-center gap-2">
             {!isDragging && <small className="font-bold">{index + 1}</small>}
             {slide.transition !== Transition.None && (
