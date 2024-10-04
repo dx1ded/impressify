@@ -204,7 +204,7 @@ function Presentation() {
       name={`presentation/${id}`}
       token={userToken}
       onUpdate={updateHandler}
-      onClose={() => navigate("/not-found")}
+      onAuthenticationFailed={() => navigate("/not-found")}
       onAwarenessChange={awarenessChangeHandler}
       onAuthenticated={addHistoryRecord}
       setInitialAwareness={setInitialAwareness}>
