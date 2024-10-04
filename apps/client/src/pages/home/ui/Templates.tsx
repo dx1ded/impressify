@@ -10,7 +10,7 @@ export function Templates() {
   const { data, loading } = useQuery<FindTemplatesQuery, FindTemplatesQueryVariables>(FIND_TEMPLATES)
 
   return (
-    <div className="grid grid-cols-6 gap-4">
+    <div className="grid grid-cols-6 gap-4 max-lg:gap-2.5 max-md:grid-cols-3">
       <CreatePresentation>
         {(createPresentation, { loading: createPresentationLoading }) => (
           <>
@@ -18,7 +18,7 @@ export function Templates() {
             {createPresentationLoading && <Loader />}
             {/* Blank presentation */}
             <Template
-              name="Blank presentation"
+              name="Blank Page"
               thumbnailUrl="https://ssl.gstatic.com/docs/templates/thumbnails/slides-blank-googlecolors.png"
               createPresentation={createPresentation}
             />

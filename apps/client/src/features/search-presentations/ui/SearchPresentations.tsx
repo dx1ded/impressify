@@ -62,7 +62,7 @@ export function SearchPresentations() {
   const isOpen = isMenuOpen && !!data?.searchPresentations?.length
 
   return (
-    <div className="relative">
+    <div className="relative basis-[26.25rem] max-sm:order-3 max-sm:basis-full">
       <Input
         ref={inputRef}
         className={cn("pl-10 pr-8 focus-visible:ring-0", isOpen && "rounded-b-none")}

@@ -53,11 +53,13 @@ export function PresentationPreview({
       onClick={clickHandler}>
       <img
         src={slide.thumbnailUrl}
-        className={cn("h-36 w-full rounded-t border-b", view === "list" && "hidden")}
+        className={cn("h-32 w-full rounded-t border-b object-cover", view === "list" && "hidden")}
         alt="Presentation thumbnail"
       />
-      <div className={cn("flex flex-col gap-2 p-3 pr-1.5", view === "list" && "flex-row items-center p-5")}>
-        <Small className={cn("block truncate", view === "list" && "!text-[1rem]")}>{presentation.name}</Small>
+      <div className={cn("flex flex-col gap-2 p-3 pr-1.5", view === "list" && "max-xs:p-4 flex-row items-center p-5")}>
+        <Small className={cn("block truncate", view === "list" && "max-xs:!text-[0.875rem] !text-[1rem]")}>
+          {presentation.name}
+        </Small>
         <div className={cn("flex items-center gap-1", view === "list" && "ml-auto gap-5")}>
           <PanelRightIcon className={cn("text-primary h-4 w-4", view === "list" && "hidden")} />
           {presentation.users.length > 1 && <Users className="text-primary h-4 w-4" />}
