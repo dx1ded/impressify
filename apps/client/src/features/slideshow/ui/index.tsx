@@ -62,7 +62,7 @@ export const Slideshow = memo<ChildrenAsCallbackWithFn>(function Slideshow({ chi
       <div
         ref={containerRef}
         className={cn(
-          "left-0 top-0 z-50 flex h-full w-full justify-center bg-black",
+          "left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black",
           isSlideshow ? "absolute" : "hidden",
         )}
         hidden={!isSlideshow}>

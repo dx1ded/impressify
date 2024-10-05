@@ -4,7 +4,7 @@ import { CopyIcon, SparklesIcon, Trash2Icon } from "lucide-react"
 import { shallowEqual } from "react-redux"
 
 import { Transition } from "~/__generated__/graphql"
-import { type SlideProps, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID } from "~/entities/presentation"
+import { type SlideProps, EDIT_ELEMENT_ID, TAKE_SCREENSHOT_ID, NOT_SELECTED } from "~/entities/presentation"
 import { DeleteSlide } from "~/features/delete-slide"
 import { DuplicateSlide } from "~/features/duplicate-slide/ui"
 import { ConnectionList } from "~/pages/presentation/ui/ConnectionList"
@@ -39,7 +39,7 @@ export function SlideListItem({ slide, index, isDragging }: SlideListItemProps) 
       deleteWithPattern(EDIT_ELEMENT_ID)
     }
     dispatch(switchCurrentSlide(index))
-    updateAwareness<UserAwareness>({ currentSlideId: slide.id })
+    updateAwareness<UserAwareness>({ currentSlideId: slide.id, selectedId: NOT_SELECTED })
   }
 
   return (
