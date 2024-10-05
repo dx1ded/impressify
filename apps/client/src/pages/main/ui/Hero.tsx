@@ -79,7 +79,7 @@ export function Hero() {
                 </DialogHeader>
                 <iframe
                   className="aspect-video w-full"
-                  src="https://www.youtube.com/embed/nz43Vuy9_dE?si=0ByIiprljcCqH3jv"
+                  src="https://www.youtube.com/embed/xp9aguZDUp4?si=s4NGmMYTFea9CzGE"
                   title="YouTube video player"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"

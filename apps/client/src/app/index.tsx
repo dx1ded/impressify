@@ -23,13 +23,13 @@ if (!PUBLISHABLE_KEY) {
 }
 
 const clerkInstance = new Clerk(PUBLISHABLE_KEY)
-clerkInstance.load()
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_GRAPHQL_URL,
 })
 
 const authLink = setContext(async (_, { headers }) => {
+  if (!clerkInstance.loaded) await clerkInstance.load()
   const clerkToken = await clerkInstance?.session?.getToken()
 
   return {
@@ -44,6 +44,7 @@ const wsLink = new GraphQLWsLink(
   createClient({
     url: import.meta.env.VITE_GRAPHQL_WS_URL,
     connectionParams: async () => {
+      if (!clerkInstance.loaded) await clerkInstance.load()
       const clerkToken = await clerkInstance?.session?.getToken()
       return {
         authorization: clerkToken ? `Bearer ${clerkToken}` : "UNAUTHORIZED",
