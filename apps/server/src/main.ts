@@ -29,7 +29,7 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
 
   const wsServer = new WebSocketServer({
     port: wssPort,
-    path: "/graphql/subscriptions",
+    path: "/api/graphql/subscriptions",
   })
 
   const serverCleanup = useServer(
@@ -61,9 +61,11 @@ const FASTIFY_BODY_LIMIT = 1024 * 1024 * 8
   fastify.register(cors)
   fastify.register(ws)
   fastify.register(fastifyApollo(apollo), {
+    path: "/api/graphql",
     context: (request) => getContext(request.headers.authorization),
   })
   fastify.register(app)
+
   fastify.listen({ port, host }, (err) => {
     if (err) {
       console.error(err)
