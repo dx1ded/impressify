@@ -8,11 +8,14 @@ RUN npm ci
 RUN npx nx run codegen:build
 
 FROM node:22-alpine AS runner
+WORKDIR /app
 
 ARG PORT=4000
 ARG WSS_PORT=4001
 ENV PORT=${PORT}
 ENV WSS_PORT=${WSS_PORT}
+
+COPY --from=builder /app .
 
 RUN --mount=type=secret,id=env_file \
     cp /run/secrets/env_file apps/server/.env.local
